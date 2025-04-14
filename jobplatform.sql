@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `jobplatform` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `jobplatform`;
 -- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 --
 -- Host: localhost    Database: jobplatform
@@ -39,6 +37,31 @@ LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
 INSERT INTO `admin` VALUES (3);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `category`
+--
+
+DROP TABLE IF EXISTS `category`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `category` (
+  `id` int NOT NULL,
+  `name` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `category`
+--
+
+LOCK TABLES `category` WRITE;
+/*!40000 ALTER TABLE `category` DISABLE KEYS */;
+INSERT INTO `category` VALUES (1,'IT'),(2,'Kế toán'),(4,'Sale'),(3,'Tiếp Thị& Makerting');
+/*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -224,11 +247,14 @@ CREATE TABLE `job_posting` (
   `state` enum('pending','approved','rejected') DEFAULT NULL,
   `employer_id` int DEFAULT NULL,
   `approved_by_admin_id` int DEFAULT NULL,
+  `category_jd` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `employer_id` (`employer_id`),
   KEY `approved_by_admin_id` (`approved_by_admin_id`),
+  KEY `job_posting_ibfk_3_idx` (`category_jd`),
   CONSTRAINT `job_posting_ibfk_1` FOREIGN KEY (`employer_id`) REFERENCES `employer` (`id`),
-  CONSTRAINT `job_posting_ibfk_2` FOREIGN KEY (`approved_by_admin_id`) REFERENCES `admin` (`id`)
+  CONSTRAINT `job_posting_ibfk_2` FOREIGN KEY (`approved_by_admin_id`) REFERENCES `admin` (`id`),
+  CONSTRAINT `job_posting_ibfk_3` FOREIGN KEY (`category_jd`) REFERENCES `category` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -238,7 +264,7 @@ CREATE TABLE `job_posting` (
 
 LOCK TABLES `job_posting` WRITE;
 /*!40000 ALTER TABLE `job_posting` DISABLE KEYS */;
-INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python',1200,'08:00:00','17:00:00','approved',2,3),(2,'Frontend Developer','React',1000,'08:30:00','17:30:00','approved',5,3),(3,'DevOps Engineer','Docker',1300,'09:00:00','18:00:00','pending',5,3),(4,'Tester','Selenium',900,'08:00:00','16:00:00','approved',2,3),(5,'Project Manager','Agile',1500,'08:00:00','17:00:00','rejected',2,3),(6,'Mobile App Developer','Flutter',1100,'08:00:00','17:00:00','approved',6,3),(7,'UI/UX Designer','Figma',950,'09:00:00','18:00:00','pending',7,3),(8,'System Analyst','UML',1250,'08:30:00','17:30:00','approved',6,3),(9,'Tech Lead','Leadership',1700,'08:00:00','17:00:00','approved',7,3),(10,'Database Engineer','MySQL',1150,'09:00:00','18:00:00','rejected',6,3);
+INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python',1200,'08:00:00','17:00:00','approved',2,3,1),(2,'Frontend Developer','React',1000,'08:30:00','17:30:00','approved',5,3,1),(3,'DevOps Engineer','Docker',1300,'09:00:00','18:00:00','pending',5,3,1),(4,'Tester','Selenium',900,'08:00:00','16:00:00','approved',2,3,1),(5,'Project Manager','Agile',1500,'08:00:00','17:00:00','rejected',2,3,1),(6,'Mobile App Developer','Flutter',1100,'08:00:00','17:00:00','approved',6,3,1),(7,'UI/UX Designer','Figma',950,'09:00:00','18:00:00','pending',7,3,2),(8,'System Analyst','UML',1250,'08:30:00','17:30:00','approved',6,3,2),(9,'Tech Lead','Leadership',1700,'08:00:00','17:00:00','approved',7,3,2),(10,'Database Engineer','MySQL',1150,'09:00:00','18:00:00','rejected',6,3,2),(11,'Sale milk','Sale',1150,'08:00:00','17:00:00','pending',2,3,3);
 /*!40000 ALTER TABLE `job_posting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,4 +343,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-09 20:02:26
+-- Dump completed on 2025-04-15  0:09:31
