@@ -4,6 +4,7 @@
  */
 package com.job.controllers;
 
+import com.job.services.CategoryService;
 import com.job.services.JobPostingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController {
     @Autowired
     private JobPostingService jobService;
+    @Autowired
+    private CategoryService cateService;
     @RequestMapping("/")
     public String index(Model model){
-        model.addAttribute("JobPosting",this.jobService.getJobPostings());
+        model.addAttribute("categories",this.cateService.getCates());
         return "index";
     }
 }
