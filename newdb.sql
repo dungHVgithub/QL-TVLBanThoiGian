@@ -245,7 +245,7 @@ CREATE TABLE `job_description` (
   PRIMARY KEY (`id`),
   KEY `job_posting_id` (`job_posting_id`),
   CONSTRAINT `job_description_ibfk_1` FOREIGN KEY (`job_posting_id`) REFERENCES `job_posting` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +254,6 @@ CREATE TABLE `job_description` (
 
 LOCK TABLES `job_description` WRITE;
 /*!40000 ALTER TABLE `job_description` DISABLE KEYS */;
-INSERT INTO `job_description` VALUES (1,1,'Kiểm soát tính pháp lý đối với các văn bản, hợp đồng do Công ty ban hành, ký kết.','Job_Description'),(2,1,' Chuẩn bị các hồ sơ pháp lý của công ty, kiểm tra, chỉnh sửa, bổ sung hoàn chỉnh hồ sơ pháp lý, các văn bản ban hành, tài liệu giao dịch nhằm đảm bảo thực hiện theo đúng quy định của luật doanh nghiệp, luật lao động, cùng các quy định khác của Nhà nước.','Job_Description'),(3,1,'Tham gia cùng Ban Hành chính trong việc giải quyết các khiếu nại, tranh chấp, xử lý các vi phạm về Hợp đồng lao động, đào tạo kiến thức pháp luật.','Job_Description'),(4,1,'Thực hiện các công việc khác theo sự chỉ đạo của quản lý trực tiếp.','Job_Description'),(5,1,'Nam, nữ: Từ 23 đến 45 tuổi','Skill_Requirement'),(6,1,'Trình độ: tốt nghiệp Đại học trở lên chuyên ngành luật,','Skill_Requirement'),(7,1,'Kỹ năng giao tiếp, đàm phán tốt.','Skill_Requirement'),(8,1,' Kinh nghiệm: 1 năm trở lên làm việc trong lĩnh vực pháp lý; ưu tiên cho ứng viên có kinh nghiệm trong ngành kinh doanh có điều kiện.','Skill_Requirement');
 /*!40000 ALTER TABLE `job_description` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,23 +268,20 @@ CREATE TABLE `job_posting` (
   `id` int NOT NULL,
   `description` text,
   `skill` varchar(100) DEFAULT NULL,
+  `salary` double DEFAULT NULL,
   `time_start` time DEFAULT NULL,
   `time_end` time DEFAULT NULL,
   `state` enum('pending','approved','rejected') DEFAULT NULL,
   `employer_id` int DEFAULT NULL,
   `approved_by_admin_id` int DEFAULT NULL,
   `category_jd` int DEFAULT NULL,
-  `submit_end` date DEFAULT NULL,
-  `salary_from` int DEFAULT NULL,
-  `salary_to` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `employer_id` (`employer_id`),
   KEY `approved_by_admin_id` (`approved_by_admin_id`),
   KEY `job_posting_ibfk_3_idx` (`category_jd`),
   CONSTRAINT `job_posting_ibfk_1` FOREIGN KEY (`employer_id`) REFERENCES `employer` (`id`),
   CONSTRAINT `job_posting_ibfk_2` FOREIGN KEY (`approved_by_admin_id`) REFERENCES `admin` (`id`),
-  CONSTRAINT `job_posting_ibfk_3` FOREIGN KEY (`category_jd`) REFERENCES `category` (`id`),
-  CONSTRAINT `check_salary_range` CHECK ((`salary_from` < `salary_to`))
+  CONSTRAINT `job_posting_ibfk_3` FOREIGN KEY (`category_jd`) REFERENCES `category` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -295,7 +291,7 @@ CREATE TABLE `job_posting` (
 
 LOCK TABLES `job_posting` WRITE;
 /*!40000 ALTER TABLE `job_posting` DISABLE KEYS */;
-INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python','08:00:00','17:00:00','approved',2,3,1,'2025-01-05',15,21),(2,'Frontend Developer','React','08:30:00','17:30:00','approved',5,3,1,'2025-01-05',15,30),(3,'DevOps Engineer','Docker','09:00:00','18:00:00','pending',5,3,1,'2025-01-05',15,22),(4,'Tester','Selenium','08:00:00','16:00:00','approved',2,3,1,'2025-01-05',15,30),(5,'Project Manager','Agile','08:00:00','17:00:00','rejected',2,3,1,'2025-01-05',15,26),(6,'Mobile App Developer','Flutter','08:00:00','17:00:00','approved',6,3,1,'2025-01-05',15,24),(7,'UI/UX Designer','Figma','09:00:00','18:00:00','pending',7,3,2,'2025-01-05',15,22),(8,'System Analyst','UML','08:30:00','17:30:00','approved',6,3,2,'2025-01-05',15,20),(9,'Tech Lead','Leadership','08:00:00','17:00:00','approved',7,3,2,'2025-01-05',15,20),(10,'Database Engineer','MySQL','09:00:00','18:00:00','rejected',6,3,2,'2025-01-05',15,20),(11,'Sale milk','Sale','08:00:00','17:00:00','pending',2,3,3,'2025-01-05',15,20);
+INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python',1200,'08:00:00','17:00:00','approved',2,3,1),(2,'Frontend Developer','React',1000,'08:30:00','17:30:00','approved',5,3,1),(3,'DevOps Engineer','Docker',1300,'09:00:00','18:00:00','pending',5,3,1),(4,'Tester','Selenium',900,'08:00:00','16:00:00','approved',2,3,1),(5,'Project Manager','Agile',1500,'08:00:00','17:00:00','rejected',2,3,1),(6,'Mobile App Developer','Flutter',1100,'08:00:00','17:00:00','approved',6,3,1),(7,'UI/UX Designer','Figma',950,'09:00:00','18:00:00','pending',7,3,2),(8,'System Analyst','UML',1250,'08:30:00','17:30:00','approved',6,3,2),(9,'Tech Lead','Leadership',1700,'08:00:00','17:00:00','approved',7,3,2),(10,'Database Engineer','MySQL',1150,'09:00:00','18:00:00','rejected',6,3,2),(11,'Sale milk','Sale',1150,'08:00:00','17:00:00','pending',2,3,3);
 /*!40000 ALTER TABLE `job_posting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -374,4 +370,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-01 16:31:59
+-- Dump completed on 2025-05-01 18:46:29
