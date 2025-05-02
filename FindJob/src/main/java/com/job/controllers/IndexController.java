@@ -6,24 +6,35 @@ package com.job.controllers;
 
 import com.job.services.CategoryService;
 import com.job.services.JobPostingService;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
  * @author DUNG
  */
 @Controller
+@ControllerAdvice
 public class IndexController {
     @Autowired
     private JobPostingService jobService;
     @Autowired
     private CategoryService cateService;
-    @RequestMapping("/")
-    public String index(Model model){
+    
+    @ModelAttribute
+    public void commonRespone(Model model){
         model.addAttribute("categories",this.cateService.getCates());
+    }
+    
+    @RequestMapping("/")
+    public String indexProduct(Model model, @RequestParam Map<String, String> params) {
+        model.addAttribute("job_postings", this.jobService.getJobPostings(params));
         return "index";
     }
 }

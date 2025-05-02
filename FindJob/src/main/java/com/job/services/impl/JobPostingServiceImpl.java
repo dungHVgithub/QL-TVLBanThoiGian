@@ -8,6 +8,7 @@ import com.job.pojo.JobPosting;
 import com.job.repositories.JobPostingRepository;
 import com.job.services.JobPostingService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,26 @@ import org.springframework.stereotype.Service;
 public class JobPostingServiceImpl implements JobPostingService{
     @Autowired
     private JobPostingRepository jobRepo;
+    
+    @Override
+    public List<JobPosting> getJobPostings(Map<String, String> params) {
+        return this.jobRepo.getJobPostings(params);
+    }
 
     @Override
-    public List<JobPosting> getJobPostings() {
-        return this.jobRepo.getJobPostings();
+    public JobPosting getJobById(int id) {
+        return this.jobRepo.getJobById(id);
     }
+
+    @Override
+    public JobPosting addOrUpdate(JobPosting j) {
+        return this.jobRepo.addOrUpdate(j);
+    }
+
+    @Override
+    public void deleteJob(int id) {
+        this.jobRepo.deleteJob(id);
+    }
+    
     
 }

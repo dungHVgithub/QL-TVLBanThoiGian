@@ -26,18 +26,18 @@ import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "job_posting")
 @NamedQueries({
     @NamedQuery(name = "JobPosting.findAll", query = "SELECT j FROM JobPosting j"),
     @NamedQuery(name = "JobPosting.findById", query = "SELECT j FROM JobPosting j WHERE j.id = :id"),
-    @NamedQuery(name = "JobPosting.findBySkill", query = "SELECT j FROM JobPosting j WHERE j.skill = :skill"),
     @NamedQuery(name = "JobPosting.findBySalary", query = "SELECT j FROM JobPosting j WHERE j.salary = :salary"),
     @NamedQuery(name = "JobPosting.findByTimeStart", query = "SELECT j FROM JobPosting j WHERE j.timeStart = :timeStart"),
     @NamedQuery(name = "JobPosting.findByTimeEnd", query = "SELECT j FROM JobPosting j WHERE j.timeEnd = :timeEnd"),
-    @NamedQuery(name = "JobPosting.findByState", query = "SELECT j FROM JobPosting j WHERE j.state = :state")})
+    @NamedQuery(name = "JobPosting.findByState", query = "SELECT j FROM JobPosting j WHERE j.state = :state"),
+    @NamedQuery(name = "JobPosting.findBySubmitEnd", query = "SELECT j FROM JobPosting j WHERE j.submitEnd = :submitEnd")})
 public class JobPosting implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -50,9 +50,6 @@ public class JobPosting implements Serializable {
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
-    @Size(max = 100)
-    @Column(name = "skill")
-    private String skill;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "salary")
     private Double salary;
@@ -65,11 +62,19 @@ public class JobPosting implements Serializable {
     @Size(max = 8)
     @Column(name = "state")
     private String state;
+    @Column(name = "submit_end")
+    @Temporal(TemporalType.DATE)
+    private Date submitEnd;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
     private Set<HosoUngtuyen> hosoUngtuyenSet;
+    @OneToMany(mappedBy = "jobPostingId")
+    private Set<JobDescription> jobDescriptionSet;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
     @ManyToOne
     private Admin approvedByAdminId;
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @ManyToOne
+    private Category categoryId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
     private Employer employerId;
@@ -95,14 +100,6 @@ public class JobPosting implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getSkill() {
-        return skill;
-    }
-
-    public void setSkill(String skill) {
-        this.skill = skill;
     }
 
     public Double getSalary() {
@@ -137,6 +134,14 @@ public class JobPosting implements Serializable {
         this.state = state;
     }
 
+    public Date getSubmitEnd() {
+        return submitEnd;
+    }
+
+    public void setSubmitEnd(Date submitEnd) {
+        this.submitEnd = submitEnd;
+    }
+
     public Set<HosoUngtuyen> getHosoUngtuyenSet() {
         return hosoUngtuyenSet;
     }
@@ -145,12 +150,28 @@ public class JobPosting implements Serializable {
         this.hosoUngtuyenSet = hosoUngtuyenSet;
     }
 
+    public Set<JobDescription> getJobDescriptionSet() {
+        return jobDescriptionSet;
+    }
+
+    public void setJobDescriptionSet(Set<JobDescription> jobDescriptionSet) {
+        this.jobDescriptionSet = jobDescriptionSet;
+    }
+
     public Admin getApprovedByAdminId() {
         return approvedByAdminId;
     }
 
     public void setApprovedByAdminId(Admin approvedByAdminId) {
         this.approvedByAdminId = approvedByAdminId;
+    }
+
+    public Category getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Category categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Employer getEmployerId() {

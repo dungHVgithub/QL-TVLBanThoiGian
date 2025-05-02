@@ -10,14 +10,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "category")
@@ -38,6 +40,8 @@ public class Category implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "name")
     private String name;
+    @OneToMany(mappedBy = "categoryId")
+    private Set<JobPosting> jobPostingSet;
 
     public Category() {
     }
@@ -65,6 +69,14 @@ public class Category implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<JobPosting> getJobPostingSet() {
+        return jobPostingSet;
+    }
+
+    public void setJobPostingSet(Set<JobPosting> jobPostingSet) {
+        this.jobPostingSet = jobPostingSet;
     }
 
     @Override

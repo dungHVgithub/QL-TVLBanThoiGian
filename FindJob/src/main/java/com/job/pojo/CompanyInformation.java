@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "company_information")

@@ -13,5 +13,6 @@
     <class>com.job.pojo.Admin</class>
     <class>com.job.pojo.JobPosting</class>
     <class>com.job.pojo.Category</class>
+    <class>com.job.pojo.JobDescription</class>
   </persistence-unit>
 </persistence>
