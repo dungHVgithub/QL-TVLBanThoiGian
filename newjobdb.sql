@@ -275,6 +275,7 @@ CREATE TABLE `job_posting` (
   `employer_id` int DEFAULT NULL,
   `approved_by_admin_id` int DEFAULT NULL,
   `category_jd` int DEFAULT NULL,
+  `submit_end` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `employer_id` (`employer_id`),
   KEY `approved_by_admin_id` (`approved_by_admin_id`),
@@ -291,7 +292,7 @@ CREATE TABLE `job_posting` (
 
 LOCK TABLES `job_posting` WRITE;
 /*!40000 ALTER TABLE `job_posting` DISABLE KEYS */;
-INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python',1200,'08:00:00','17:00:00','approved',2,3,1),(2,'Frontend Developer','React',1000,'08:30:00','17:30:00','approved',5,3,1),(3,'DevOps Engineer','Docker',1300,'09:00:00','18:00:00','pending',5,3,1),(4,'Tester','Selenium',900,'08:00:00','16:00:00','approved',2,3,1),(5,'Project Manager','Agile',1500,'08:00:00','17:00:00','rejected',2,3,1),(6,'Mobile App Developer','Flutter',1100,'08:00:00','17:00:00','approved',6,3,1),(7,'UI/UX Designer','Figma',950,'09:00:00','18:00:00','pending',7,3,2),(8,'System Analyst','UML',1250,'08:30:00','17:30:00','approved',6,3,2),(9,'Tech Lead','Leadership',1700,'08:00:00','17:00:00','approved',7,3,2),(10,'Database Engineer','MySQL',1150,'09:00:00','18:00:00','rejected',6,3,2),(11,'Sale milk','Sale',1150,'08:00:00','17:00:00','pending',2,3,3);
+INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python',1200,'08:00:00','17:00:00','approved',2,3,1,'2025-05-01'),(2,'Frontend Developer','React',1000,'08:30:00','17:30:00','approved',5,3,1,'2025-05-01'),(3,'DevOps Engineer','Docker',1300,'09:00:00','18:00:00','pending',5,3,1,'2025-05-01'),(4,'Tester','Selenium',900,'08:00:00','16:00:00','approved',2,3,1,'2025-05-01'),(5,'Project Manager','Agile',1500,'08:00:00','17:00:00','rejected',2,3,1,'2025-05-01'),(6,'Mobile App Developer','Flutter',1100,'08:00:00','17:00:00','approved',6,3,1,'2025-05-01'),(7,'UI/UX Designer','Figma',950,'09:00:00','18:00:00','pending',7,3,2,'2025-05-01'),(8,'System Analyst','UML',1250,'08:30:00','17:30:00','approved',6,3,2,'2025-05-01'),(9,'Tech Lead','Leadership',1700,'08:00:00','17:00:00','approved',7,3,2,'2025-05-01'),(10,'Database Engineer','MySQL',1150,'09:00:00','18:00:00','rejected',6,3,2,'2025-05-01'),(11,'Sale milk','Sale',1150,'08:00:00','17:00:00','pending',2,3,3,'2025-05-01');
 /*!40000 ALTER TABLE `job_posting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -370,4 +371,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-01 18:46:29
+-- Dump completed on 2025-05-02 17:57:30
