@@ -6,11 +6,15 @@ package com.job.services;
 
 import com.job.pojo.JobPosting;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author DUNG
  */
 public interface JobPostingService {
-     List<JobPosting> getJobPostings();
+    List<JobPosting> getJobPostings(Map<String, String> params);
+    JobPosting getJobById(int id); 
+    JobPosting addOrUpdate (JobPosting j);
+    void deleteJob ( int id);
 }

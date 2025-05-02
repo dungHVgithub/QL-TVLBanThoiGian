@@ -22,7 +22,7 @@ import java.util.Date;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "user_documents")

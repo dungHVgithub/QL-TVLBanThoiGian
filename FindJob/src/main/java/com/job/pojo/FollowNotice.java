@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "follow_notice")

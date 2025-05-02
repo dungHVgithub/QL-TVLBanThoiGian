@@ -6,6 +6,7 @@ package com.job.repositories;
 
 import com.job.pojo.JobPosting;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -13,6 +14,8 @@ import java.util.List;
  * @author DUNG
  */
 public interface JobPostingRepository {
-    List<JobPosting> getJobPostings();
-  
+    List<JobPosting> getJobPostings(Map<String, String> params);
+    JobPosting getJobById(int id); 
+    JobPosting addOrUpdate(JobPosting j);
+    void deleteJob(int id);
 }
