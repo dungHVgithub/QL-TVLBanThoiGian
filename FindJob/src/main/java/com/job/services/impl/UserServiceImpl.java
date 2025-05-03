@@ -35,21 +35,12 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User u = this.getUserByUserName(username);
         if (u == null) {
-            throw new UsernameNotFoundException("Invalid username!");
+            throw new UsernameNotFoundException("Invalid username");
         }
-
+        System.out.println("Loaded user: " + u.getUsername() + ", Role: " + u.getRole());
         Set<GrantedAuthority> authorities = new HashSet<>();
-        String role = u.getRole();
-        if (role != null && !role.isEmpty()) {
-            authorities.add(new SimpleGrantedAuthority(role));
-            System.out.println("Authorities: " + authorities);
-        } else {
-            System.out.println("Role is null or empty for user: " + username);
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
-
-        System.out.println("User loaded: " + u.getUsername() + ", Password: " + u.getPassword());
+        authorities.add(new SimpleGrantedAuthority(u.getRole()));
         return new org.springframework.security.core.userdetails.User(
-                u.getUsername(), u.getPassword(), authorities);
+            u.getUsername(), u.getPassword(), authorities);
     }
 }

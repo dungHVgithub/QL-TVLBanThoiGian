@@ -1,31 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Đăng nhập</title>
-    <th:block th:replace="base :: bootstrap"></th:block>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <div th:replace="~{base :: bootstrap}"></div>
 </head>
 <body>
-    <main class="container">
-        <div th:replace="base :: header"></div>
-        <h1 class="text-center text-info mt-1">ĐĂNG NHẬP</h1>
+    <div th:replace="~{base :: header}"></div>
+
+    <div class="container">
+        <h2>Đăng nhập</h2>
+        <!-- Hiển thị thông báo lỗi nếu có -->
+        <div th:if="${param.error}" class="alert alert-danger">
+            <p th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message ?: 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!'}"></p>
+        </div>
 
         <form th:action="@{/login}" method="post">
-            <div th:if="${param.error}" class="alert alert-danger">
-                <p th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message ?: 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!'}"></p>
+            <div class="form-group">
+                <label for="username">Tên đăng nhập:</label>
+                <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="mb-3 mt-3">
-                <label for="username" class="form-label">Tên đăng nhập:</label>
-                <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập..." name="username">
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Mật khẩu:</label>
-                <input type="password" class="form-control" id="password" placeholder="Mật khẩu..." name="password">
-            </div>
-
             <button type="submit" class="btn btn-primary">Đăng nhập</button>
         </form>
+    </div>
 
-        <div th:replace="base :: footer"></div>
-    </main>
+    <div th:replace="~{base :: footer}"></div>
 </body>
-
+</html>

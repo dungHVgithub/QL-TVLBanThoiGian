@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider; // Import rõ ràng từ Spring Security
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,7 +27,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 public class SpringSecurityConfig {
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService; // Đảm bảo được tiêm
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -40,14 +40,14 @@ public class SpringSecurityConfig {
     }
 
     @Bean
-    public org.springframework.security.authentication.AuthenticationProvider securityAuthenticationProvider() { // Khai báo kiểu trả về rõ ràng
+    public org.springframework.security.authentication.AuthenticationProvider securityAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(userDetailsService); // Đảm bảo sử dụng UserDetailsService
         authProvider.setPasswordEncoder(passwordEncoder());
         authProvider.setPostAuthenticationChecks(userDetails -> {
             if (!userDetails.getAuthorities().stream()
                     .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-                throw new org.springframework.security.authentication.BadCredentialsException("Only users with ROLE_ADMIN are allowed to log in.");
+                throw new org.springframework.security.authentication.BadCredentialsException("Người dùng không có quyền đăng nhập vào trang web này");
             }
         });
         return authProvider;
