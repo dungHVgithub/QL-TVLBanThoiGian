@@ -35,7 +35,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (3);
+INSERT INTO `admin` VALUES (2);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -291,7 +291,7 @@ CREATE TABLE `job_posting` (
 
 LOCK TABLES `job_posting` WRITE;
 /*!40000 ALTER TABLE `job_posting` DISABLE KEYS */;
-INSERT INTO `job_posting` VALUES (1,'Backend Developer',1200,'08:00:00','17:00:00','approved',2,3,1,'2025-05-01'),(2,'Frontend Developer',1000,'08:30:00','17:30:00','approved',5,3,1,'2025-05-01'),(3,'DevOps Engineer',1300,'09:00:00','18:00:00','pending',5,3,1,'2025-05-01'),(4,'Tester',900,'08:00:00','16:00:00','approved',2,3,1,'2025-05-01'),(5,'Project Manager',1500,'08:00:00','17:00:00','rejected',2,3,1,'2025-05-01'),(6,'Mobile App Developer',1100,'08:00:00','17:00:00','approved',6,3,1,'2025-05-01'),(7,'UI/UX Designer',950,'09:00:00','18:00:00','pending',7,3,2,'2025-05-01'),(8,'System Analyst',1250,'08:30:00','17:30:00','approved',6,3,2,'2025-05-01'),(9,'Tech Lead',1700,'08:00:00','17:00:00','approved',7,3,2,'2025-05-01'),(10,'Database Engineer',1150,'09:00:00','18:00:00','rejected',6,3,2,'2025-05-01'),(11,'Sale milk',1150,'08:00:00','17:00:00','pending',2,3,3,'2025-05-01');
+INSERT INTO `job_posting` VALUES (1,'Backend Developer',1200,'08:00:00','17:00:00','approved',2,2,1,'2025-05-01'),(2,'Frontend Developer',1000,'08:30:00','17:30:00','approved',5,2,1,'2025-05-01'),(3,'DevOps Engineer',1300,'09:00:00','18:00:00','pending',5,2,1,'2025-05-01'),(4,'Tester',900,'08:00:00','16:00:00','approved',2,2,1,'2025-05-01'),(5,'Project Manager',1500,'08:00:00','17:00:00','rejected',2,2,1,'2025-05-01'),(6,'Mobile App Developer',1100,'08:00:00','17:00:00','approved',6,2,1,'2025-05-01'),(7,'UI/UX Designer',950,'09:00:00','18:00:00','pending',7,2,2,'2025-05-01'),(8,'System Analyst',1250,'08:30:00','17:30:00','approved',6,2,2,'2025-05-01'),(9,'Tech Lead',1700,'08:00:00','17:00:00','approved',7,2,2,'2025-05-01'),(10,'Database Engineer',1150,'09:00:00','18:00:00','rejected',6,2,2,'2025-05-01'),(11,'Sale milk',1150,'08:00:00','17:00:00','pending',2,2,3,'2025-05-01');
 /*!40000 ALTER TABLE `job_posting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -311,7 +311,7 @@ CREATE TABLE `user` (
   `address` varchar(255) DEFAULT NULL,
   `sdt` varchar(20) DEFAULT NULL,
   `birthday` date DEFAULT NULL,
-  `role` enum('employee','employer','admin') DEFAULT NULL,
+  `role` varchar(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `verification_status` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -324,7 +324,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'john123','pass123','John Doe','','Hanoi','0911111111','1990-01-01','employee','john@example.com',1),(2,'employerA','abc123','Company A','','HCM','0922222222','1985-03-10','employer','hr@companya.com',1),(3,'admin1','admin123','Admin One','','Da Nang','0933333333','1980-06-20','admin','admin@job.vn',1),(4,'jane456','xyz456','Jane Smith','','Hue','0944444444','1992-07-15','employee','jane@jobmail.com',1),(5,'bossB','pw456','Boss B','','Can Tho','0955555555','1983-11-11','employer','hr@companyb.com',0),(6,'employerC','pw789','Company C','','Nha Trang','0966666666','1986-08-08','employer','hr@companyc.com',1),(7,'employerD','pw890','Company D','','Vinh','0977777777','1981-09-09','employer','hr@companyd.com',1),(8,'alice_dev','pw321','Alice Dev','','Da Lat','0988888888','1995-10-10','employee','alice@example.com',1),(9,'bob_test','pw654','Bob Tester','','Quy Nhon','0999999999','1993-11-11','employee','bob@example.com',1),(10,'carol_ui','pw987','Carol UI','','Bien Hoa','0900000000','1991-12-12','employee','carol@example.com',1);
+INSERT INTO `user` VALUES (1,'john123','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','John Doe','','Hanoi','0911111111','1990-01-01','ROLE_EMPLOYEE','john@example.com',1),(2,'hvd','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','Company A','','HCM','0922222222','1985-03-10','ROLE_ADMIN','hr@companya.com',1),(4,'jane456','xyz456','Jane Smith','','Hue','0944444444','1992-07-15','ROLE_EMPLOYEE','jane@jobmail.com',1),(5,'bossB','pw456','Boss B','','Can Tho','0955555555','1983-11-11','ROLE_EMPLOYER','hr@companyb.com',0),(6,'employerC','pw789','Company C','','Nha Trang','0966666666','1986-08-08','ROLE_EMPLOYER','hr@companyc.com',1),(7,'employerD','pw890','Company D','','Vinh','0977777777','1981-09-09','ROLE_EMPLOYER','hr@companyd.com',1),(8,'alice_dev','pw321','Alice Dev','','Da Lat','0988888888','1995-10-10','ROLE_EMPLOYEE','alice@example.com',1),(9,'bob_test','pw654','Bob Tester','','Quy Nhon','0999999999','1993-11-11','ROLE_EMPLOYEE','bob@example.com',1),(10,'carol_ui','pw987','Carol UI','','Bien Hoa','0900000000','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -357,7 +357,7 @@ CREATE TABLE `user_documents` (
 
 LOCK TABLES `user_documents` WRITE;
 /*!40000 ALTER TABLE `user_documents` DISABLE KEYS */;
-INSERT INTO `user_documents` VALUES (1,1,'ID','docs/john_id.png','2025-04-06 14:55:20','approved',3),(2,1,'CV','docs/john_cv.pdf','2025-04-06 14:55:20','approved',3),(3,4,'ID','docs/jane_id.png','2025-04-06 14:55:20','pending',3),(4,4,'CV','docs/jane_cv.pdf','2025-04-06 14:55:20','approved',3),(5,2,'Diploma','docs/employerA_diploma.pdf','2025-04-06 14:55:20','rejected',3);
+INSERT INTO `user_documents` VALUES (1,1,'ID','docs/john_id.png','2025-04-06 14:55:20','approved',2),(2,1,'CV','docs/john_cv.pdf','2025-04-06 14:55:20','approved',2),(3,4,'ID','docs/jane_id.png','2025-04-06 14:55:20','pending',2),(4,4,'CV','docs/jane_cv.pdf','2025-04-06 14:55:20','approved',2),(5,2,'Diploma','docs/employerA_diploma.pdf','2025-04-06 14:55:20','rejected',2);
 /*!40000 ALTER TABLE `user_documents` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -370,4 +370,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-02 18:20:05
+-- Dump completed on 2025-05-03 16:22:33

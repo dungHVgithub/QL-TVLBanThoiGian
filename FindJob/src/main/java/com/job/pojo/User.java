@@ -24,7 +24,7 @@ import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "user")
@@ -70,7 +70,7 @@ public class User implements Serializable {
     @Column(name = "birthday")
     @Temporal(TemporalType.DATE)
     private Date birthday;
-    @Size(max = 8)
+    @Size(max = 20)
     @Column(name = "role")
     private String role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation

@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "job_description")

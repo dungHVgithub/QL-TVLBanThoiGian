@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Embeddable
 public class FollowNoticePK implements Serializable {
