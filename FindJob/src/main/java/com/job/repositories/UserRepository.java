@@ -11,5 +11,10 @@ import com.job.pojo.User;
  * @author DUNG
  */
 public interface UserRepository {
+
     User getUserByUserName(String username);
+
+    User addUser(User u);
+
+    boolean authenticate(String username, String password);
 }

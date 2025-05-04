@@ -4,22 +4,21 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -37,7 +36,6 @@ import java.util.Set;
     @NamedQuery(name = "User.findByAvatar", query = "SELECT u FROM User u WHERE u.avatar = :avatar"),
     @NamedQuery(name = "User.findByAddress", query = "SELECT u FROM User u WHERE u.address = :address"),
     @NamedQuery(name = "User.findBySdt", query = "SELECT u FROM User u WHERE u.sdt = :sdt"),
-    @NamedQuery(name = "User.findByBirthday", query = "SELECT u FROM User u WHERE u.birthday = :birthday"),
     @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role"),
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
     @NamedQuery(name = "User.findByVerificationStatus", query = "SELECT u FROM User u WHERE u.verificationStatus = :verificationStatus")})
@@ -45,8 +43,8 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id")
     private Integer id;
     @Size(max = 50)
@@ -54,6 +52,7 @@ public class User implements Serializable {
     private String username;
     @Size(max = 100)
     @Column(name = "password")
+    @JsonIgnore
     private String password;
     @Size(max = 100)
     @Column(name = "name")
@@ -67,10 +66,7 @@ public class User implements Serializable {
     @Size(max = 20)
     @Column(name = "sdt")
     private String sdt;
-    @Column(name = "birthday")
-    @Temporal(TemporalType.DATE)
-    private Date birthday;
-    @Size(max = 20)
+    @Size(max = 13)
     @Column(name = "role")
     private String role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
@@ -80,11 +76,15 @@ public class User implements Serializable {
     @Column(name = "verification_status")
     private Boolean verificationStatus;
     @OneToMany(mappedBy = "userid")
+    @JsonIgnore
     private Set<UserDocuments> userDocumentsSet;
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Admin admin;
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Employer employer;
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Employee employee;
 
@@ -149,14 +149,6 @@ public class User implements Serializable {
 
     public void setSdt(String sdt) {
         this.sdt = sdt;
-    }
-
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
     }
 
     public String getRole() {

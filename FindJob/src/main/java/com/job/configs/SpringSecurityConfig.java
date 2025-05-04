@@ -2,10 +2,12 @@ package com.job.configs;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +16,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -56,16 +62,18 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(c -> c.disable())
-            .authenticationProvider(securityAuthenticationProvider())
-            .authorizeHttpRequests(requests -> requests
+                .authenticationProvider(securityAuthenticationProvider())
+                .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/", "/home").authenticated()
+                .requestMatchers("/api/users").permitAll()
+                .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll())
-            .formLogin(form -> form
+                .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true").permitAll())
-            .logout(logout -> logout
+                .logout(logout -> logout
                 .logoutSuccessUrl("/login").permitAll());
         return http.build();
     }
@@ -73,10 +81,32 @@ public class SpringSecurityConfig {
     @Bean
     public Cloudinary cloudinary() {
         Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-            "cloud_name", "dxymsdvsz",
-            "api_key", "216696381565245",
-            "api_secret", "hsazyGO01a_702eZ9inRx8skrWA",
-            "secure", true));
+                "cloud_name", "dxymsdvsz",
+                "api_key", "216696381565245",
+                "api_secret", "hsazyGO01a_702eZ9inRx8skrWA",
+                "secure", true));
         return cloudinary;
+    }
+    @Bean
+    @Order(0)
+    public StandardServletMultipartResolver multipartResolver() {
+        return new StandardServletMultipartResolver();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of("http://localhost:3000/")); 
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(true); 
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 }
