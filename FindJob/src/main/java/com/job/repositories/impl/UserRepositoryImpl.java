@@ -40,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User addUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
         s.persist(u);
-        
+
         s.refresh(u);
 
         return u;
@@ -48,7 +48,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean authenticate(String username, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        User u = this.getUserByUserName(username);
+
+        return this.passwordEncoder.matches(password, u.getPassword());
     }
 
 }

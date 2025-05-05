@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
         u.setSdt(params.get("sdt"));
         u.setUsername(params.get("username"));
         u.setPassword(this.passwordEncoder.encode(params.get("password")));
-            u.setRole(params.get("role"));
+        u.setRole(params.get("role"));
 
         if (!avatar.isEmpty()) {
             try {
@@ -81,6 +81,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean authenticate(String username, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return this.userRepo.authenticate(username, password);
     }
 }

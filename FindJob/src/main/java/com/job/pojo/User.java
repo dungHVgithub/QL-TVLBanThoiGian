@@ -52,7 +52,6 @@ public class User implements Serializable {
     private String username;
     @Size(max = 100)
     @Column(name = "password")
-    @JsonIgnore
     private String password;
     @Size(max = 100)
     @Column(name = "name")

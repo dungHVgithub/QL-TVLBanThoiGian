@@ -65,10 +65,11 @@ public class SpringSecurityConfig {
                 .authenticationProvider(securityAuthenticationProvider())
                 .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/", "/home").authenticated()
+                .requestMatchers("/login").permitAll()
                 .requestMatchers("/api/users").permitAll()
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().permitAll())
-                .formLogin(form -> form
+                .requestMatchers("/api/login").permitAll() // Thêm dòng này để cho phép truy cập công khai /api/login
+                .requestMatchers("/api/**").authenticated() // Các endpoint /api/** khác vẫn yêu cầu xác thực
+                .anyRequest().permitAll()).formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
@@ -87,6 +88,7 @@ public class SpringSecurityConfig {
                 "secure", true));
         return cloudinary;
     }
+
     @Bean
     @Order(0)
     public StandardServletMultipartResolver multipartResolver() {
@@ -98,11 +100,11 @@ public class SpringSecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:3000/")); 
+        config.setAllowedOrigins(List.of("http://localhost:3000/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true); 
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
