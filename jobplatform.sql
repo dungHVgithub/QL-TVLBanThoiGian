@@ -231,6 +231,33 @@ INSERT INTO `hoso_ungtuyen` VALUES (1,1,'isPending','Tôi mong muốn tham gia',
 UNLOCK TABLES;
 
 --
+-- Table structure for table `job_description`
+--
+
+DROP TABLE IF EXISTS `job_description`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `job_description` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `job_posting_id` int DEFAULT NULL,
+  `description` text,
+  `type` enum('Job_Description','Skill_Requirement') DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `job_posting_id` (`job_posting_id`),
+  CONSTRAINT `job_description_ibfk_1` FOREIGN KEY (`job_posting_id`) REFERENCES `job_posting` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `job_description`
+--
+
+LOCK TABLES `job_description` WRITE;
+/*!40000 ALTER TABLE `job_description` DISABLE KEYS */;
+/*!40000 ALTER TABLE `job_description` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job_posting`
 --
 
@@ -240,21 +267,21 @@ DROP TABLE IF EXISTS `job_posting`;
 CREATE TABLE `job_posting` (
   `id` int NOT NULL,
   `description` text,
-  `skill` varchar(100) DEFAULT NULL,
   `salary` double DEFAULT NULL,
   `time_start` time DEFAULT NULL,
   `time_end` time DEFAULT NULL,
   `state` enum('pending','approved','rejected') DEFAULT NULL,
   `employer_id` int DEFAULT NULL,
   `approved_by_admin_id` int DEFAULT NULL,
-  `category_jd` int DEFAULT NULL,
+  `category_id` int DEFAULT NULL,
+  `submit_end` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `employer_id` (`employer_id`),
   KEY `approved_by_admin_id` (`approved_by_admin_id`),
-  KEY `job_posting_ibfk_3_idx` (`category_jd`),
+  KEY `job_posting_ibfk_3_idx` (`category_id`),
   CONSTRAINT `job_posting_ibfk_1` FOREIGN KEY (`employer_id`) REFERENCES `employer` (`id`),
   CONSTRAINT `job_posting_ibfk_2` FOREIGN KEY (`approved_by_admin_id`) REFERENCES `admin` (`id`),
-  CONSTRAINT `job_posting_ibfk_3` FOREIGN KEY (`category_jd`) REFERENCES `category` (`id`)
+  CONSTRAINT `job_posting_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -264,7 +291,7 @@ CREATE TABLE `job_posting` (
 
 LOCK TABLES `job_posting` WRITE;
 /*!40000 ALTER TABLE `job_posting` DISABLE KEYS */;
-INSERT INTO `job_posting` VALUES (1,'Backend Developer','Python',1200,'08:00:00','17:00:00','approved',2,3,1),(2,'Frontend Developer','React',1000,'08:30:00','17:30:00','approved',5,3,1),(3,'DevOps Engineer','Docker',1300,'09:00:00','18:00:00','pending',5,3,1),(4,'Tester','Selenium',900,'08:00:00','16:00:00','approved',2,3,1),(5,'Project Manager','Agile',1500,'08:00:00','17:00:00','rejected',2,3,1),(6,'Mobile App Developer','Flutter',1100,'08:00:00','17:00:00','approved',6,3,1),(7,'UI/UX Designer','Figma',950,'09:00:00','18:00:00','pending',7,3,2),(8,'System Analyst','UML',1250,'08:30:00','17:30:00','approved',6,3,2),(9,'Tech Lead','Leadership',1700,'08:00:00','17:00:00','approved',7,3,2),(10,'Database Engineer','MySQL',1150,'09:00:00','18:00:00','rejected',6,3,2),(11,'Sale milk','Sale',1150,'08:00:00','17:00:00','pending',2,3,3);
+INSERT INTO `job_posting` VALUES (1,'Backend Developer',1200,'08:00:00','17:00:00','approved',2,3,1,'2025-05-01'),(2,'Frontend Developer',1000,'08:30:00','17:30:00','approved',5,3,1,'2025-05-01'),(3,'DevOps Engineer',1300,'09:00:00','18:00:00','pending',5,3,1,'2025-05-01'),(4,'Tester',900,'08:00:00','16:00:00','approved',2,3,1,'2025-05-01'),(5,'Project Manager',1500,'08:00:00','17:00:00','rejected',2,3,1,'2025-05-01'),(6,'Mobile App Developer',1100,'08:00:00','17:00:00','approved',6,3,1,'2025-05-01'),(7,'UI/UX Designer',950,'09:00:00','18:00:00','pending',7,3,2,'2025-05-01'),(8,'System Analyst',1250,'08:30:00','17:30:00','approved',6,3,2,'2025-05-01'),(9,'Tech Lead',1700,'08:00:00','17:00:00','approved',7,3,2,'2025-05-01'),(10,'Database Engineer',1150,'09:00:00','18:00:00','rejected',6,3,2,'2025-05-01'),(11,'Sale milk',1150,'08:00:00','17:00:00','pending',2,3,3,'2025-05-01');
 /*!40000 ALTER TABLE `job_posting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -343,4 +370,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-15  0:09:31
+-- Dump completed on 2025-05-02 18:20:05
