@@ -7,6 +7,8 @@ package com.job.pojo;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
@@ -33,6 +35,7 @@ public class Category implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Thêm để tự động tăng
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)

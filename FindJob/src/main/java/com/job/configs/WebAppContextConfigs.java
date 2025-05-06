@@ -4,6 +4,7 @@
  */
 package com.job.configs;
 
+import com.job.formatter.CategoryFormatter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -32,4 +33,8 @@ public class WebAppContextConfigs implements WebMvcConfigurer{
         configurer.enable();
     }
     
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(new CategoryFormatter());
+    }
 }

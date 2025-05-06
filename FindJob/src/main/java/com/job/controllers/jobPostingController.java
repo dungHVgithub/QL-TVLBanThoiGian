@@ -5,6 +5,8 @@
 package com.job.controllers;
 import com.job.services.JobPostingService;
 import com.job.pojo.JobPosting;
+import java.util.Arrays;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
@@ -24,15 +27,19 @@ public class jobPostingController {
     private JobPostingService jobService;
     
        @GetMapping("/job_postings")
-    public String addView(Model model) {
+    public String addView(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("job_posting", new JobPosting());
+        model.addAttribute("job_postings", jobService.getJobPostings(params));
+        model.addAttribute("states", Arrays.asList("approved", "reject", "pending")); // Danh sách tĩnh
         return "job_postings";
     }
     
     @GetMapping("/job_postings/{jobPostingId}")
-    public String updateView(Model model, @PathVariable (value = "jobPostingId") int id)
+    public String updateView(Model model, @PathVariable (value = "jobPostingId") int id, @RequestParam Map<String, String> params )
     {
         model.addAttribute("job_posting", this.jobService.getJobById(id));
+        model.addAttribute("job_postings", jobService.getJobPostings(params));
+        model.addAttribute("states", Arrays.asList("approved", "reject", "pending")); // Danh sách tĩnh
         return "job_postings";
     }
     
@@ -40,5 +47,5 @@ public class jobPostingController {
     public String add (@ModelAttribute (value = "jobPosting") JobPosting j){
       this.jobService.addOrUpdate(j);
       return "redirect:/";
-    }
-}
+    }   
+ }
