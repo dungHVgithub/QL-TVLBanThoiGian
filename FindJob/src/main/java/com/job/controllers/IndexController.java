@@ -22,18 +22,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @ControllerAdvice
 public class IndexController {
+
     @Autowired
     private JobPostingService jobService;
     @Autowired
     private CategoryService cateService;
-    
+
     @ModelAttribute
-    public void commonRespone(Model model){
-        model.addAttribute("categories",this.cateService.getCates());
+    public void commonRespone(Model model) {
+        model.addAttribute("categories", this.cateService.getCates());
     }
-    
+
     @RequestMapping("/")
     public String indexProduct(Model model, @RequestParam Map<String, String> params) {
+        System.out.println("Accessing index page with params: " + params);
         model.addAttribute("job_postings", this.jobService.getJobPostings(params));
         return "index";
     }

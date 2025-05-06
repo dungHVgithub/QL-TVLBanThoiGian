@@ -35,7 +35,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (3);
+INSERT INTO `admin` VALUES (2),(14);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -47,11 +47,11 @@ DROP TABLE IF EXISTS `category`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +60,7 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'IT'),(2,'Kế toán'),(4,'Sale'),(3,'Tiếp Thị& Makerting');
+INSERT INTO `category` VALUES (1,'IT'),(2,'Kế toán'),(4,'Sale'),(5,'test'),(3,'Tiếp Thị& Makerting');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -80,7 +80,7 @@ CREATE TABLE `company_images` (
   PRIMARY KEY (`id`),
   KEY `company_id` (`company_id`),
   CONSTRAINT `company_images_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `company_information` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,7 +89,7 @@ CREATE TABLE `company_images` (
 
 LOCK TABLES `company_images` WRITE;
 /*!40000 ALTER TABLE `company_images` DISABLE KEYS */;
-INSERT INTO `company_images` VALUES (1,1,'images/companyA_front.png','Mặt tiền công ty A','2025-04-06 15:04:30'),(2,1,'images/companyA_team.jpg','Team công ty A','2025-04-06 15:04:30'),(3,1,'images/companyA_office.png','Văn phòng công ty A','2025-04-06 15:04:30'),(4,2,'images/companyB_logo.jpg','Logo công ty B','2025-04-06 15:04:30'),(5,2,'images/companyB_event.png','Sự kiện tuyển dụng công ty B','2025-04-06 15:04:30'),(6,3,'images/companyC_hall.jpg','Sảnh công ty C','2025-04-06 15:04:30'),(7,4,'images/companyD_award.jpg','Giải thưởng công ty D','2025-04-06 15:04:30'),(8,5,'images/companyE_building.png','Tòa nhà công ty E','2025-04-06 15:04:30');
+INSERT INTO `company_images` VALUES (1,1,'images/companyA_front.png','Mặt tiền công ty A','2025-04-06 15:04:30'),(2,1,'images/companyA_team.jpg','Team công ty A','2025-04-06 15:04:30'),(3,1,'images/companyA_office.png','Văn phòng công ty A','2025-04-06 15:04:30'),(4,2,'images/companyB_logo.jpg','Logo công ty B','2025-04-06 15:04:30'),(5,2,'images/companyB_event.png','Sự kiện tuyển dụng công ty B','2025-04-06 15:04:30'),(6,3,'images/companyC_hall.jpg','Sảnh công ty C','2025-04-06 15:04:30'),(7,4,'images/companyD_award.jpg','Giải thưởng công ty D','2025-04-06 15:04:30'),(8,5,'images/companyE_building.png','Tòa nhà công ty E','2025-04-06 15:04:30'),(9,5,'a','a','2025-04-06 15:04:30');
 /*!40000 ALTER TABLE `company_images` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -101,12 +101,12 @@ DROP TABLE IF EXISTS `company_information`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `company_information` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `tax_code` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +140,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES (1,'Junior'),(4,'Senior'),(8,'Middle'),(9,'Junior'),(10,'Senior');
+INSERT INTO `employee` VALUES (1,'Junior'),(4,'Senior'),(8,'Middle'),(9,'Junior'),(10,'Senior'),(13,NULL);
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -265,7 +265,7 @@ DROP TABLE IF EXISTS `job_posting`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `job_posting` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `description` text,
   `salary` double DEFAULT NULL,
   `time_start` time DEFAULT NULL,
@@ -282,7 +282,7 @@ CREATE TABLE `job_posting` (
   CONSTRAINT `job_posting_ibfk_1` FOREIGN KEY (`employer_id`) REFERENCES `employer` (`id`),
   CONSTRAINT `job_posting_ibfk_2` FOREIGN KEY (`approved_by_admin_id`) REFERENCES `admin` (`id`),
   CONSTRAINT `job_posting_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -291,7 +291,7 @@ CREATE TABLE `job_posting` (
 
 LOCK TABLES `job_posting` WRITE;
 /*!40000 ALTER TABLE `job_posting` DISABLE KEYS */;
-INSERT INTO `job_posting` VALUES (1,'Backend Developer',1200,'08:00:00','17:00:00','approved',2,3,1,'2025-05-01'),(2,'Frontend Developer',1000,'08:30:00','17:30:00','approved',5,3,1,'2025-05-01'),(3,'DevOps Engineer',1300,'09:00:00','18:00:00','pending',5,3,1,'2025-05-01'),(4,'Tester',900,'08:00:00','16:00:00','approved',2,3,1,'2025-05-01'),(5,'Project Manager',1500,'08:00:00','17:00:00','rejected',2,3,1,'2025-05-01'),(6,'Mobile App Developer',1100,'08:00:00','17:00:00','approved',6,3,1,'2025-05-01'),(7,'UI/UX Designer',950,'09:00:00','18:00:00','pending',7,3,2,'2025-05-01'),(8,'System Analyst',1250,'08:30:00','17:30:00','approved',6,3,2,'2025-05-01'),(9,'Tech Lead',1700,'08:00:00','17:00:00','approved',7,3,2,'2025-05-01'),(10,'Database Engineer',1150,'09:00:00','18:00:00','rejected',6,3,2,'2025-05-01'),(11,'Sale milk',1150,'08:00:00','17:00:00','pending',2,3,3,'2025-05-01');
+INSERT INTO `job_posting` VALUES (1,'Backend Developer',1200,'08:00:00','17:00:00','approved',2,2,1,'2025-05-01'),(2,'Frontend Developer',1000,'08:30:00','17:30:00','approved',5,2,1,'2025-05-01'),(3,'DevOps Engineer',1300,'09:00:00','18:00:00','pending',5,2,1,'2025-05-01'),(4,'Tester',900,'08:00:00','16:00:00','approved',2,2,1,'2025-05-01'),(5,'Project Manager',1500,'08:00:00','17:00:00','rejected',2,2,1,'2025-05-01'),(6,'Mobile App Developer',1100,'08:00:00','17:00:00','approved',6,2,1,'2025-05-01'),(7,'UI/UX Designer',950,'09:00:00','18:00:00','pending',7,2,2,'2025-05-01'),(8,'System Analyst',1250,'08:30:00','17:30:00','approved',6,2,2,'2025-05-01'),(9,'Tech Lead',1700,'08:00:00','17:00:00','approved',7,2,2,'2025-05-01'),(10,'Database Engineer',1150,'09:00:00','18:00:00','rejected',6,2,2,'2025-05-01'),(11,'Sale milk',1150,'08:00:00','17:00:00','pending',2,2,3,'2025-05-01'),(12,'a',1,'08:00:00','17:00:00','pending',2,2,3,'2025-05-01');
 /*!40000 ALTER TABLE `job_posting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -303,7 +303,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(100) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
@@ -311,11 +311,12 @@ CREATE TABLE `user` (
   `address` varchar(255) DEFAULT NULL,
   `sdt` varchar(20) DEFAULT NULL,
   `birthday` date DEFAULT NULL,
-  `role` enum('employee','employer','admin') DEFAULT NULL,
+  `role` enum('ROLE_ADMIN','ROLE_EMPLOYER','ROLE_EMPLOYEE') DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `verification_status` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -324,7 +325,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'john123','pass123','John Doe','','Hanoi','0911111111','1990-01-01','employee','john@example.com',1),(2,'employerA','abc123','Company A','','HCM','0922222222','1985-03-10','employer','hr@companya.com',1),(3,'admin1','admin123','Admin One','','Da Nang','0933333333','1980-06-20','admin','admin@job.vn',1),(4,'jane456','xyz456','Jane Smith','','Hue','0944444444','1992-07-15','employee','jane@jobmail.com',1),(5,'bossB','pw456','Boss B','','Can Tho','0955555555','1983-11-11','employer','hr@companyb.com',0),(6,'employerC','pw789','Company C','','Nha Trang','0966666666','1986-08-08','employer','hr@companyc.com',1),(7,'employerD','pw890','Company D','','Vinh','0977777777','1981-09-09','employer','hr@companyd.com',1),(8,'alice_dev','pw321','Alice Dev','','Da Lat','0988888888','1995-10-10','employee','alice@example.com',1),(9,'bob_test','pw654','Bob Tester','','Quy Nhon','0999999999','1993-11-11','employee','bob@example.com',1),(10,'carol_ui','pw987','Carol UI','','Bien Hoa','0900000000','1991-12-12','employee','carol@example.com',1);
+INSERT INTO `user` VALUES (1,'john123','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','John Doe','','Hanoi','0911111111','1990-01-01','ROLE_EMPLOYEE','john@example.com',1),(2,'hvd','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','Company A','','HCM','0922222222','1985-03-10','ROLE_ADMIN','hr@companya.com',1),(4,'jane456','xyz456','Jane Smith','','Hue','0944444444','1992-07-15','ROLE_EMPLOYEE','jane@jobmail.com',1),(5,'bossB','pw456','Boss B','','Can Tho','0955555555','1983-11-11','ROLE_EMPLOYER','hr@companyb.com',0),(6,'employerC','pw789','Company C','','Nha Trang','0966666666','1986-08-08','ROLE_EMPLOYER','hr@companyc.com',1),(7,'employerD','pw890','Company D','','Vinh','0977777777','1981-09-09','ROLE_EMPLOYER','hr@companyd.com',1),(8,'alice_dev','pw321','Alice Dev','','Da Lat','0988888888','1995-10-10','ROLE_EMPLOYEE','alice@example.com',1),(9,'bob_test','pw654','Bob Tester','','Quy Nhon','0999999999','1993-11-11','ROLE_EMPLOYEE','bob@example.com',1),(10,'carol_ui','pw987','Carol UI','','Bien Hoa','0900000000','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(11,'a','a','a',NULL,'a','1111111111','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(12,'c','a','Test',NULL,'a','1111111111','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(13,'d','b','Test1',NULL,'b','1111111111','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(14,'b','b','adtest',NULL,'b','1111111111','1991-12-12','ROLE_ADMIN','carol@example.com',1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -357,7 +358,7 @@ CREATE TABLE `user_documents` (
 
 LOCK TABLES `user_documents` WRITE;
 /*!40000 ALTER TABLE `user_documents` DISABLE KEYS */;
-INSERT INTO `user_documents` VALUES (1,1,'ID','docs/john_id.png','2025-04-06 14:55:20','approved',3),(2,1,'CV','docs/john_cv.pdf','2025-04-06 14:55:20','approved',3),(3,4,'ID','docs/jane_id.png','2025-04-06 14:55:20','pending',3),(4,4,'CV','docs/jane_cv.pdf','2025-04-06 14:55:20','approved',3),(5,2,'Diploma','docs/employerA_diploma.pdf','2025-04-06 14:55:20','rejected',3);
+INSERT INTO `user_documents` VALUES (1,1,'ID','docs/john_id.png','2025-04-06 14:55:20','approved',2),(2,1,'CV','docs/john_cv.pdf','2025-04-06 14:55:20','approved',2),(3,4,'ID','docs/jane_id.png','2025-04-06 14:55:20','pending',2),(4,4,'CV','docs/jane_cv.pdf','2025-04-06 14:55:20','approved',2),(5,2,'Diploma','docs/employerA_diploma.pdf','2025-04-06 14:55:20','rejected',2);
 /*!40000 ALTER TABLE `user_documents` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -370,4 +371,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-02 18:20:05
+-- Dump completed on 2025-05-04 15:20:23

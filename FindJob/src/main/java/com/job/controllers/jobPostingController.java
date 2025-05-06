@@ -30,16 +30,15 @@ public class jobPostingController {
     public String addView(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("job_posting", new JobPosting());
         model.addAttribute("job_postings", jobService.getJobPostings(params));
-        model.addAttribute("states", Arrays.asList("approved", "reject", "pending")); // Danh sách tĩnh
+        model.addAttribute("states", Arrays.asList("approved", "rejected", "pending")); // Danh sách tĩnh
         return "job_postings";
     }
     
     @GetMapping("/job_postings/{jobPostingId}")
-    public String updateView(Model model, @PathVariable (value = "jobPostingId") int id, @RequestParam Map<String, String> params )
+    public String updateView(Model model, @PathVariable (value = "jobPostingId") int id)
     {
         model.addAttribute("job_posting", this.jobService.getJobById(id));
-        model.addAttribute("job_postings", jobService.getJobPostings(params));
-        model.addAttribute("states", Arrays.asList("approved", "reject", "pending")); // Danh sách tĩnh
+        model.addAttribute("states", Arrays.asList("approved", "rejected", "pending")); // Danh sách tĩnh
         return "job_postings";
     }
     

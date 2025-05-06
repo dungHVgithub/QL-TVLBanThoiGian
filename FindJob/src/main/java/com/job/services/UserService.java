@@ -1,0 +1,25 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package com.job.services;
+
+import com.job.pojo.User;
+import java.util.List;
+import java.util.Map;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
+
+/**
+ *
+ * @author DUNG
+ */
+public interface UserService extends UserDetailsService {
+
+    User getUserByUserName(String username);
+    User addUser1(Map<String, String> params, MultipartFile avatar);
+    User addUpdateUser(User u);
+    List <User> getUser(Map <String , String> params);
+    User getUserById(int id);
+    boolean authenticate(String username, String password);
+}

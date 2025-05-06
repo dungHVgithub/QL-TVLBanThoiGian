@@ -32,6 +32,7 @@
             </div>
             <div class="mb-3 mt-3">
                 <button class="btn btn-success mt-1" type="submit">
+                    <input type="hidden" class="form-control" th:field="*{id}"  />
                     <span th:if="${job_posting.id == null}">Thêm bài viết </span>
                     <span th:unless="${job_posting.id == null}">Cập nhật bài viết </span>
                 </button>

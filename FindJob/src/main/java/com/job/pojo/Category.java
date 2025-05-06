@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "category")
@@ -33,9 +33,9 @@ public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @NotNull
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Thêm để tự động tăng
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
