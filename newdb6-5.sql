@@ -35,7 +35,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (2),(14);
+INSERT INTO `admin` VALUES (2),(14),(19);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -106,7 +106,7 @@ CREATE TABLE `company_information` (
   `address` varchar(255) DEFAULT NULL,
   `tax_code` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +140,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES (1,'Junior'),(4,'Senior'),(8,'Middle'),(9,'Junior'),(10,'Senior'),(13,NULL);
+INSERT INTO `employee` VALUES (1,'Junior'),(4,'Senior'),(8,'Middle'),(9,'Junior'),(10,'Senior'),(13,NULL),(15,NULL),(17,NULL);
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -245,7 +245,7 @@ CREATE TABLE `job_description` (
   PRIMARY KEY (`id`),
   KEY `job_posting_id` (`job_posting_id`),
   CONSTRAINT `job_description_ibfk_1` FOREIGN KEY (`job_posting_id`) REFERENCES `job_posting` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -296,6 +296,32 @@ INSERT INTO `job_posting` VALUES (1,'Backend Developer',1200,'08:00:00','17:00:0
 UNLOCK TABLES;
 
 --
+-- Table structure for table `job_posting_images`
+--
+
+DROP TABLE IF EXISTS `job_posting_images`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `job_posting_images` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `job_posting_id` int DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `job_posting_id` (`job_posting_id`),
+  CONSTRAINT `job_posting_images_ibfk_1` FOREIGN KEY (`job_posting_id`) REFERENCES `job_posting` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `job_posting_images`
+--
+
+LOCK TABLES `job_posting_images` WRITE;
+/*!40000 ALTER TABLE `job_posting_images` DISABLE KEYS */;
+/*!40000 ALTER TABLE `job_posting_images` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user`
 --
 
@@ -310,13 +336,12 @@ CREATE TABLE `user` (
   `avatar` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `sdt` varchar(20) DEFAULT NULL,
-  `birthday` date DEFAULT NULL,
   `role` enum('ROLE_ADMIN','ROLE_EMPLOYER','ROLE_EMPLOYEE') DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `verification_status` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -325,7 +350,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'john123','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','John Doe','','Hanoi','0911111111','1990-01-01','ROLE_EMPLOYEE','john@example.com',1),(2,'hvd','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','Company A','','HCM','0922222222','1985-03-10','ROLE_ADMIN','hr@companya.com',1),(4,'jane456','xyz456','Jane Smith','','Hue','0944444444','1992-07-15','ROLE_EMPLOYEE','jane@jobmail.com',1),(5,'bossB','pw456','Boss B','','Can Tho','0955555555','1983-11-11','ROLE_EMPLOYER','hr@companyb.com',0),(6,'employerC','pw789','Company C','','Nha Trang','0966666666','1986-08-08','ROLE_EMPLOYER','hr@companyc.com',1),(7,'employerD','pw890','Company D','','Vinh','0977777777','1981-09-09','ROLE_EMPLOYER','hr@companyd.com',1),(8,'alice_dev','pw321','Alice Dev','','Da Lat','0988888888','1995-10-10','ROLE_EMPLOYEE','alice@example.com',1),(9,'bob_test','pw654','Bob Tester','','Quy Nhon','0999999999','1993-11-11','ROLE_EMPLOYEE','bob@example.com',1),(10,'carol_ui','pw987','Carol UI','','Bien Hoa','0900000000','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(11,'a','a','a',NULL,'a','1111111111','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(12,'c','a','Test',NULL,'a','1111111111','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(13,'d','b','Test1',NULL,'b','1111111111','1991-12-12','ROLE_EMPLOYEE','carol@example.com',1),(14,'b','b','adtest',NULL,'b','1111111111','1991-12-12','ROLE_ADMIN','carol@example.com',1);
+INSERT INTO `user` VALUES (1,'john123','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','John Doe','','Hanoi','0911111111','ROLE_EMPLOYEE','john@example.com',1),(2,'hvd','$2a$10$CukoeAY3.pvFnT37p/LPJ.qLgmTF8snio.YNd8JIFibajy9A9Ieju','Company A','','HCM','0922222222','ROLE_ADMIN','hr@companya.com',1),(4,'jane456','xyz456','Jane Smith','','Hue','0944444444','ROLE_EMPLOYEE','jane@jobmail.com',1),(5,'bossB','pw456','Boss B','','Can Tho','0955555555','ROLE_EMPLOYER','hr@companyb.com',0),(6,'employerC','pw789','Company C','','Nha Trang','0966666666','ROLE_EMPLOYER','hr@companyc.com',1),(7,'employerD','pw890','Company D','','Vinh','0977777777','ROLE_EMPLOYER','hr@companyd.com',1),(8,'alice_dev','pw321','Alice Dev','','Da Lat','0988888888','ROLE_EMPLOYEE','alice@example.com',1),(9,'bob_test','pw654','Bob Tester','','Quy Nhon','0999999999','ROLE_EMPLOYEE','bob@example.com',1),(10,'carol_ui','pw987','Carol UI','','Bien Hoa','0900000000','ROLE_EMPLOYEE','carol@example.com',1),(11,'a','a','a',NULL,'a','1111111111','ROLE_EMPLOYEE','carol@example.com',1),(12,'c','a','Test',NULL,'a','1111111111','ROLE_EMPLOYEE','carol@example.com',1),(13,'d','b','Test1',NULL,'b','1111111111','ROLE_EMPLOYEE','carol@example.com',1),(14,'b','b','adtest',NULL,'b','1111111111','ROLE_ADMIN','carol@example.com',1),(15,'x','$2a$10$TdS7WsZD4GzBeFcjUYUyUeluyXhkR6SEK9Kw8hEEE01s207x4uHvW','demo','https://res.cloudinary.com/dxymsdvsz/image/upload/v1746351599/ybhlycg9rgztnwpb5rdh.png','a','1','ROLE_EMPLOYEE','a@gmail.com',NULL),(17,'xx','$2a$10$En5xXZr2x8iR4bptaixIqOsho2Ac/p2suU6mXC6wTy7p1IvWYm59e','demo','https://res.cloudinary.com/dxymsdvsz/image/upload/v1746410483/up95mrfm0qbm5vxqsb11.png','a','1','ROLE_EMPLOYEE','a@gmail.com',NULL),(19,'khang','$2a$10$ozne3wpwetiwo.urog4zhue2H2r728rVRi2mrBtzkwt7iUo/gYJ1u','demo','https://res.cloudinary.com/dxymsdvsz/image/upload/v1746539206/fk5vnbnlmxr9yiomscqc.png','a','1','ROLE_ADMIN','a@gmail.com',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -371,4 +396,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-04 15:20:23
+-- Dump completed on 2025-05-06 21:16:20
