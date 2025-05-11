@@ -68,7 +68,7 @@ public class SpringSecurityConfig {
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/api/users").permitAll()
                 .requestMatchers("/api/login").permitAll() // Thêm dòng này để cho phép truy cập công khai /api/login
-                .requestMatchers("/api/**").authenticated() // Các endpoint /api/** khác vẫn yêu cầu xác thực
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().permitAll()).formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -78,7 +78,7 @@ public class SpringSecurityConfig {
                 .logoutSuccessUrl("/login").permitAll());
         return http.build();
     }
-
+    
     @Bean
     public Cloudinary cloudinary() {
         Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
@@ -97,9 +97,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowedOrigins(List.of("http://localhost:3000/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));

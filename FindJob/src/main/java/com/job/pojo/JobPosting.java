@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -69,17 +70,22 @@ public class JobPosting implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date submitEnd;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
+    @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
     @OneToMany(mappedBy = "jobPostingId")
+    @JsonIgnore
     private Set<JobDescription> jobDescriptionSet;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Admin approvedByAdminId;
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Category categoryId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Employer employerId;
 
     public JobPosting() {

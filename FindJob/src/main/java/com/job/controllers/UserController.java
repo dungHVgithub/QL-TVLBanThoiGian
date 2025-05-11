@@ -48,6 +48,6 @@ public class UserController {
     public String addUser(@ModelAttribute (value = "User") User u)
     {
      this.userDetailsService.addUpdateUser(u);
-     return "user";
+     return "direct:/";
     }
 }

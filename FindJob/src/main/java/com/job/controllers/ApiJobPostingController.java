@@ -38,7 +38,7 @@ public class ApiJobPostingController {
         this.jobService.deleteJob(id);
     }
     
-    @GetMapping("/products")
+    @GetMapping("/job_postings")
     public ResponseEntity<List<JobPosting>> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.jobService.getJobPostings(params), HttpStatus.OK);
     } 
