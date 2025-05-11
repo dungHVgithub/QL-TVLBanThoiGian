@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,8 +50,10 @@ public class CompanyInformation implements Serializable {
     @Column(name = "tax_code")
     private String taxCode;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
+    @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
     @OneToMany(mappedBy = "company")
+    @JsonIgnore
     private Set<Employer> employerSet;
 
     public CompanyInformation() {

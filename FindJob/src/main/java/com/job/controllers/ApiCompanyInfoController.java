@@ -4,12 +4,10 @@
  */
 package com.job.controllers;
 
-/**
- *
- * @author AN515-57
- */
-import com.job.services.JobPostingService;
+import com.job.pojo.CompanyInformation;
 import com.job.pojo.JobPosting;
+import com.job.services.CompanyInfoService;
+import com.job.services.JobPostingService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,28 +22,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ *
+ * @author DUNG
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
-public class ApiJobPostingController {
+public class ApiCompanyInfoController {
     @Autowired
-    private JobPostingService jobService;
+    private CompanyInfoService companyInfoService;
     
-    @DeleteMapping("/job_postings/{jobPostingId}")
+    @DeleteMapping("/company_info/{company_id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void destroy(@PathVariable (value = "jobPostingId") int id)
+    public void destroy(@PathVariable (value = "company_id") int id)
     {
-        this.jobService.deleteJob(id);
+        this.companyInfoService.deleteCompanyInformation(id);
     }
     
-    @GetMapping("/job_postings")
-    public ResponseEntity<List<JobPosting>> list(@RequestParam Map<String, String> params) {
-        return new ResponseEntity<>(this.jobService.getJobPostings(params), HttpStatus.OK);
+    @GetMapping("/company_info")
+    public ResponseEntity<List<CompanyInformation>> list(@RequestParam Map<String, String> params) {
+        System.out.println(">> SIZE = " + this.companyInfoService.companyInformations(params).size());
+        return new ResponseEntity<>(this.companyInfoService.companyInformations(params), HttpStatus.OK);
     } 
     
-    @GetMapping("/job_postings/{jobPostingId}")
-    public ResponseEntity<JobPosting> retrieve(@PathVariable(value = "jobPostingId") int id) {
-        return new ResponseEntity<>(this.jobService.getJobById(id), HttpStatus.OK);
+    
+    @GetMapping("/company_info/{company_id}")
+    public ResponseEntity<CompanyInformation> retrieve(@PathVariable(value = "company_id") int id) {
+        return new ResponseEntity<>(this.companyInfoService.companyInformationById(id), HttpStatus.OK);
     }
     
 }
