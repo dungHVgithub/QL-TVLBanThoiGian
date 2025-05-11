@@ -67,7 +67,9 @@ public class SpringSecurityConfig {
                 .requestMatchers("/", "/home").authenticated()
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/api/users").permitAll()
-                .requestMatchers("/api/login").permitAll() // Thêm dòng này để cho phép truy cập công khai /api/login
+                .requestMatchers("/api/login").permitAll()
+//                .requestMatchers("/user_documents/**").authenticated()
+                // Thêm dòng này để cho phép truy cập công khai /api/login
                 .requestMatchers("/api/**").authenticated() // Các endpoint /api/** khác vẫn yêu cầu xác thực
                 .anyRequest().permitAll()).formLogin(form -> form
                 .loginPage("/login")

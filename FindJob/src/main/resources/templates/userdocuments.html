@@ -1,0 +1,174 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <title>Home</title>
+        <th:block th:replace="base :: bootstrap"></th:block>
+        <style>
+            .thumbnail-img {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+            .thumbnail-img.zoomed {
+                transform: scale(2.5);
+                position: relative;
+                z-index: 1000;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+            .zoomed + * {
+                visibility: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:replace="base :: header"></div>
+        <main class="container my-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/}" method="get">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="kw" placeholder="Từ khóa tìm kiếm..." />
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" name="created_date" placeholder="tìm theo ngày tạo" />
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" name="admin" placeholder="người phê duyệt" />
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" type="submit">
+                                    <i class="bi bi-search"></i> Tìm kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên tài liệu</th>
+                            <th>User ID</th>
+                            <th>Tên người dùng</th>
+                            <th>Hình ảnh</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày cập nhật</th>
+                            <th>Người phê duyệt</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="ud : ${uds}">
+                            <td th:text="${ud.id}"></td>
+                            <td th:text="${ud.documentType}"></td>
+                            <td th:text="${ud.userid != null} ? ${ud.userid.id} : 'N/A'"></td>
+                            <td th:text="${ud.userid != null} ? ${ud.userid.name} : 'N/A'"></td>
+                            <td>
+                                <div th:if="${ud.documentPath != null and (ud.documentPath.endsWith('.jpg') or ud.documentPath.endsWith('.jpeg') or ud.documentPath.endsWith('.png') or ud.documentPath.endsWith('.gif'))}">
+                                    <img th:src="${ud.documentPath}" class="thumbnail-img" th:onclick="'toggleZoom(this)'" alt="Document Image" />
+                                </div>
+                                <div th:unless="${ud.documentPath != null and (ud.documentPath.endsWith('.jpg') or ud.documentPath.endsWith('.jpeg') or ud.documentPath.endsWith('.png') or ud.documentPath.endsWith('.gif'))}">
+                                    Không phải hình ảnh
+                                </div>
+                            </td>
+                            <td th:text="${#dates.format(ud.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td>
+                                <select class="form-select status-select" th:data-id="${ud.id}">
+                                    <option value="approved" th:selected="${ud.status == 'approved'}">Approved</option>
+                                    <option value="pending" th:selected="${ud.status == 'pending'}">Pending</option>
+                                    <option value="rejected" th:selected="${ud.status == 'rejected'}">Rejected</option>
+                                </select>
+                            </td>
+                            <td class="updated-date" th:text="${ud.updatedDate != null} ? ${#dates.format(ud.updatedDate, 'yyyy-MM-dd HH:mm:ss')} : 'N/A'"></td>
+                            <td class="approved-by" th:text="${ud.approvedByAdminId != null and ud.approvedByAdminId.user != null} ? ${ud.approvedByAdminId.user.name} : 'N/A'"></td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm confirm-btn" th:data-id="${ud.id}" sec:authorize="hasRole('ROLE_ADMIN')">
+                                    <i class="bi bi-check-lg"></i> Xác nhận
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <div th:replace="base :: footer"></div>
+        <script>
+            // Get JWT token from localStorage or wherever it is stored
+            const token = localStorage.getItem('jwtToken'); // Adjust based on your token storage
+
+            // JavaScript for image zoom functionality
+            function toggleZoom(img) {
+                console.log("toggleZoom called for image:", img);
+                img.classList.toggle('zoomed');
+            }
+
+            document.addEventListener('click', function (e) {
+                const zoomedImage = document.querySelector('.thumbnail-img.zoomed');
+                if (zoomedImage && !zoomedImage.contains(e.target)) {
+                    zoomedImage.classList.remove('zoomed');
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    const zoomedImage = document.querySelector('.thumbnail-img.zoomed');
+                    if (zoomedImage) {
+                        zoomedImage.classList.remove('zoomed');
+                    }
+                }
+            });
+
+            // JavaScript for confirm button functionality
+            document.querySelectorAll('.confirm-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const documentId = this.getAttribute('data-id');
+                    const row = this.closest('tr');
+                    const statusSelect = row.querySelector('.status-select');
+                    const updatedDateCell = row.querySelector('.updated-date');
+                    const approvedByCell = row.querySelector('.approved-by');
+                    const newStatus = statusSelect.value;
+
+                    // Update the Updated Date with current timestamp
+                    const now = new Date();
+                    updatedDateCell.textContent = now.toLocaleString();
+
+                    // Get current username from JWT (assuming decoded from token)
+                    const currentUser = /*[[${#authentication.name}]]*/ 'AdminUser'; // Fallback
+                    approvedByCell.textContent = currentUser;
+
+                    // Send update to backend with JWT token
+                    fetch('/user_documents/updateStatus', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` // Send JWT token
+                        },
+                        body: JSON.stringify({
+                            id: documentId,
+                            status: newStatus,
+                            updatedDate: now.toISOString(),
+                            approvedBy: currentUser
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Status updated successfully');
+                            location.reload(); // Reload trang để hiển thị thay đổi
+                        } else {
+                            console.error('Failed to update status:', data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        </script>
+    </body>
+</html>

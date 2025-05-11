@@ -32,7 +32,8 @@ import java.util.Date;
     @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
     @NamedQuery(name = "UserDocuments.findByDocumentPath", query = "SELECT u FROM UserDocuments u WHERE u.documentPath = :documentPath"),
     @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate"),
-    @NamedQuery(name = "UserDocuments.findByStatus", query = "SELECT u FROM UserDocuments u WHERE u.status = :status")})
+    @NamedQuery(name = "UserDocuments.findByStatus", query = "SELECT u FROM UserDocuments u WHERE u.status = :status"),
+    @NamedQuery(name = "UserDocuments.findByUpdatedDate", query = "SELECT u FROM UserDocuments u WHERE u.updatedDate = :updatedDate")})
 public class UserDocuments implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,6 +54,9 @@ public class UserDocuments implements Serializable {
     @Size(max = 8)
     @Column(name = "status")
     private String status;
+    @Column(name = "updated_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDate;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
     @ManyToOne
     private Admin approvedByAdminId;
@@ -105,6 +109,14 @@ public class UserDocuments implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public Admin getApprovedByAdminId() {
