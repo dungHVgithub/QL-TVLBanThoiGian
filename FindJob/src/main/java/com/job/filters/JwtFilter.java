@@ -1,64 +1,70 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.filters;
 
-
 import com.job.utils.JwtUtils;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- *
- * @author huu-thanhduong
- */
-public class JwtFilter implements Filter{
+import java.io.IOException;
+import java.util.List;
+
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
-        if (httpRequest.getRequestURI().startsWith(String.format("%s/api/secure", httpRequest.getContextPath())) == true) {
-        
-           
-            String header = httpRequest.getHeader("Authorization");
-            
-            if (header == null || !header.startsWith("Bearer ")) {
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header.");
-                return;
-            }
-            else {
-                String token = header.substring(7);
-                try {
-                    String username = JwtUtils.validateTokenAndGetUsername(token);
-                    if (username != null) {
-                        httpRequest.setAttribute("username", username);
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, null);
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        
-                        chain.doFilter(request, response);
-                        return;
-                    }
-                } catch (Exception e) {
-                    // Log lỗi
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String uri = request.getRequestURI();
+        System.out.println("====== JwtFilter: Processing URL: " + uri);
+
+        String header = request.getHeader("Authorization");
+        if (header == null) {
+            header = request.getHeader("authorization"); // fallback (trường hợp proxy biến đổi)
+        }
+
+        System.out.println("====== JwtFilter - Authorization Header: " + header);
+
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            try {
+                String username = JwtUtils.validateTokenAndGetUsername(token);
+                if (username != null) {
+                    // Bạn có thể load roles từ DB, tạm hardcode ROLE_ADMIN để đảm bảo hoạt động
+                    List<SimpleGrantedAuthority> authorities = List.of(
+                            new SimpleGrantedAuthority("ROLE_ADMIN")
+                    );
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    filterChain.doFilter(request, response);
+                    return;
                 }
+            } catch (Exception e) {
+                e.printStackTrace(); // log lỗi token nếu cần
             }
 
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, 
-                    "Token không hợp lệ hoặc hết hạn");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token không hợp lệ hoặc đã hết hạn.");
+            return;
         }
-        
-        chain.doFilter(request, response);
+
+        // Nếu không có token và đang truy cập /api/secure → trả lỗi
+        if (uri.startsWith(request.getContextPath() + "/api/secure")) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Thiếu header Authorization.");
+            return;
+        }
+
+        // Cho phép các URL khác tiếp tục
+        filterChain.doFilter(request, response);
     }
-    
 }

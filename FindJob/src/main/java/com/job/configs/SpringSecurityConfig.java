@@ -2,8 +2,11 @@ package com.job.configs;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.job.filters.JwtFilter;
+import jakarta.servlet.Filter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -28,9 +32,13 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @ComponentScan(basePackages = {
     "com.job.controllers",
     "com.job.repositories",
-    "com.job.services"
+    "com.job.services",
+    "com.job.filters"
 })
 public class SpringSecurityConfig {
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Autowired
     private UserDetailsService userDetailsService; // Đảm bảo được tiêm
@@ -61,21 +69,22 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(c -> c.disable())
+        http.csrf(csrf -> csrf.disable())
                 .authenticationProvider(securityAuthenticationProvider())
-                .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/", "/home").authenticated()
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/api/users").permitAll()
-                .requestMatchers("/api/login").permitAll() // Thêm dòng này để cho phép truy cập công khai /api/login
-                .requestMatchers("/api/**").authenticated() // Các endpoint /api/** khác vẫn yêu cầu xác thực
-                .anyRequest().permitAll()).formLogin(form -> form
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/login", "/api/users").permitAll()
+                .requestMatchers("/api/secure/**").authenticated()
+                .anyRequest().permitAll())
+                .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error=true").permitAll())
+                .defaultSuccessUrl("/", false)
+                .failureUrl("/login?error=true")
+                .permitAll())
                 .logout(logout -> logout
                 .logoutSuccessUrl("/login").permitAll());
+
         return http.build();
     }
 
@@ -111,4 +120,5 @@ public class SpringSecurityConfig {
 
         return source;
     }
+
 }

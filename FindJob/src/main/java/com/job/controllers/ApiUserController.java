@@ -58,7 +58,13 @@ public class ApiUserController {
     @RequestMapping("/secure/profile")
     @ResponseBody
     @CrossOrigin
-    public ResponseEntity<User> getProfile(Principal principal) {
-        return new ResponseEntity<>(this.userDetailsService.getUserByUserName(principal.getName()), HttpStatus.OK);
+     public ResponseEntity<User> getProfile(Principal principal) {
+        // Log thông tin principal (username từ JWT)
+        System.out.println("====== ApiUserController - Principal name: " + principal.getName());
+        
+        User user = userDetailsService.getUserByUserName(principal.getName());
+        System.out.println("====== ApiUserController - User details: " + user); // Log thông tin user
+        
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
