@@ -17,9 +17,11 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -86,7 +88,8 @@ public class User implements Serializable {
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Employee employee;
-
+    @Transient
+    private MultipartFile file;
     public User() {
     }
 
@@ -229,6 +232,20 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.User[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
     
 }

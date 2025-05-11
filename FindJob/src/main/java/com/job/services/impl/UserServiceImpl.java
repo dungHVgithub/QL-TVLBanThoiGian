@@ -11,6 +11,7 @@ import com.job.repositories.UserRepository;
 import com.job.services.UserService;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(Map<String, String> params, MultipartFile avatar) {
+    public User addUser1(Map<String, String> params, MultipartFile avatar) {
         User u = new User();
         u.setName(params.get("name"));
         u.setAddress(params.get("address"));
@@ -76,11 +77,42 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        return this.userRepo.addUser(u);
+        return this.userRepo.addUpdateUser(u);
     }
 
     @Override
     public boolean authenticate(String username, String password) {
         return this.userRepo.authenticate(username, password);
+    }
+
+    @Override
+    public List<User> getUser(Map<String, String> params) {
+        return this.userRepo.getUser(params);
+    }
+
+    @Override
+    public User getUserById(int id) {
+        return this.userRepo.getUserById(id);
+    }
+
+    @Override
+    public User addUpdateUser(User u) {
+        // Mã hóa mật khẩu nếu nó không rỗng
+        if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+            u.setPassword(this.passwordEncoder.encode(u.getPassword()));
+        }
+
+        // Xử lý upload avatar nếu có
+        if (!u.getFile().isEmpty()) {
+            try {
+                Map res = cloudinary.uploader().upload(u.getFile().getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                u.setAvatar(res.get("secure_url").toString());
+            } catch (IOException ex) {
+                Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return this.userRepo.addUpdateUser(u);
     }
 }

@@ -1,0 +1,45 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Quản lý công việc</title>
+    <th:block th:replace="base :: bootstrap"></th:block>
+</head>
+<body>
+    <main class="container">
+        <div th:replace="base :: header"></div>
+        <h1 class="text-center text-info mt-1">Quản Lý Công Việc </h1>
+        <form method="post" th:action="@{/add}" th:object="${job_posting}" >
+            <div class="mb-3 mt-3">
+                <label for="description" class="form-label">Tên công việc:</label>
+                <input type="text" class="form-control" id="description" placeholder="Nhập vào tên công việc" th:field="*{description}"  />
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="salary" class="form-label">Nhập vào mức lương:</label>
+                <input type="number" class="form-control" id="salary" placeholder="Nhập vào mức lương" th:field="*{salary}" />
+            </div>
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="state" class="form-label">Trạng thái bài viết: </label>
+                <select class="form-select" id="state" th:field="*{state}">
+                    <option th:each="state: ${states}" th:value="${state}" th:text="${state}"></option>
+                </select>
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="cate" class="form-label">Loại công việc: </label>
+                <select class="form-select" id="cate" th:field="*{categoryId}">
+                    <option th:each="c: ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+            </div>
+            <div class="mb-3 mt-3">
+                <button class="btn btn-success mt-1" type="submit">
+                    <input type="hidden" class="form-control" th:field="*{id}"  />
+                    <span th:if="${job_posting.id == null}">Thêm bài viết </span>
+                    <span th:unless="${job_posting.id == null}">Cập nhật bài viết </span>
+                </button>
+            </div>
+        </form>
+        <div th:replace="base :: footer"></div>
+    </main>
+</body>
+</html>
+

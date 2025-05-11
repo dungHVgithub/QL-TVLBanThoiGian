@@ -4,7 +4,9 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +37,7 @@ public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
@@ -43,6 +46,7 @@ public class Category implements Serializable {
     @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "categoryId")
+    @JsonIgnore
     private Set<JobPosting> jobPostingSet;
 
     public Category() {

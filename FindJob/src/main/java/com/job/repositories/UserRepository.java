@@ -5,6 +5,8 @@
 package com.job.repositories;
 
 import com.job.pojo.User;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -13,8 +15,8 @@ import com.job.pojo.User;
 public interface UserRepository {
 
     User getUserByUserName(String username);
-
-    User addUser(User u);
-
+    User addUpdateUser(User u);
+    List <User> getUser(Map <String , String> params);
+    User getUserById(int id);
     boolean authenticate(String username, String password);
 }

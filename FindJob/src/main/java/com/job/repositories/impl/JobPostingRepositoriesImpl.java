@@ -41,7 +41,6 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
 
         if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
-
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 predicates.add(b.like(root.get("description"), String.format("%%%s%%", kw)));
@@ -63,7 +62,6 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
             }
 
             q.where(predicates.toArray(Predicate[]::new));
-
             String orderBy = params.get("orderBy");
             if (orderBy != null && !orderBy.isEmpty()) {
                 q.orderBy(b.asc(root.get(orderBy)));
@@ -80,7 +78,8 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
             query.setFirstResult(start);
         }
 
-        return query.getResultList();    }
+        return query.getResultList();   
+    }
 
     @Override
     public JobPosting getJobById(int id) {
