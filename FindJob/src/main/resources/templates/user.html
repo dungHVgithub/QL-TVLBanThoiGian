@@ -60,7 +60,7 @@
                             <a th:href="@{'/users/' + ${user.id}}" class="btn btn-outline-success btn-sm">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <button class="btn btn-danger" th:onclick="'deleteUser(\''+@{/api/users/}+'\','+${user.id}+')'">×</button>
+                            <button class="btn btn-danger" th:onclick="'deleteUser(\''+@{/api/users/}+'\','+${user.id}+')'"> Xóa </button>
                         </td>
                     </tr>
                     <tr th:if="${users.isEmpty()}">
