@@ -76,7 +76,7 @@ public class User implements Serializable {
     private String email;
     @Column(name = "verification_status")
     private Boolean verificationStatus;
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "userid", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<UserDocuments> userDocumentsSet;
     @JsonIgnore
