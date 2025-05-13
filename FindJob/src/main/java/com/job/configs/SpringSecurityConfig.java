@@ -67,28 +67,49 @@ public class SpringSecurityConfig {
         return authProvider;
     }
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(csrf -> csrf.disable())
+//                .authenticationProvider(securityAuthenticationProvider())
+//
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                .authorizeHttpRequests(auth -> auth
+//                .requestMatchers("/api/login", "/api/users").permitAll()
+//                .requestMatchers("/api/secure/**").authenticated()
+//                .anyRequest().permitAll())
+//                .formLogin(form -> form
+//                .loginPage("/login")
+//                .loginProcessingUrl("/login")
+//                .defaultSuccessUrl("/", false)
+//                .failureUrl("/login?error=true")
+//                .permitAll())
+//                .logout(logout -> logout
+//                .logoutSuccessUrl("/login").permitAll());
+//
+//        return http.build();
+//    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authenticationProvider(securityAuthenticationProvider())
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login", "/api/users").permitAll()
-                .requestMatchers("/api/secure/**").authenticated()
-                .anyRequest().permitAll())
+                .requestMatchers("/api/login", "/api/users", "/login", "/logout").permitAll()
+                .anyRequest().authenticated()) // Yêu cầu xác thực cho tất cả các request khác
                 .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", false)
+                .defaultSuccessUrl("/", true) // Chuyển hướng đến "/" sau khi đăng nhập thành công
                 .failureUrl("/login?error=true")
                 .permitAll())
                 .logout(logout -> logout
-                .logoutSuccessUrl("/login").permitAll());
+                .logoutSuccessUrl("/login?logout=true") // Chuyển hướng sau khi đăng xuất
+                .permitAll()
+        );
 
-        return http.build();
+    return http.build();
     }
-    
+
     @Bean
     public Cloudinary cloudinary() {
         Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
