@@ -46,9 +46,8 @@ public class JobDescription implements Serializable {
     @Column(name = "type")
     private String type;
     @JoinColumn(name = "job_posting_id", referencedColumnName = "id")
-    
     @ManyToOne
-    @JsonIgnore
+     @JsonIgnore
     private JobPosting jobPostingId;
 
     public JobDescription() {

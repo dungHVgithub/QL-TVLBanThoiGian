@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -40,9 +41,11 @@ public class FollowNotice implements Serializable {
     private Boolean isFollow;
     @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Employee employee;
     @JoinColumn(name = "employer_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Employer employer;
 
     public FollowNotice() {
@@ -120,5 +123,5 @@ public class FollowNotice implements Serializable {
     public String toString() {
         return "com.job.pojo.FollowNotice[ followNoticePK=" + followNoticePK + " ]";
     }
-    
+
 }

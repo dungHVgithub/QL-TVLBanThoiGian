@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -80,10 +81,12 @@ public class User implements Serializable {
     @Column(name = "verification_status")
     private Boolean verificationStatus;
     @OneToOne(mappedBy = "userId")
+     @JsonIgnore
     private Employer employer;
     @OneToOne(mappedBy = "userId")
+    @JsonIgnore
     private Employee employee;
-     @Transient
+    @Transient
     private MultipartFile file;
 
     public User() {

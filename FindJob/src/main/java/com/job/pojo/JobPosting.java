@@ -68,22 +68,22 @@ public class JobPosting implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date submitEnd;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
-    @JsonIgnore
+     @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
     @OneToMany(mappedBy = "jobPostingId")
-    @JsonIgnore
+     @JsonIgnore
     private Set<JobDescription> jobDescriptionSet;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
+     @JsonIgnore
     private Admin approvedByAdminId;
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
+     @JsonIgnore
     private Category categoryId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
+     @JsonIgnore
     private Employer employerId;
 
     public JobPosting() {
@@ -213,5 +213,5 @@ public class JobPosting implements Serializable {
     public String toString() {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
-
+    
 }
