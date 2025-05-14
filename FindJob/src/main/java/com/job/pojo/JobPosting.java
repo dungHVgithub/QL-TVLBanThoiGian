@@ -21,7 +21,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -47,7 +46,6 @@ public class JobPosting implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id")
     private Integer id;
     @Lob
@@ -85,6 +83,7 @@ public class JobPosting implements Serializable {
     private Category categoryId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Employer employerId;
 
     public JobPosting() {
@@ -214,5 +213,5 @@ public class JobPosting implements Serializable {
     public String toString() {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
-    
+
 }

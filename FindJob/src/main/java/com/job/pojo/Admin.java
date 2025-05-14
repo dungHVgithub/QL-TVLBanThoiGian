@@ -7,14 +7,13 @@ package com.job.pojo;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -26,20 +25,18 @@ import java.util.Set;
 @Table(name = "admin")
 @NamedQueries({
     @NamedQuery(name = "Admin.findAll", query = "SELECT a FROM Admin a"),
-    @NamedQuery(name = "Admin.findById", query = "SELECT a FROM Admin a WHERE a.id = :id")})
+    @NamedQuery(name = "Admin.findById", query = "SELECT a FROM Admin a WHERE a.id = :id"),
+    @NamedQuery(name = "Admin.findByUserId", query = "SELECT a FROM Admin a WHERE a.userId = :userId")})
 public class Admin implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id")
     private Integer id;
-    @OneToMany(mappedBy = "approvedByAdminId")
-    private Set<UserDocuments> userDocumentsSet;
-    @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
-    @OneToOne(optional = false)
-    private User user;
+    @Column(name = "user_id")
+    private Integer userId;
     @OneToMany(mappedBy = "approvedByAdminId")
     private Set<JobPosting> jobPostingSet;
 
@@ -58,20 +55,12 @@ public class Admin implements Serializable {
         this.id = id;
     }
 
-    public Set<UserDocuments> getUserDocumentsSet() {
-        return userDocumentsSet;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUserDocumentsSet(Set<UserDocuments> userDocumentsSet) {
-        this.userDocumentsSet = userDocumentsSet;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Set<JobPosting> getJobPostingSet() {

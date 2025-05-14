@@ -4,9 +4,7 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -23,7 +20,6 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -83,21 +79,12 @@ public class User implements Serializable {
     private String email;
     @Column(name = "verification_status")
     private Boolean verificationStatus;
-    @OneToMany(mappedBy = "userid", cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private Set<UserDocuments> userDocumentsSet;
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    private Admin admin;
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToOne(mappedBy = "userId")
     private Employer employer;
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToOne(mappedBy = "userId")
     private Employee employee;
-    @Transient
+     @Transient
     private MultipartFile file;
-    
 
     public User() {
     }
@@ -194,6 +181,22 @@ public class User implements Serializable {
         this.verificationStatus = verificationStatus;
     }
 
+    public Employer getEmployer() {
+        return employer;
+    }
+
+    public void setEmployer(Employer employer) {
+        this.employer = employer;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -218,38 +221,7 @@ public class User implements Serializable {
     public String toString() {
         return "com.job.pojo.User[ id=" + id + " ]";
     }
-     public Set<UserDocuments> getUserDocumentsSet() {
-        return userDocumentsSet;
-    }
 
-    public void setUserDocumentsSet(Set<UserDocuments> userDocumentsSet) {
-        this.userDocumentsSet = userDocumentsSet;
-    }
-
-    public Admin getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(Admin admin) {
-        this.admin = admin;
-    }
-
-    public Employer getEmployer() {
-        return employer;
-    }
-
-    public void setEmployer(Employer employer) {
-        this.employer = employer;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-    
     /**
      * @return the file
      */

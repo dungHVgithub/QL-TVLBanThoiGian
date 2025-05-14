@@ -4,10 +4,13 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.NamedQueries;
@@ -15,7 +18,6 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
@@ -34,20 +36,26 @@ public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id")
     private Integer id;
     @Size(max = 50)
     @Column(name = "level")
     private String level;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
+    @OneToMany(mappedBy = "employeeId")
+    @JsonIgnore
+    private Set<UserDocuments> userDocumentsSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
-    @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
-    @OneToOne(optional = false)
-    private User user;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne
+    @JsonIgnore
+    private User userId;
 
     public Employee() {
     }
@@ -80,6 +88,14 @@ public class Employee implements Serializable {
         this.hosoUngtuyenSet = hosoUngtuyenSet;
     }
 
+    public Set<UserDocuments> getUserDocumentsSet() {
+        return userDocumentsSet;
+    }
+
+    public void setUserDocumentsSet(Set<UserDocuments> userDocumentsSet) {
+        this.userDocumentsSet = userDocumentsSet;
+    }
+
     public Set<FollowNotice> getFollowNoticeSet() {
         return followNoticeSet;
     }
@@ -88,12 +104,12 @@ public class Employee implements Serializable {
         this.followNoticeSet = followNoticeSet;
     }
 
-    public User getUser() {
-        return user;
+    public User getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(User userId) {
+        this.userId = userId;
     }
 
     @Override

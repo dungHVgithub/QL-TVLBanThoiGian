@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +32,7 @@ import java.util.Date;
     @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
     @NamedQuery(name = "UserDocuments.findByDocumentPath", query = "SELECT u FROM UserDocuments u WHERE u.documentPath = :documentPath"),
     @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate"),
-    @NamedQuery(name = "UserDocuments.findByStatus", query = "SELECT u FROM UserDocuments u WHERE u.status = :status")})
+    @NamedQuery(name = "UserDocuments.findByUserDocumentscol", query = "SELECT u FROM UserDocuments u WHERE u.userDocumentscol = :userDocumentscol")})
 public class UserDocuments implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,17 +50,12 @@ public class UserDocuments implements Serializable {
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
-    @Size(max = 8)
-    @Column(name = "status")
-    private String status;
-    @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
+    @Size(max = 45)
+    @Column(name = "user_documentscol")
+    private String userDocumentscol;
+    @JoinColumn(name = "employee_id", referencedColumnName = "user_id")
     @ManyToOne
-    @JsonIgnore
-    private Admin approvedByAdminId;
-    @JoinColumn(name = "User_id", referencedColumnName = "id")
-    @ManyToOne
-    @JsonIgnore
-    private User userid;
+    private Employee employeeId;
 
     public UserDocuments() {
     }
@@ -102,28 +96,20 @@ public class UserDocuments implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public String getStatus() {
-        return status;
+    public String getUserDocumentscol() {
+        return userDocumentscol;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setUserDocumentscol(String userDocumentscol) {
+        this.userDocumentscol = userDocumentscol;
     }
 
-    public Admin getApprovedByAdminId() {
-        return approvedByAdminId;
+    public Employee getEmployeeId() {
+        return employeeId;
     }
 
-    public void setApprovedByAdminId(Admin approvedByAdminId) {
-        this.approvedByAdminId = approvedByAdminId;
-    }
-
-    public User getUserid() {
-        return userid;
-    }
-
-    public void setUserid(User userid) {
-        this.userid = userid;
+    public void setEmployeeId(Employee employeeId) {
+        this.employeeId = employeeId;
     }
 
     @Override
@@ -150,5 +136,5 @@ public class UserDocuments implements Serializable {
     public String toString() {
         return "com.job.pojo.UserDocuments[ id=" + id + " ]";
     }
-
+    
 }

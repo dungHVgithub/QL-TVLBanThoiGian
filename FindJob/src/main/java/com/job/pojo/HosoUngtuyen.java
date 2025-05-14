@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -45,9 +46,11 @@ public class HosoUngtuyen implements Serializable {
     private String rvFromEmployer;
     @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Employee employee;
     @JoinColumn(name = "job_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonIgnore
     private JobPosting jobPosting;
 
     public HosoUngtuyen() {
@@ -133,5 +136,5 @@ public class HosoUngtuyen implements Serializable {
     public String toString() {
         return "com.job.pojo.HosoUngtuyen[ hosoUngtuyenPK=" + hosoUngtuyenPK + " ]";
     }
-    
+
 }

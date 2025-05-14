@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,6 +46,7 @@ public class CompanyImages implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "image_path")
     private String imagePath;
@@ -56,9 +58,11 @@ public class CompanyImages implements Serializable {
     private Date uploadTime;
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private CompanyInformation companyId;
     @Transient
     private MultipartFile file;
+
     public CompanyImages() {
     }
 

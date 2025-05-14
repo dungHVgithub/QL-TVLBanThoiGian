@@ -16,9 +16,11 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -52,9 +54,7 @@ public class CompanyInformation implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
     @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
-    @OneToMany(mappedBy = "company")
-    @JsonIgnore
-    private Set<Employer> employerSet;
+    
 
     public CompanyInformation() {
     }
@@ -103,14 +103,6 @@ public class CompanyInformation implements Serializable {
         this.companyImagesSet = companyImagesSet;
     }
 
-    public Set<Employer> getEmployerSet() {
-        return employerSet;
-    }
-
-    public void setEmployerSet(Set<Employer> employerSet) {
-        this.employerSet = employerSet;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -135,5 +127,10 @@ public class CompanyInformation implements Serializable {
     public String toString() {
         return "com.job.pojo.CompanyInformation[ id=" + id + " ]";
     }
-    
+
+    /**
+     * @return the file
+     */
+   
+
 }
