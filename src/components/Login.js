@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import Api, { endpoints } from "../configs/Api";
-import cookie from "react-cookies";
 import { MyDispatchContext } from "../configs/MyContexts";
 import { useNavigate } from "react-router-dom";
 import MySpinner from "./layouts/MySpinner";
@@ -15,7 +14,7 @@ const Login = () => {
     const dispatch = useContext(MyDispatchContext);
     const nav = useNavigate();
 
- 
+
     const [user, setUser] = useState({
         username: "",
         password: ""
@@ -29,20 +28,40 @@ const Login = () => {
         try {
             setLoading(true);
 
-            
+
             let res = await Api.post(endpoints['login'], user);
             console.info("Token nhận được:", res.data);
 
-            
-            cookie.save('token', res.data.token);
 
-            
+            const token = res.data.token;
+            localStorage.setItem('token', token);
+            const profileRes = await Api.get(endpoints['profile'], {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const userInfo = profileRes.data;
+            const role = userInfo.role;
+
+
+
             dispatch({
                 type: "login",
-                payload: { username: user.username }
+                payload: {
+                    token: token,
+                    username: userInfo.username,
+                    role: role
+                }
             });
 
-            nav("/");
+            if (role === "ROLE_EMPLOYEE" || role === "ROLE_ADMIN") {
+                nav("/");
+            } else if (role === "ROLE_EMPLOYER") {
+                nav("/employer");
+            } else {
+                console.warn("Role không xác định:", role);
+                nav("/");
+            }
         } catch (err) {
             console.error("Lỗi đăng nhập:", err);
         } finally {
@@ -68,7 +87,7 @@ const Login = () => {
                         <Form.Control
                             type={f.type}
                             placeholder={f.label}
-                            value={user[f.field] || ""} 
+                            value={user[f.field] || ""}
                             onChange={e => setState(e.target.value, f.field)}
                             required
                         />

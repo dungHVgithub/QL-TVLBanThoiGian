@@ -61,19 +61,7 @@ public class SpringSecurityConfig {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 
-    @Bean
-    public org.springframework.security.authentication.AuthenticationProvider securityAuthenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Đảm bảo sử dụng UserDetailsService
-        authProvider.setPasswordEncoder(passwordEncoder());
-        authProvider.setPostAuthenticationChecks(userDetails -> {
-            if (!userDetails.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-                throw new org.springframework.security.authentication.BadCredentialsException("Người dùng không có quyền đăng nhập vào trang web này");
-            }
-        });
-        return authProvider;
-    }
+  
 
 
      @Bean

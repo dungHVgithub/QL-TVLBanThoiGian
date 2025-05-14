@@ -58,13 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser1(Map<String, String> params, MultipartFile avatar) {
+    public User addUser(Map<String, String> params, MultipartFile avatar) {
         User u = new User();
         u.setName(params.get("name"));
         u.setAddress(params.get("address"));
         u.setEmail(params.get("email"));
         u.setSdt(params.get("sdt"));
-        u.setSdt(params.get("birthday"));
         u.setUsername(params.get("username"));
         u.setPassword(this.passwordEncoder.encode(params.get("password")));
         u.setRole(params.get("role"));
