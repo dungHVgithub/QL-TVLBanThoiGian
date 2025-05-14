@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.controllers;
 
 import com.job.pojo.User;
@@ -10,10 +6,14 @@ import com.job.utils.JwtUtils;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,15 +23,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- *
- * @author DUNG
- */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
 public class ApiUserController {
-    @Autowired
+
+   @Autowired
     private UserService userDetailsService;
 
     @PostMapping(path = "/users", 
@@ -58,13 +55,7 @@ public class ApiUserController {
     @RequestMapping("/secure/profile")
     @ResponseBody
     @CrossOrigin
-     public ResponseEntity<User> getProfile(Principal principal) {
-        // Log thông tin principal (username từ JWT)
-        System.out.println("====== ApiUserController - Principal name: " + principal.getName());
-        
-        User user = userDetailsService.getUserByUserName(principal.getName());
-        System.out.println("====== ApiUserController - User details: " + user); // Log thông tin user
-        
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<User> getProfile(Principal principal) {
+        return new ResponseEntity<>(this.userDetailsService.getUserByUserName(principal.getName()), HttpStatus.OK);
     }
 }

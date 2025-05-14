@@ -11,8 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -54,6 +57,11 @@ public class SpringSecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
+    }
+
+    @Bean
     public org.springframework.security.authentication.AuthenticationProvider securityAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService); // Đảm bảo sử dụng UserDetailsService
@@ -67,47 +75,23 @@ public class SpringSecurityConfig {
         return authProvider;
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(csrf -> csrf.disable())
-//                .authenticationProvider(securityAuthenticationProvider())
-//
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-//                .authorizeHttpRequests(auth -> auth
-//                .requestMatchers("/api/login", "/api/users").permitAll()
-//                .requestMatchers("/api/secure/**").authenticated()
-//                .anyRequest().permitAll())
-//                .formLogin(form -> form
-//                .loginPage("/login")
-//                .loginProcessingUrl("/login")
-//                .defaultSuccessUrl("/", false)
-//                .failureUrl("/login?error=true")
-//                .permitAll())
-//                .logout(logout -> logout
-//                .logoutSuccessUrl("/login").permitAll());
-//
-//        return http.build();
-//    }
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authenticationProvider(securityAuthenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login", "/api/users", "/login", "/logout").permitAll()
-                .anyRequest().authenticated()) // Yêu cầu xác thực cho tất cả các request khác
-                .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true) // Chuyển hướng đến "/" sau khi đăng nhập thành công
-                .failureUrl("/login?error=true")
-                .permitAll())
-                .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout=true") // Chuyển hướng sau khi đăng xuất
-                .permitAll()
-        );
 
-    return http.build();
+     @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
+            Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(c -> c.disable()).authorizeHttpRequests(requests
+                -> requests.requestMatchers("/").authenticated()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/job_postings").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/job_postings/**").hasAnyRole("EMPLOYEE", "EMPLOYEER")
+                        .anyRequest().authenticated())
+                .formLogin(form -> form.loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true").permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
+        return http.build();
     }
 
     @Bean
@@ -129,7 +113,7 @@ public class SpringSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000/"));
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));

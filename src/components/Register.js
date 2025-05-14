@@ -10,30 +10,30 @@ const Register = () => {
             label: "Họ Tên",
             type: "text",
             field: "name"
-        }, 
+        },
         {
             label: "Tên đăng nhập",
-            type: "text", 
+            type: "text",
             field: "username"
-        }, 
+        },
         {
             label: "Mật khẩu",
-            type: "password", 
+            type: "password",
             field: "password"
-        }, 
+        },
         {
             label: "Xác nhận mật khẩu",
-            type: "password", 
+            type: "password",
             field: "confirm"
-        }, 
+        },
         {
             label: "Điện thoại",
-            type: "tel", 
+            type: "tel",
             field: "phone"
-        }, 
+        },
         {
             label: "Email",
-            type: "email", 
+            type: "email",
             field: "email"
         }
     ];
@@ -44,7 +44,7 @@ const Register = () => {
     const nav = useNavigate();
 
     const setState = (value, field) => {
-        setUser({...user, [field]: value});
+        setUser({ ...user, [field]: value });
     };
 
     const register = async (e) => {
@@ -63,7 +63,7 @@ const Register = () => {
                 }
                 form.append('role', user.role);
                 form.append('avatar', avatar.current.files[0]);
-                
+
                 let res = await Api.post(endpoints['register'], form, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -91,12 +91,12 @@ const Register = () => {
                     {info.map((f, index) => (
                         <Col md={6} key={f.field} className="mb-3">
                             <FloatingLabel controlId={`floating${f.field}`} label={f.label}>
-                                <Form.Control 
-                                    type={f.type} 
-                                    placeholder={f.label} 
-                                    required 
-                                    value={user[f.field] || ''} 
-                                    onChange={e => setState(e.target.value, f.field)} 
+                                <Form.Control
+                                    type={f.type}
+                                    placeholder={f.label}
+                                    required
+                                    value={user[f.field] || ''}
+                                    onChange={e => setState(e.target.value, f.field)}
                                 />
                             </FloatingLabel>
                         </Col>
@@ -111,6 +111,7 @@ const Register = () => {
                                 <Form.Check
                                     inline
                                     type="radio"
+                                    id="role-employee" 
                                     label="Nhân viên"
                                     name="role"
                                     value="ROLE_EMPLOYEE"
@@ -121,6 +122,7 @@ const Register = () => {
                                 <Form.Check
                                     inline
                                     type="radio"
+                                    id="role-employer" 
                                     label="Nhà tuyển dụng"
                                     name="role"
                                     value="ROLE_EMPLOYER"
@@ -131,12 +133,13 @@ const Register = () => {
                             </div>
                         </Form.Group>
                     </Col>
+
                     <Col md={6}>
                         <FloatingLabel controlId="floatingAvatar" label="Ảnh đại diện">
-                            <Form.Control 
-                                type="file" 
-                                placeholder="Ảnh đại diện" 
-                                ref={avatar} 
+                            <Form.Control
+                                type="file"
+                                placeholder="Ảnh đại diện"
+                                ref={avatar}
                             />
                         </FloatingLabel>
                     </Col>
@@ -146,9 +149,9 @@ const Register = () => {
                     {loading ? (
                         <MySpinner />
                     ) : (
-                        <Button 
-                            type="submit" 
-                            variant="success" 
+                        <Button
+                            type="submit"
+                            variant="success"
                             size="lg"
                             className="px-5"
                         >
