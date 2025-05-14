@@ -115,4 +115,9 @@ public class UserServiceImpl implements UserService {
 
         return this.userRepo.addUpdateUser(u);
     }
+
+    @Override
+    public void deleteUser(int id) {
+        this.userRepo.deleteUser(id);
+    }
 }

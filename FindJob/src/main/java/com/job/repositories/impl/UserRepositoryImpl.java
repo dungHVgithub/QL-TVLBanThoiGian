@@ -4,6 +4,7 @@
  */
 package com.job.repositories.impl;
 
+import com.job.pojo.JobPosting;
 import com.job.pojo.User;
 import com.job.repositories.UserRepository;
 import jakarta.persistence.Query;
@@ -46,15 +47,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User addUpdateUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
-        if(u.getId() == null)
-        {
+        if (u.getId() == null) {
             s.persist(u);
-        }
-        else
-        {
+        } else {
             s.merge(u);
         }
-     
+
         return u;
     }
 
@@ -74,7 +72,7 @@ public class UserRepositoryImpl implements UserRepository {
         q.select(root);
         if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
-            
+
             //Loc theo ten
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
@@ -82,18 +80,16 @@ public class UserRepositoryImpl implements UserRepository {
             }
             //Loc theo so dien thoai
             String sdt = params.get("sdt");
-            if(sdt != null && !sdt.isEmpty())
-            {
-            predicates.add(b.like(root.get("sdt"),String.format("%%%s%%", sdt)));
+            if (sdt != null && !sdt.isEmpty()) {
+                predicates.add(b.like(root.get("sdt"), String.format("%%%s%%", sdt)));
             }
-            
+
             //Loc theo role
             String role = params.get("role");
-            if(role !=  null && !role.isEmpty())
-            {
-            predicates.add(b.like(root.get("role"),String.format("%%%s%%", role)));
+            if (role != null && !role.isEmpty()) {
+                predicates.add(b.like(root.get("role"), String.format("%%%s%%", role)));
             }
-            
+
             q.where(predicates.toArray(Predicate[]::new));
             String orderBy = params.get("orderBy");
             if (orderBy != null && !orderBy.isEmpty()) {
@@ -112,8 +108,18 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getUserById(int id) {
-         Session s = this.factory.getObject().getCurrentSession();
+        Session s = this.factory.getObject().getCurrentSession();
         return s.get(User.class, id);
     }
 
+    @Override
+    public void deleteUser(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        User u = this.getUserById(id);
+        s.remove(u);
+    }
+
+
 }
+    
+    
