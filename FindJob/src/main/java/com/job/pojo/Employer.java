@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,10 +17,6 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
-/**
- *
- * @author DUNG
- */
 @Entity
 @Table(name = "employer")
 @NamedQueries({
@@ -38,14 +31,17 @@ public class Employer implements Serializable {
     @Column(name = "id")
     private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
+    @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
     @JoinColumn(name = "company", referencedColumnName = "id")
     @ManyToOne
     private CompanyInformation company;
     @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
+    @JsonIgnore
     private User user;
     @OneToMany(mappedBy = "employerId")
+    @JsonIgnore
     private Set<JobPosting> jobPostingSet;
 
     public Employer() {
@@ -104,7 +100,6 @@ public class Employer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Employer)) {
             return false;
         }
@@ -119,5 +114,4 @@ public class Employer implements Serializable {
     public String toString() {
         return "com.job.pojo.Employer[ id=" + id + " ]";
     }
-    
 }

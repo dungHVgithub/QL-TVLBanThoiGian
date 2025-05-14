@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,9 +56,11 @@ public class UserDocuments implements Serializable {
     private String status;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Admin approvedByAdminId;
     @JoinColumn(name = "User_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private User userid;
 
     public UserDocuments() {
@@ -147,5 +150,5 @@ public class UserDocuments implements Serializable {
     public String toString() {
         return "com.job.pojo.UserDocuments[ id=" + id + " ]";
     }
-    
+
 }

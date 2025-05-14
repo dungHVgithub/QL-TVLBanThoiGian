@@ -13,7 +13,6 @@ import java.util.Map;
  * @author DUNG
  */
 public interface UserRepository {
-
     User getUserByUserName(String username);
     User addUpdateUser(User u);
     List <User> getUser(Map <String , String> params);

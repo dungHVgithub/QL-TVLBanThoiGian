@@ -1,0 +1,81 @@
+/* Styling for the navbar */
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 0;
+  transition: all 0.3s ease;
+}
+
+/* Navbar brand styling */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #007bff !important;
+  transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+  color: #0056b3 !important;
+}
+
+/* Navbar links styling */
+.nav-link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333 !important;
+  margin: 0 1rem;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #007bff !important;
+  background-color: rgba(0, 123, 255, 0.1); /* Background mờ khi hover */
+}
+
+/* Dropdown menu styling */
+.nav-dropdown .dropdown-menu {
+  background-color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  font-size: 0.95rem;
+  color: #333 !important;
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(0, 123, 255, 0.1); /* Background mờ khi hover */
+  color: #007bff !important;
+}
+
+/* Navbar toggle button */
+.navbar-toggler {
+  border: none;
+  padding: 0.5rem;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    padding: 1rem 0;
+  }
+
+  .nav-link {
+    margin: 0.5rem 0;
+  }
+}
+
+/* Container padding */
+.container {
+  max-width: 1200px;
+}
