@@ -17,10 +17,12 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -43,7 +45,6 @@ public class CompanyImages implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "image_path")
     private String imagePath;
@@ -56,7 +57,8 @@ public class CompanyImages implements Serializable {
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private CompanyInformation companyId;
-
+    @Transient
+    private MultipartFile file;
     public CompanyImages() {
     }
 
@@ -132,6 +134,20 @@ public class CompanyImages implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.CompanyImages[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
     
 }

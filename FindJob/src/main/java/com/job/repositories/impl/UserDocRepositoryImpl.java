@@ -16,10 +16,8 @@ import com.job.repositories.UserDocRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Session;
@@ -27,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -123,10 +120,8 @@ public class UserDocRepositoryImpl implements UserDocRepository {
     @Override
     public String extractTextFromImage(byte[] fileBytes) throws Exception {
         ByteString imgBytes = ByteString.copyFrom(fileBytes);
-
         Image image = Image.newBuilder().setContent(imgBytes).build();
         Feature feature = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
-
         AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
                 .addFeatures(feature)
                 .setImage(image)

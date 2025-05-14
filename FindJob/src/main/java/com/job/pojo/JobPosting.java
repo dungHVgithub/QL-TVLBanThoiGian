@@ -85,7 +85,6 @@ public class JobPosting implements Serializable {
     private Category categoryId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
-    @JsonIgnore
     private Employer employerId;
 
     public JobPosting() {
