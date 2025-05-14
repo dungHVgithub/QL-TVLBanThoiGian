@@ -6,6 +6,9 @@ const BASE_URL = 'http://localhost:8080/FindJob/api/';
 export const endpoints = {
     'categories' : '/categories',
     'job_postings' : 'job_postings',
+    'company_info' : 'company_info',
+    'company_images' : 'company_images',
+    'employers': '/employers',
     'register': '/users',
     'login': '/login',
     'profile': '/secure/profile'

@@ -66,10 +66,7 @@ public class ApiUserController {
 
         return new ResponseEntity<>(this.userDetailsService.getUserByUserName(principal.getName()), HttpStatus.OK);
 
-        User user = userDetailsService.getUserByUserName(principal.getName());
-
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+       
 
     }
 
