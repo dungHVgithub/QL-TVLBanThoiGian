@@ -52,6 +52,7 @@ public class CompanyInformation implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
     @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
+    
 
     public CompanyInformation() {
     }

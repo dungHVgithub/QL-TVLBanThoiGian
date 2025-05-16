@@ -58,7 +58,6 @@ public class CompanyImages implements Serializable {
     private Date uploadTime;
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    @JsonIgnore
     private CompanyInformation companyId;
     @Transient
     private MultipartFile file;
