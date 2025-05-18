@@ -14,8 +14,6 @@ import { MyDispatchContext, MyUserContext } from "../../configs/MyContexts";
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
-  const [kw, setKw] = useState();
-  const nav = useNavigate();
   const user = useContext(MyUserContext);
   const dispatch = useContext(MyDispatchContext);
 
@@ -32,10 +30,7 @@ const Header = () => {
     loadCates();
   }, []);
 
-  const search = (e) => {
-    e.preventDefault();
-    nav(`/?kw=${kw}`);
-  }
+ 
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary" aria-label="Main navigation">
@@ -64,15 +59,7 @@ const Header = () => {
                         <Button className="btn btnd-danger" onClick={() => dispatch({"type": "logout"})}>Đăng xuất</Button>
                     </>}
           </Nav>
-          <Form onSubmit={search} className="d-flex">
-            <Form.Control value={kw} onChange={e => setKw(e.target.value)}
-              type="search"
-              placeholder="Tìm kiếm..."
-              className="me-2"
-              aria-label="Search"
-            />
-            <Button type="submit" variant="outline-success">Tìm</Button>
-          </Form>
+          
         </Navbar.Collapse>
       </Container>
     </Navbar>

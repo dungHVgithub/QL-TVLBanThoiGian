@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png";
 import "../static/home.css";
@@ -11,6 +11,12 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [q] = useSearchParams();
+  const [kw, setKw] = useState();
+  const nav = useNavigate();
+  const locationHome = useLocation();
+  const [jobLocation, setJobLocation] = useState();
+  const [salary, setSalary] = useState();
+  const [companyName, setCompanyName] = useState();
 
   // Load danh sách công việc
   const loadJob = async () => {
@@ -22,14 +28,46 @@ const Home = () => {
         if (cateId) url += `&categoryId=${cateId}`;
         let kw = q.get("kw");
         if (kw) url += `&kw=${kw}`;
+
         const res = await Api.get(url);
-        if (res.data.length === 0) {
+
+        // 👇 Lọc thêm tại frontend theo địa điểm nếu có
+        let location = q.get("location");
+        let filteredJobs = res.data;
+        if (location) {
+          const lowerLocation = location.toLowerCase();
+          filteredJobs = res.data.filter(job => {
+            const companyId = job.employerId?.company;
+            const info = companyInfos[companyId];
+            return info?.address?.toLowerCase().includes(lowerLocation);
+          });
+        }
+
+        // Lọc theo lương
+        let minSalary = q.get("salary");
+        if (minSalary) {
+          filteredJobs = filteredJobs.filter(job =>
+            job.salary && parseFloat(job.salary) >= parseFloat(minSalary)
+          );
+        }
+
+        let companyName = q.get("companyName");
+        if (companyName) {
+          const lowerCompany = companyName.toLowerCase();
+          filteredJobs = filteredJobs.filter(job => {
+            const companyId = job.employerId?.company;
+            const info = companyInfos[companyId];
+            return info?.name?.toLowerCase().includes(lowerCompany);
+          });
+        }
+
+        if (filteredJobs.length === 0) {
           setPage(0);
         } else {
           if (page === 1) {
-            setJobPostings(res.data);
+            setJobPostings(filteredJobs);
           } else {
-            setJobPostings(prev => [...prev, ...res.data]);
+            setJobPostings(prev => [...prev, ...filteredJobs]);
           }
         }
       } catch (error) {
@@ -40,7 +78,7 @@ const Home = () => {
     }
   };
 
-  // Load logo công ty (ảnh có caption bắt đầu bằng "Logo")
+  // Load logo công ty
   const loadCompanyImage = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
@@ -68,7 +106,7 @@ const Home = () => {
     }
   };
 
-  // Load thông tin công ty từ API company_info
+  // Load thông tin công ty
   const loadCompanyInfos = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
@@ -99,7 +137,6 @@ const Home = () => {
     }
   };
 
-  // Lấy thông tin công ty từ state
   const getCompanyInfo = (employer) => {
     const companyId = employer?.company;
     if (!companyId) {
@@ -113,31 +150,28 @@ const Home = () => {
     };
   };
 
-  // Hàm định dạng thời gian
   const formatTime = (time) => {
     if (!time) return "Chưa xác định";
     return time.split(":").slice(0, 2).join(":");
   };
 
-  // Hàm định dạng ngày tháng từ timestamp
   const formatDate = (timestamp) => {
     if (!timestamp) return "Chưa xác định";
     const date = new Date(timestamp);
     return isNaN(date.getTime()) ? "Chưa xác định" : date.toLocaleDateString();
   };
 
-  // Khi component mount hoặc page/query thay đổi
   useEffect(() => {
     loadJob();
   }, [page, q]);
 
-  // Khi jobPostings thay đổi, gọi load dữ liệu phụ trợ
+  
+
   useEffect(() => {
     loadCompanyInfos(jobPostings);
     loadCompanyImage(jobPostings);
   }, [jobPostings]);
 
-  // Reset khi query thay đổi
   useEffect(() => {
     setPage(1);
     setJobPostings([]);
@@ -151,10 +185,71 @@ const Home = () => {
     }
   };
 
+  const search = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (kw) params.append("kw", kw);
+    if (jobLocation) params.append("location", jobLocation);
+    if (salary) params.append("salary", salary);
+    if (companyName) params.append("companyName", companyName);
+    nav("/?" + params.toString());
+  };
+
   const approvedJobs = jobPostings.filter((job) => job.state === "approved") || [];
+
+  const clearFilters = () => {
+  setKw("");
+  setCompanyName("");
+  setJobLocation("");
+  setSalary("");
+  nav("/", { replace: true }); 
+};
+
 
   return (
     <div className="home-container">
+      <div className="filter-section">
+        <form onSubmit={search} className="filter-form">
+          <div className="filter-group">
+            <label>Tìm công việc</label>
+            <input
+              type="search"
+              placeholder="Nhập tên công việc"
+              value={kw}
+              onChange={e => setKw(e.target.value)}
+            />
+          </div>
+          <div className="filter-group">
+            <label>Địa điểm</label>
+            <input
+              type="search"
+              placeholder="Nhập địa điểm"
+              value={jobLocation}
+              onChange={(e) => setJobLocation(e.target.value)}
+            />
+          </div>
+          <div className="filter-group">
+            <label>Lương tối thiểu ($)</label>
+            <input
+              type="number"
+              placeholder="VD: 1000"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+            />
+          </div>
+          <div className="filter-group">
+            <label>Tên công ty</label>
+            <input
+              type="search"
+              placeholder="VD: FPT"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="filter-btn">Lọc</button>
+          <button type="button" className="filter-btn reset-btn" onClick={clearFilters}>Xoá bộ lọc</button>
+        </form>
+      </div>
       {approvedJobs.length > 0 ? (
         approvedJobs.map((job) => {
           const companyInfo = getCompanyInfo(job.employerId);
@@ -171,8 +266,7 @@ const Home = () => {
               <div className="job-content">
                 <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
                 <p className="job-details">
-                  💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} - 
-                  📅 {job.submitEnd ? `Hạn nộp: ${formatDate(job.submitEnd)}` : "Hạn nộp: Chưa xác định"}
+                  💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} - 📅 {job.submitEnd ? `Hạn nộp: ${formatDate(job.submitEnd)}` : "Hạn nộp: Chưa xác định"}
                 </p>
                 <p className="job-time">
                   🕒 Bắt đầu: {formatTime(job.timeStart)} - Kết thúc: {formatTime(job.timeEnd)}
