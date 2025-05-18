@@ -23,4 +23,5 @@ public interface UserService extends UserDetailsService {
     User getUserById(int id);
     void deleteUser(int id);
     boolean authenticate(String username, String password);
+    User getUserByEmail(String email);
 }

@@ -97,13 +97,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUpdateUser(User u) {
-        // Mã hóa mật khẩu nếu nó không rỗng
+        // Mã hóa mật khẩu nếu có
         if (u.getPassword() != null && !u.getPassword().isEmpty()) {
             u.setPassword(this.passwordEncoder.encode(u.getPassword()));
         }
 
-        // Xử lý upload avatar nếu có
-        if (!u.getFile().isEmpty()) {
+        // ✅ Sửa đoạn xử lý avatar:
+        if (u.getFile() != null && !u.getFile().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(u.getFile().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
@@ -119,5 +119,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int id) {
         this.userRepo.deleteUser(id);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return this.userRepo.getUserByEmail(email);
     }
 }

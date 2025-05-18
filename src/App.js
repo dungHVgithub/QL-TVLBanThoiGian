@@ -30,6 +30,7 @@ const App = () => {
             payload: {
               token: token,
               username: res.data.username,
+              name: res.data.name,
               role: res.data.role
             }
           });

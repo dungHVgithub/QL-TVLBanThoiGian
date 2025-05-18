@@ -3,13 +3,10 @@ import { Alert, Button, FloatingLabel, Form, Col, Row } from "react-bootstrap";
 import Api, { endpoints } from "../configs/Api";
 import { useNavigate } from "react-router-dom";
 import MySpinner from "./layouts/MySpinner";
-
-// Firebase imports
 import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfig";
 import { signInWithPopup } from "firebase/auth";
-
-// FontAwesome (hoặc bạn có thể dùng ảnh logo nếu muốn)
 import { FaFacebook, FaGoogle } from "react-icons/fa";
+import cookie from "react-cookies";
 
 const Register = () => {
     const info = [
@@ -27,49 +24,71 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const nav = useNavigate();
 
-    const setState = (value, field) => {
-        setUser({ ...user, [field]: value });
-    };
+    const setState = (value, field) => setUser({ ...user, [field]: value });
 
     const register = async (e) => {
         e.preventDefault();
 
-        if (user.password !== user.confirm) {
-            setMsg("Mật khẩu không khớp!");
-        } else {
-            try {
-                setLoading(true);
-                let form = new FormData();
-                for (let f of info) {
-                    if (f.field !== 'confirm') {
-                        form.append(f.field, user[f.field]);
-                    }
-                }
-                form.append('role', user.role);
-                form.append('avatar', avatar.current.files[0]);
+        if ((user.password || "").trim() !== (user.confirm || "").trim()) {
+            setMsg("❌ Mật khẩu không khớp!");
+            return;
+        }
 
-                let res = await Api.post(endpoints['register'], form, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+        try {
+            setLoading(true);
+            let form = new FormData();
 
-                if (res.status === 201) {
-                    nav("/login");
-                }
-            } catch {
-                setMsg("Đăng ký thất bại. Vui lòng thử lại!");
-            } finally {
-                setLoading(false);
+            for (let f of info) {
+                if (f.field !== "confirm") form.append(f.field, user[f.field]);
             }
+            form.append("role", user.role);
+            form.append("avatar", avatar.current.files[0]);
+
+            const res = await Api.post(endpoints.register, form, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            if (res.status === 201) {
+                alert("✅ Đăng ký thành công! Vui lòng đăng nhập.");
+                nav("/login");
+            }
+        } catch (err) {
+            console.error("Đăng ký thất bại:", err);
+            setMsg("❌ Đăng ký thất bại. Vui lòng thử lại sau!");
+        } finally {
+            setLoading(false);
         }
     };
 
     const loginWithProvider = async (provider) => {
+        if (loading) return;
         try {
             setLoading(true);
-            await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider);
+            const firebaseUser = result.user;
+
+            let email = firebaseUser.email;
+            if (!email && provider === facebookProvider) {
+                email = prompt("Facebook không cung cấp email. Vui lòng nhập email để tiếp tục:");
+                if (!email.trim()) throw new Error("Email là bắt buộc!");
+            }
+
+            const payload = {
+                name: firebaseUser.displayName,
+                email,
+                avatar: firebaseUser.photoURL,
+                provider: provider === googleProvider ? "google" : "facebook"
+            };
+
+            const res = await Api.post(endpoints.oauth, payload);
+            const token = res.data.token;
+            cookie.save("token", token);
+
+            alert("✅ Đăng ký bằng tài khoản mạng xã hội thành công!");
             nav("/");
         } catch (error) {
-            setMsg("Đăng nhập bằng mạng xã hội thất bại!");
+            console.error("OAuth đăng ký lỗi:", error);
+            setMsg("❌ Đăng ký bằng mạng xã hội thất bại!");
         } finally {
             setLoading(false);
         }
@@ -82,18 +101,11 @@ const Register = () => {
             {msg && <Alert variant="danger">{msg}</Alert>}
 
             <div className="text-center mb-4">
-                <Button
-                    variant="primary"
-                    className="me-2"
-                    onClick={() => loginWithProvider(facebookProvider)}
-                >
-                    <FaFacebook className="me-2" /> Đăng ký với Facebook
+                <Button variant="primary" className="me-2" onClick={() => loginWithProvider(facebookProvider)} disabled={loading}>
+                    <FaFacebook className="me-2" /> Đăng ký bằng Facebook
                 </Button>
-                <Button
-                    variant="danger"
-                    onClick={() => loginWithProvider(googleProvider)}
-                >
-                    <FaGoogle className="me-2" /> Đăng ký với Google
+                <Button variant="danger" onClick={() => loginWithProvider(googleProvider)} disabled={loading}>
+                    <FaGoogle className="me-2" /> Đăng ký bằng Google
                 </Button>
             </div>
 
@@ -106,8 +118,8 @@ const Register = () => {
                                     type={f.type}
                                     placeholder={f.label}
                                     required
-                                    value={user[f.field] || ''}
-                                    onChange={e => setState(e.target.value, f.field)}
+                                    value={user[f.field] || ""}
+                                    onChange={(e) => setState(e.target.value, f.field)}
                                 />
                             </FloatingLabel>
                         </Col>
@@ -127,7 +139,7 @@ const Register = () => {
                                     name="role"
                                     value="ROLE_EMPLOYEE"
                                     checked={user.role === "ROLE_EMPLOYEE"}
-                                    onChange={e => setState(e.target.value, "role")}
+                                    onChange={(e) => setState(e.target.value, "role")}
                                     required
                                 />
                                 <Form.Check
@@ -138,7 +150,7 @@ const Register = () => {
                                     name="role"
                                     value="ROLE_EMPLOYER"
                                     checked={user.role === "ROLE_EMPLOYER"}
-                                    onChange={e => setState(e.target.value, "role")}
+                                    onChange={(e) => setState(e.target.value, "role")}
                                     required
                                 />
                             </div>
@@ -163,7 +175,7 @@ const Register = () => {
                 </div>
             </Form>
         </div>
-    );
+    );  
 };
 
 export default Register;

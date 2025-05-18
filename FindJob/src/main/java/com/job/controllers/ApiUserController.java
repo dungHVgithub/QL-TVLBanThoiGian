@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api")
 @CrossOrigin
 public class ApiUserController {
-
 
     @Autowired
     private UserService userDetailsService;
@@ -62,12 +59,19 @@ public class ApiUserController {
     @RequestMapping("/secure/profile")
     @ResponseBody
     @CrossOrigin
-    public ResponseEntity<User> getProfile(Principal principal) {
+    public ResponseEntity<?> getProfile(Principal user) {
+        String principalName = user.getName();
 
-        return new ResponseEntity<>(this.userDetailsService.getUserByUserName(principal.getName()), HttpStatus.OK);
+        User u = userDetailsService.getUserByUserName(principalName);
+        if (u == null) {
+            u = userDetailsService.getUserByEmail(principalName);
+        }
 
-       
+        if (u == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng!");
+        }
 
+        return ResponseEntity.ok(u);
     }
 
     @DeleteMapping("/users/{userId}")
@@ -75,14 +79,48 @@ public class ApiUserController {
     public void destroy(@PathVariable(value = "userId") int id) {
         this.userDetailsService.deleteUser(id);
     }
+
     @GetMapping("/users")
     public ResponseEntity<List<User>> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.userDetailsService.getUser(params), HttpStatus.OK);
-    } 
-    
+    }
+
     @GetMapping("/users/{userId}")
     public ResponseEntity<User> retrieve(@PathVariable(value = "userId") int id) {
         return new ResponseEntity<>(this.userDetailsService.getUserById(id), HttpStatus.OK);
     }
-    
+
+    @PostMapping("/oauth-login")
+    public ResponseEntity<?> oauthLogin(@RequestBody Map<String, String> payload) {
+        try {
+            String email = payload.get("email");
+            String name = payload.get("name");
+            String avatar = payload.get("avatar");
+
+            if (email == null || email.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Email là bắt buộc!");
+            }
+
+            User user = userDetailsService.getUserByEmail(email);
+
+            if (user == null) {
+                // Tạo user mới
+                user = new User();
+                user.setEmail(email);
+                user.setName(name);
+                user.setAvatar(avatar);
+                user.setRole("ROLE_EMPLOYEE");
+                user.setVerificationStatus(true);
+
+                user = userDetailsService.addUpdateUser(user);
+            }
+
+            String token = JwtUtils.generateToken(email);
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+        } catch (Exception ex) {
+            ex.printStackTrace(); // Log chi tiết để dễ debug
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi đăng nhập OAuth");
+        }
+    }
+
 }

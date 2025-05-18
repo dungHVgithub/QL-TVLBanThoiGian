@@ -1,9 +1,13 @@
 import { useContext, useState } from "react";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
-import Api, { endpoints } from "../configs/Api";
+import Api, { authApis, endpoints } from "../configs/Api";
 import { MyDispatchContext } from "../configs/MyContexts";
 import { useNavigate } from "react-router-dom";
 import MySpinner from "./layouts/MySpinner";
+import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfig";
+import { signInWithPopup } from "firebase/auth";
+import { FaFacebook, FaGoogle } from "react-icons/fa";
+import cookie from "react-cookies";
 
 const Login = () => {
     const info = [
@@ -14,54 +18,35 @@ const Login = () => {
     const dispatch = useContext(MyDispatchContext);
     const nav = useNavigate();
 
-
-    const [user, setUser] = useState({
-        username: "",
-        password: ""
-    });
-
+    const [user, setUser] = useState({ username: "", password: "" });
     const [loading, setLoading] = useState(false);
+    const [msg, setMsg] = useState("");
 
     const login = async (e) => {
         e.preventDefault();
-
         try {
             setLoading(true);
-
-
-            let res = await Api.post(endpoints['login'], user);
-            console.info("Token nhận được:", res.data);
-
-
+            const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
-            localStorage.setItem('token', token);
-            const profileRes = await Api.get(endpoints['profile'], {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            cookie.save("token", token);
+
+            const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;
-            const role = userInfo.role;
-
-
 
             dispatch({
                 type: "login",
                 payload: {
                     token: token,
                     username: userInfo.username,
-                    role: role
-                }
+                    role: userInfo.role
+                },
             });
 
-            if (role === "ROLE_EMPLOYEE" || role === "ROLE_ADMIN") {
+            if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
                 nav("/");
-            } else if (role === "ROLE_EMPLOYER") {
+            else if (userInfo.role === "ROLE_EMPLOYER")
                 nav("/employer");
-            } else {
-                console.warn("Role không xác định:", role);
-                nav("/");
-            }
+            else nav("/");
         } catch (err) {
             console.error("Lỗi đăng nhập:", err);
         } finally {
@@ -73,11 +58,75 @@ const Login = () => {
         setUser({ ...user, [field]: value });
     };
 
+    const loginWithProvider = async (provider) => {
+  try {
+    alert("Vui lòng không đóng cửa sổ popup cho đến khi hoàn tất đăng nhập!");
+    setLoading(true);
+
+    const result = await signInWithPopup(auth, provider);
+    const firebaseUser = result.user;
+
+    let email = firebaseUser.email;
+    if (!email && provider === facebookProvider) {
+      email = prompt("Facebook không cung cấp email. Nhập email để tiếp tục:");
+      if (!email) throw new Error("Email bắt buộc!");
+    }
+
+    const payload = {
+      name: firebaseUser.displayName,
+      email,
+      avatar: firebaseUser.photoURL,
+    };
+
+    const res = await Api.post(endpoints.oauth, payload);
+    const token = res.data.token;
+
+    cookie.save("token", token);
+    localStorage.setItem("token", token);
+
+    const profileRes = await authApis().get(endpoints.profile);
+    const userInfo = profileRes.data;
+
+    dispatch({
+      type: "login",
+      payload: {
+        token: token,
+        ...userInfo,
+      },
+    });
+
+    nav("/");
+  } catch (err) {
+    console.error("OAuth login error:", err);
+    if (err.code === "auth/account-exists-with-different-credential") {
+      setMsg("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
+    } else if (err.code === "auth/popup-closed-by-user") {
+      setMsg("Bạn đã đóng cửa sổ đăng nhập quá sớm.");
+    } else {
+      setMsg("Đăng nhập mạng xã hội thất bại!");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
     return (
         <>
             <h1 className="text-center text-success mt-1">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
+
+            <div className="text-center mb-3">
+                <Button variant="primary" className="me-2" onClick={() => loginWithProvider(facebookProvider)}>
+                    <FaFacebook className="me-2" /> Facebook
+                </Button>
+                <Button variant="danger" onClick={() => loginWithProvider(googleProvider)}>
+                    <FaGoogle className="me-2" /> Google
+                </Button>
+            </div>
+
             <Form onSubmit={login}>
-                {info.map(f => (
+                {info.map((f) => (
                     <FloatingLabel
                         key={f.field}
                         controlId={`floating-${f.field}`}
@@ -88,7 +137,7 @@ const Login = () => {
                             type={f.type}
                             placeholder={f.label}
                             value={user[f.field] || ""}
-                            onChange={e => setState(e.target.value, f.field)}
+                            onChange={(e) => setState(e.target.value, f.field)}
                             required
                         />
                     </FloatingLabel>

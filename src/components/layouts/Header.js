@@ -60,7 +60,7 @@ const Header = () => {
                         <Link to="/register" className="nav-link text-success">Đăng ký</Link>
                         <Link to="/login" className="nav-link text-danger">Đăng nhập</Link>
                     </>:<>
-                        <Link to="/" className="nav-link text-success">Chào {user.username}!</Link>
+                        <Link to="/" className="nav-link text-success">Chào {user.name}!</Link>
                         <Button className="btn btnd-danger" onClick={() => dispatch({"type": "logout"})}>Đăng xuất</Button>
                     </>}
           </Nav>

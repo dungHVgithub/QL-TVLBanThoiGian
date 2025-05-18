@@ -1,4 +1,4 @@
-    /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -7,6 +7,8 @@ package com.job.repositories.impl;
 import com.job.pojo.JobPosting;
 import com.job.pojo.User;
 import com.job.repositories.UserRepository;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -39,9 +41,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getUserByUserName(String username) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createNamedQuery("User.findByUsername", User.class);
-        q.setParameter("username", username);
-        return (User) q.getSingleResult();
+        try {
+            Query q = s.createNamedQuery("User.findByUsername", User.class);
+            q.setParameter("username", username);
+            return (User) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null; 
+        }
     }
 
     @Override
@@ -119,7 +125,18 @@ public class UserRepositoryImpl implements UserRepository {
         s.remove(u);
     }
 
-
+    @Override
+    public User getUserByEmail(String email) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createNamedQuery("User.findByEmail", User.class);
+        q.setParameter("email", email);
+        try {
+            return (User) q.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            return null;
+        } catch (Exception ex) {
+            ex.printStackTrace(); // In ra lỗi backend
+            throw new RuntimeException("Lỗi khi truy vấn user theo email");
+        }
+    }
 }
-    
-    

@@ -11,7 +11,8 @@ export const endpoints = {
     'employers': '/employers',
     'register': '/users',
     'login': '/login',
-    'profile': '/secure/profile'
+    'profile': '/secure/profile',
+    'oauth':'/oauth-login',
 }
 
 export const authApis = () => {
