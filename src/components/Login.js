@@ -20,7 +20,7 @@ const Login = () => {
 
     const [user, setUser] = useState({ username: "", password: "" });
     const [loading, setLoading] = useState(false);
-    const [msg, setMsg] = useState("");
+    const [, setMsg] = useState("");
 
     const login = async (e) => {
         e.preventDefault();
@@ -38,6 +38,7 @@ const Login = () => {
                 payload: {
                     token: token,
                     username: userInfo.username,
+                    name: userInfo.name,
                     role: userInfo.role
                 },
             });

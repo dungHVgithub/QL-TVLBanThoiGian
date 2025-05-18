@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png";
 import "../static/home.css";
@@ -13,7 +13,6 @@ const Home = () => {
   const [q] = useSearchParams();
   const [kw, setKw] = useState();
   const nav = useNavigate();
-  const locationHome = useLocation();
   const [jobLocation, setJobLocation] = useState();
   const [salary, setSalary] = useState();
   const [companyName, setCompanyName] = useState();
@@ -165,7 +164,7 @@ const Home = () => {
     loadJob();
   }, [page, q]);
 
-  
+
 
   useEffect(() => {
     loadCompanyInfos(jobPostings);
@@ -198,12 +197,12 @@ const Home = () => {
   const approvedJobs = jobPostings.filter((job) => job.state === "approved") || [];
 
   const clearFilters = () => {
-  setKw("");
-  setCompanyName("");
-  setJobLocation("");
-  setSalary("");
-  nav("/", { replace: true }); 
-};
+    setKw("");
+    setCompanyName("");
+    setJobLocation("");
+    setSalary("");
+    nav("/", { replace: true });
+  };
 
 
   return (
@@ -255,16 +254,20 @@ const Home = () => {
           const companyInfo = getCompanyInfo(job.employerId);
           return (
             <div key={job.id} className="job-card">
-              <img
-                src={companyInfo.imagePath}
-                alt={companyInfo.name}
-                className="job-logo"
-                onError={(e) => {
-                  e.target.src = ou;
-                }}
-              />
+              <Link to={`/company/${companyInfo.companyId}`}>
+                <img
+                  src={companyInfo.imagePath}
+                  alt={companyInfo.name}
+                  className="job-logo"
+                  onError={(e) => {
+                    e.target.src = ou;
+                  }}
+                />
+              </Link>
               <div className="job-content">
-                <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
+                <Link to={`/jobs/${job.id}`} className="job-title-link">
+                  <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
+                </Link>
                 <p className="job-details">
                   💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} - 📅 {job.submitEnd ? `Hạn nộp: ${formatDate(job.submitEnd)}` : "Hạn nộp: Chưa xác định"}
                 </p>

@@ -34,15 +34,16 @@ import java.util.Set;
     @NamedQuery(name = "Employee.findByLevel", query = "SELECT e FROM Employee e WHERE e.level = :level")})
 public class Employee implements Serializable {
 
+    @Size(max = 50)
+    @Column(name = "level")
+    private String level;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 50)
-    @Column(name = "level")
-    private String level;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
@@ -72,13 +73,6 @@ public class Employee implements Serializable {
         this.id = id;
     }
 
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
 
     public Set<HosoUngtuyen> getHosoUngtuyenSet() {
         return hosoUngtuyenSet;
@@ -135,6 +129,14 @@ public class Employee implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.Employee[ id=" + id + " ]";
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 
 }

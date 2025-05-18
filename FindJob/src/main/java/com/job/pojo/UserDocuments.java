@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,8 +31,7 @@ import java.util.Date;
     @NamedQuery(name = "UserDocuments.findById", query = "SELECT u FROM UserDocuments u WHERE u.id = :id"),
     @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
     @NamedQuery(name = "UserDocuments.findByDocumentPath", query = "SELECT u FROM UserDocuments u WHERE u.documentPath = :documentPath"),
-    @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate"),
-    @NamedQuery(name = "UserDocuments.findByUserDocumentscol", query = "SELECT u FROM UserDocuments u WHERE u.userDocumentscol = :userDocumentscol")})
+    @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate")})
 public class UserDocuments implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,12 +49,8 @@ public class UserDocuments implements Serializable {
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
-    @Size(max = 45)
-    @Column(name = "user_documentscol")
-    private String userDocumentscol;
     @JoinColumn(name = "employee_id", referencedColumnName = "user_id")
     @ManyToOne
-    @JsonIgnore
     private Employee employeeId;
 
     public UserDocuments() {
@@ -96,14 +90,6 @@ public class UserDocuments implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public String getUserDocumentscol() {
-        return userDocumentscol;
-    }
-
-    public void setUserDocumentscol(String userDocumentscol) {
-        this.userDocumentscol = userDocumentscol;
     }
 
     public Employee getEmployeeId() {

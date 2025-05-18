@@ -44,12 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "User.findByVerificationStatus", query = "SELECT u FROM User u WHERE u.verificationStatus = :verificationStatus")})
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 50)
     @Column(name = "username")
     private String username;
@@ -68,9 +62,6 @@ public class User implements Serializable {
     @Size(max = 20)
     @Column(name = "sdt")
     private String sdt;
-    @Column(name = "birthday")
-    @Temporal(TemporalType.DATE)
-    private Date birthday;
     @Size(max = 13)
     @Column(name = "role")
     private String role;
@@ -78,6 +69,15 @@ public class User implements Serializable {
     @Size(max = 100)
     @Column(name = "email")
     private String email;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "birthday")
+    @Temporal(TemporalType.DATE)
+    private Date birthday;
     @Column(name = "verification_status")
     private Boolean verificationStatus;
     @OneToOne(mappedBy = "userId")
@@ -104,53 +104,6 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getSdt() {
-        return sdt;
-    }
-
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
-    }
 
     public Date getBirthday() {
         return birthday;
@@ -160,21 +113,6 @@ public class User implements Serializable {
         this.birthday = birthday;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public Boolean getVerificationStatus() {
         return verificationStatus;
@@ -237,6 +175,70 @@ public class User implements Serializable {
      */
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
     
 }
