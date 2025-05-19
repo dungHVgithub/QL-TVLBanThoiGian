@@ -1,45 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Basic;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-/**
- *
- * @author DUNG
- */
 @Entity
 @Table(name = "job_posting")
 @NamedQueries({
-    @NamedQuery(name = "JobPosting.findAll", query = "SELECT j FROM JobPosting j"),
-    @NamedQuery(name = "JobPosting.findById", query = "SELECT j FROM JobPosting j WHERE j.id = :id"),
-    @NamedQuery(name = "JobPosting.findBySalary", query = "SELECT j FROM JobPosting j WHERE j.salary = :salary"),
-    @NamedQuery(name = "JobPosting.findByTimeStart", query = "SELECT j FROM JobPosting j WHERE j.timeStart = :timeStart"),
-    @NamedQuery(name = "JobPosting.findByTimeEnd", query = "SELECT j FROM JobPosting j WHERE j.timeEnd = :timeEnd"),
-    @NamedQuery(name = "JobPosting.findByState", query = "SELECT j FROM JobPosting j WHERE j.state = :state"),
-    @NamedQuery(name = "JobPosting.findBySubmitEnd", query = "SELECT j FROM JobPosting j WHERE j.submitEnd = :submitEnd")})
+        @NamedQuery(name = "JobPosting.findAll", query = "SELECT j FROM JobPosting j"),
+        @NamedQuery(name = "JobPosting.findById", query = "SELECT j FROM JobPosting j WHERE j.id = :id"),
+        @NamedQuery(name = "JobPosting.findBySalary", query = "SELECT j FROM JobPosting j WHERE j.salary = :salary"),
+        @NamedQuery(name = "JobPosting.findByTimeStart", query = "SELECT j FROM JobPosting j WHERE j.timeStart = :timeStart"),
+        @NamedQuery(name = "JobPosting.findByTimeEnd", query = "SELECT j FROM JobPosting j WHERE j.timeEnd = :timeEnd"),
+        @NamedQuery(name = "JobPosting.findByState", query = "SELECT j FROM JobPosting j WHERE j.state = :state"),
+        @NamedQuery(name = "JobPosting.findBySubmitEnd", query = "SELECT j FROM JobPosting j WHERE j.submitEnd = :submitEnd")})
 public class JobPosting implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -48,45 +25,57 @@ public class JobPosting implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @Lob
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+
     @Column(name = "salary")
     private Double salary;
+
     @Column(name = "time_start")
     @Temporal(TemporalType.TIME)
     private Date timeStart;
+
     @Column(name = "time_end")
     @Temporal(TemporalType.TIME)
     private Date timeEnd;
+
     @Size(max = 8)
     @Column(name = "state")
     private String state;
+
     @Column(name = "submit_end")
     @Temporal(TemporalType.DATE)
     private Date submitEnd;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
     @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
+
     @OneToMany(mappedBy = "jobPostingId")
     @JsonIgnore
     private Set<JobDescription> jobDescriptionSet;
+
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
     @ManyToOne
     @JsonIgnore
-
     private Admin approvedByAdminId;
+
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
     @JsonIgnore
-
     private Category categoryId;
+
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
-
     private Employer employerId;
+
+    // Thêm trường createdAt
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
     public JobPosting() {
     }
@@ -191,6 +180,14 @@ public class JobPosting implements Serializable {
         this.employerId = employerId;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -200,7 +197,6 @@ public class JobPosting implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof JobPosting)) {
             return false;
         }
@@ -215,5 +211,4 @@ public class JobPosting implements Serializable {
     public String toString() {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
-
 }

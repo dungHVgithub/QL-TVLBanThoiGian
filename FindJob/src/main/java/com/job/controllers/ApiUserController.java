@@ -122,5 +122,9 @@ public class ApiUserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi đăng nhập OAuth");
         }
     }
-
+    @GetMapping("/users/count/employees")
+    public ResponseEntity<Map<String, Long>> countEmployees() {
+        long count = userDetailsService.countEmployees();
+        return ResponseEntity.ok(Collections.singletonMap("totalEmployees", count));
+    }
 }

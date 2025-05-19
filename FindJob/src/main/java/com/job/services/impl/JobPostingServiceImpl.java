@@ -40,6 +40,16 @@ public class JobPostingServiceImpl implements JobPostingService{
     public void deleteJob(int id) {
         this.jobRepo.deleteJob(id);
     }
-    
-    
+
+    @Override
+    public long countJobs() {
+        return this.jobRepo.count();
+    }
+
+    @Override
+    public long countJobsByState(String state) {
+        return this.jobRepo.countByState(state);
+    }
+
+
 }

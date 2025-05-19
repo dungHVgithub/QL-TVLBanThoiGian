@@ -27,5 +27,8 @@ public interface UserRepository {
     boolean authenticate(String username, String password);
 
     User getUserByEmail(String email);
+    long countByRole(String role); //Thong ke user theo vai tro
+    long countByRoleAndMonth(String role, String month);
+    long countByRoleAndDate(String role, String date); // Thêm phương thức mới
 
 }

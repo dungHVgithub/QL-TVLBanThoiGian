@@ -125,4 +125,9 @@ public class UserServiceImpl implements UserService {
     public User getUserByEmail(String email) {
         return this.userRepo.getUserByEmail(email);
     }
+
+    @Override
+    public long countEmployees() {
+       return this.userRepo.countByRole("ROLE_EMPLOYEE");
+    }
 }

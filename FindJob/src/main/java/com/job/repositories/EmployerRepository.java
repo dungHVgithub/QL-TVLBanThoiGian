@@ -9,4 +9,7 @@ import java.util.List;
 public interface EmployerRepository {
     List<Employer> getEmployers();
     Employer getEmployerById(int id);
+    long count(); //Dem tong so Employer
+    long countByMonth(String month);
+    long countByDate(String date); // Thêm phương thức mới
 }

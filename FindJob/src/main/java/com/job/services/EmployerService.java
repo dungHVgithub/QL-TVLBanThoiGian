@@ -10,4 +10,5 @@ import java.util.List;
 public interface EmployerService {
     List<Employer> getEmployers();
     Employer getEmployerById(int id);
+    long countEmployer();
 }

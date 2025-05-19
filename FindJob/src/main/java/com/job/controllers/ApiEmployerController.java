@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -31,5 +33,10 @@ public class ApiEmployerController {
         return employer != null
                 ? new ResponseEntity<>(employer, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/employers/count")
+    public ResponseEntity<Map<String, Long>> countEmployers() {
+        long count = employerService.countEmployer();
+        return ResponseEntity.ok(Collections.singletonMap("totalEmployers", count));
     }
 }

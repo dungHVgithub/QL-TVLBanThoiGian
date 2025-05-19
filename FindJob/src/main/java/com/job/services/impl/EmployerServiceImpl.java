@@ -25,4 +25,9 @@ public class EmployerServiceImpl implements EmployerService {
     public Employer getEmployerById(int id) {
         return employerRepository.getEmployerById(id);
     }
+
+    @Override
+    public long countEmployer() {
+        return this.employerRepository.count();
+    }
 }

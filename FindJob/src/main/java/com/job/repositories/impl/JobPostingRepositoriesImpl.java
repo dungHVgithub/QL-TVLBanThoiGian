@@ -16,14 +16,6 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-/**
- *
- * @author DUNG
- */
 @Repository
 @Transactional
 public class JobPostingRepositoriesImpl implements JobPostingRepository {
@@ -33,7 +25,7 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
 
     @Override
     public List<JobPosting> getJobPostings(Map<String, String> params) {
- Session s = this.factory.getObject().getCurrentSession();
+        Session s = this.factory.getObject().getCurrentSession();
         CriteriaBuilder b = s.getCriteriaBuilder();
         CriteriaQuery<JobPosting> q = b.createQuery(JobPosting.class);
         Root root = q.from(JobPosting.class);
@@ -48,17 +40,17 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
 
             String fromPrice = params.get("fromSalary");
             if (fromPrice != null && !fromPrice.isEmpty()) {
-                predicates.add(b.greaterThanOrEqualTo(root.get("salary"), fromPrice));
+                predicates.add(b.greaterThanOrEqualTo(root.get("salary"), Double.parseDouble(fromPrice)));
             }
 
             String toPrice = params.get("toSalary");
             if (toPrice != null && !toPrice.isEmpty()) {
-                predicates.add(b.lessThanOrEqualTo(root.get("salary"), toPrice));
+                predicates.add(b.lessThanOrEqualTo(root.get("salary"), Double.parseDouble(toPrice)));
             }
 
             String cateId = params.get("categoryId");
             if (cateId != null && !cateId.isEmpty()) {
-                predicates.add(b.equal(root.get("categoryId").as(Integer.class), cateId));
+                predicates.add(b.equal(root.get("categoryId").as(Integer.class), Integer.parseInt(cateId)));
             }
 
             q.where(predicates.toArray(Predicate[]::new));
@@ -73,33 +65,27 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
         if (params != null && params.containsKey("page")) {
             int page = Integer.parseInt(params.get("page"));
             int start = (page - 1) * PAGE_SIZE;
-
             query.setMaxResults(PAGE_SIZE);
             query.setFirstResult(start);
         }
 
-        return query.getResultList();   
+        return query.getResultList();
     }
 
     @Override
     public JobPosting getJobById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
         return s.get(JobPosting.class, id);
-    
     }
-    
+
     @Override
     public JobPosting addOrUpdate(JobPosting j) {
         Session s = this.factory.getObject().getCurrentSession();
-        if(j.getId() == null)
-        {
+        if (j.getId() == null) {
             s.persist(j);
-        }
-        else
-        {
+        } else {
             s.merge(j);
         }
-     
         return j;
     }
 
@@ -109,6 +95,51 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
         JobPosting j = this.getJobById(id);
         s.remove(j);
     }
-   }
 
+    @Override
+    public long count() {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<JobPosting> root = q.from(JobPosting.class);
+        q.select(b.count(root));
+        return s.createQuery(q).getSingleResult();
+    }
 
+    @Override
+    public long countByState(String state) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<JobPosting> root = q.from(JobPosting.class);
+        q.select(b.count(root));
+        q.where(b.equal(root.get("state"), state));
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public long countByMonth(String month) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<JobPosting> root = q.from(JobPosting.class);
+        q.select(b.count(root));
+        q.where(
+                b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m")), month)
+        );
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public long countByDate(String date) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<JobPosting> root = q.from(JobPosting.class);
+        q.select(b.count(root));
+        q.where(
+                b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m-%d")), date)
+        );
+        return s.createQuery(q).getSingleResult();
+    }
+}

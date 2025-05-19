@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.repositories.impl;
+
 import com.job.pojo.Employer;
 import com.job.repositories.EmployerRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -28,7 +25,6 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         CriteriaQuery<Employer> q = b.createQuery(Employer.class);
         Root<Employer> root = q.from(Employer.class);
         q.select(root);
-        // Fetch company để tránh LazyInitializationException
         root.fetch("company", jakarta.persistence.criteria.JoinType.LEFT);
         return s.createQuery(q).getResultList();
     }
@@ -40,9 +36,43 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         CriteriaQuery<Employer> q = b.createQuery(Employer.class);
         Root<Employer> root = q.from(Employer.class);
         q.select(root).where(b.equal(root.get("id"), id));
-        // Fetch company
         root.fetch("company", jakarta.persistence.criteria.JoinType.LEFT);
-
         return s.createQuery(q).getSingleResultOrNull();
+    }
+
+    @Override
+    public long count() {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<Employer> root = q.from(Employer.class);
+        q.select(b.count(root));
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public long countByMonth(String month) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<Employer> root = q.from(Employer.class);
+        q.select(b.count(root));
+        q.where(
+                b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m")), month)
+        );
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public long countByDate(String date) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<Employer> root = q.from(Employer.class);
+        q.select(b.count(root));
+        q.where(
+                b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m-%d")), date)
+        );
+        return s.createQuery(q).getSingleResult();
     }
 }
