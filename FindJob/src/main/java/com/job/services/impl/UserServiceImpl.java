@@ -97,12 +97,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUpdateUser(User u) {
-        // Mã hóa mật khẩu nếu có
+        
         if (u.getPassword() != null && !u.getPassword().isEmpty()) {
             u.setPassword(this.passwordEncoder.encode(u.getPassword()));
         }
 
-        // ✅ Sửa đoạn xử lý avatar:
+       
         if (u.getFile() != null && !u.getFile().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(u.getFile().getBytes(),

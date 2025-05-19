@@ -11,73 +11,74 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [q] = useSearchParams();
-  const [kw, setKw] = useState();
   const nav = useNavigate();
-  const [jobLocation, setJobLocation] = useState();
-  const [salary, setSalary] = useState();
-  const [companyName, setCompanyName] = useState();
 
-  // Load danh sách công việc
+  // Gộp tất cả filter vào 1 state
+  const [filters, setFilters] = useState({
+    kw: "",
+    location: "",
+    salary: "",
+    companyName: ""
+  });
+
   const loadJob = async () => {
-    if (page > 0) {
-      try {
-        setLoading(true);
-        let url = `${endpoints["job_postings"]}?page=${page}`;
-        let cateId = q.get("categoryId");
-        if (cateId) url += `&categoryId=${cateId}`;
-        let kw = q.get("kw");
-        if (kw) url += `&kw=${kw}`;
+    if (page <= 0) return;
 
-        const res = await Api.get(url);
+    try {
+      setLoading(true);
+      let url = `${endpoints["job_postings"]}?page=${page}`;
+      const cateId = q.get("categoryId");
+      if (cateId) url += `&categoryId=${cateId}`;
+      const kw = q.get("kw");
+      if (kw) url += `&kw=${kw}`;
 
-        // 👇 Lọc thêm tại frontend theo địa điểm nếu có
-        let location = q.get("location");
-        let filteredJobs = res.data;
-        if (location) {
-          const lowerLocation = location.toLowerCase();
-          filteredJobs = res.data.filter(job => {
-            const companyId = job.employerId?.company;
-            const info = companyInfos[companyId];
-            return info?.address?.toLowerCase().includes(lowerLocation);
-          });
-        }
+      const res = await Api.get(url);
 
-        // Lọc theo lương
-        let minSalary = q.get("salary");
-        if (minSalary) {
-          filteredJobs = filteredJobs.filter(job =>
-            job.salary && parseFloat(job.salary) >= parseFloat(minSalary)
-          );
-        }
+      let location = q.get("location");
+      let filteredJobs = res.data;
 
-        let companyName = q.get("companyName");
-        if (companyName) {
-          const lowerCompany = companyName.toLowerCase();
-          filteredJobs = filteredJobs.filter(job => {
-            const companyId = job.employerId?.company;
-            const info = companyInfos[companyId];
-            return info?.name?.toLowerCase().includes(lowerCompany);
-          });
-        }
-
-        if (filteredJobs.length === 0) {
-          setPage(0);
-        } else {
-          if (page === 1) {
-            setJobPostings(filteredJobs);
-          } else {
-            setJobPostings(prev => [...prev, ...filteredJobs]);
-          }
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách công việc:", error);
-      } finally {
-        setLoading(false);
+      if (location) {
+        const lowerLocation = location.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => {
+          const companyId = job.employerId?.company;
+          const info = companyInfos[companyId];
+          return info?.address?.toLowerCase().includes(lowerLocation);
+        });
       }
+
+      const minSalary = q.get("salary");
+      if (minSalary) {
+        filteredJobs = filteredJobs.filter(job =>
+          job.salary && parseFloat(job.salary) >= parseFloat(minSalary)
+        );
+      }
+
+      const companyName = q.get("companyName");
+      if (companyName) {
+        const lowerCompany = companyName.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => {
+          const companyId = job.employerId?.company;
+          const info = companyInfos[companyId];
+          return info?.name?.toLowerCase().includes(lowerCompany);
+        });
+      }
+
+      if (filteredJobs.length === 0) {
+        setPage(0);
+      } else {
+        if (page === 1) {
+          setJobPostings(filteredJobs);
+        } else {
+          setJobPostings(prev => [...prev, ...filteredJobs]);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách công việc:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Load logo công ty
   const loadCompanyImage = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
@@ -92,8 +93,7 @@ const Home = () => {
               .filter(img => img.caption?.toLowerCase().startsWith("logo"))
               .sort((a, b) => b.uploadTime - a.uploadTime)[0];
             images[companyId] = logo?.imagePath || ou;
-          } catch (err) {
-            console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, err);
+          } catch {
             images[companyId] = ou;
           }
         }
@@ -105,7 +105,6 @@ const Home = () => {
     }
   };
 
-  // Load thông tin công ty
   const loadCompanyInfos = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
@@ -116,17 +115,7 @@ const Home = () => {
       for (const id of companyIds) {
         if (!infos[id]) {
           const found = res.data.find(c => c.id === id);
-          if (found) {
-            infos[id] = {
-              name: found.name,
-              address: found.address,
-            };
-          } else {
-            infos[id] = {
-              name: "Chưa xác định",
-              address: "Chưa xác định",
-            };
-          }
+          infos[id] = found || { name: "Chưa xác định", address: "Chưa xác định" };
         }
       }
 
@@ -138,10 +127,6 @@ const Home = () => {
 
   const getCompanyInfo = (employer) => {
     const companyId = employer?.company;
-    if (!companyId) {
-      return { name: "Chưa xác định", address: "Chưa xác định", imagePath: ou };
-    }
-
     return {
       name: companyInfos[companyId]?.name || "Chưa xác định",
       address: companyInfos[companyId]?.address || "Chưa xác định",
@@ -164,8 +149,6 @@ const Home = () => {
     loadJob();
   }, [page, q]);
 
-
-
   useEffect(() => {
     loadCompanyInfos(jobPostings);
     loadCompanyImage(jobPostings);
@@ -180,88 +163,64 @@ const Home = () => {
 
   const loadMore = () => {
     if (!loading && page > 0) {
-      setPage(page + 1);
+      setPage(prev => prev + 1);
     }
   };
 
   const search = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (kw) params.append("kw", kw);
-    if (jobLocation) params.append("location", jobLocation);
-    if (salary) params.append("salary", salary);
-    if (companyName) params.append("companyName", companyName);
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value?.trim()) params.append(key, value);
+    });
+
     nav("/?" + params.toString());
   };
 
-  const approvedJobs = jobPostings.filter((job) => job.state === "approved") || [];
-
   const clearFilters = () => {
-    setKw("");
-    setCompanyName("");
-    setJobLocation("");
-    setSalary("");
+    setFilters({ kw: "", location: "", salary: "", companyName: "" });
     nav("/", { replace: true });
   };
 
+  const approvedJobs = jobPostings.filter((job) => job.state === "approved") || [];
 
   return (
     <div className="home-container">
       <div className="filter-section">
         <form onSubmit={search} className="filter-form">
-          <div className="filter-group">
-            <label>Tìm công việc</label>
-            <input
-              type="search"
-              placeholder="Nhập tên công việc"
-              value={kw}
-              onChange={e => setKw(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
-            <label>Địa điểm</label>
-            <input
-              type="search"
-              placeholder="Nhập địa điểm"
-              value={jobLocation}
-              onChange={(e) => setJobLocation(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
-            <label>Lương tối thiểu ($)</label>
-            <input
-              type="number"
-              placeholder="VD: 1000"
-              value={salary}
-              onChange={(e) => setSalary(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
-            <label>Tên công ty</label>
-            <input
-              type="search"
-              placeholder="VD: FPT"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-            />
-          </div>
+          {[
+            { label: "Tìm công việc", placeholder: "Nhập tên công việc", name: "kw", type: "search" },
+            { label: "Địa điểm", placeholder: "Nhập địa điểm", name: "location", type: "search" },
+            { label: "Lương tối thiểu ($)", placeholder: "VD: 1000", name: "salary", type: "number" },
+            { label: "Tên công ty", placeholder: "VD: FPT", name: "companyName", type: "search" }
+          ].map(({ label, placeholder, name, type }) => (
+            <div className="filter-group" key={name}>
+              <label>{label}</label>
+              <input
+                type={type}
+                placeholder={placeholder}
+                value={filters[name]}
+                onChange={e => setFilters({ ...filters, [name]: e.target.value })}
+              />
+            </div>
+          ))}
           <button type="submit" className="filter-btn">Lọc</button>
           <button type="button" className="filter-btn reset-btn" onClick={clearFilters}>Xoá bộ lọc</button>
         </form>
       </div>
+
       {approvedJobs.length > 0 ? (
         approvedJobs.map((job) => {
           const companyInfo = getCompanyInfo(job.employerId);
           return (
             <div key={job.id} className="job-card">
-              <Link to={`/company/${companyInfo.companyId}`}>
+              <Link to={`/company/${job.employerId?.company}`}>
                 <img
                   src={companyInfo.imagePath}
                   alt={companyInfo.name}
                   className="job-logo"
-                  onError={(e) => {
-                    e.target.src = ou;
-                  }}
+                  onError={(e) => { e.target.src = ou; }}
                 />
               </Link>
               <div className="job-content">

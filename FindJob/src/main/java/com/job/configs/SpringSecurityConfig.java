@@ -71,6 +71,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/job_postings").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/job_postings/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/update").authenticated()
                         .anyRequest().permitAll())
                 .formLogin(form -> form.loginPage("/login")
                 .loginProcessingUrl("/login")

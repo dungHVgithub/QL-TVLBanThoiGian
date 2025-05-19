@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +55,21 @@ public class ApiUserController {
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
+    }
+
+    @PostMapping(path = "/user/update",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> updateUser(@RequestBody User user, Principal principal) {
+        String principalEmail = principal.getName();
+        User currentUser = userDetailsService.getUserByEmail(principalEmail);
+
+        if (currentUser == null || user.getId() != currentUser.getId()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null); // bảo mật
+        }
+
+        User updated = userDetailsService.addUpdateUser(user);
+        return ResponseEntity.ok(updated);
     }
 
     @RequestMapping("/secure/profile")

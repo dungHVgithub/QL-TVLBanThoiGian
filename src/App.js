@@ -12,6 +12,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Employer from "./components/Employer";
 import Api, { endpoints } from "./configs/Api";
+import Profile from "./components/Profile";
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
   useEffect(() => {
@@ -28,6 +29,7 @@ const App = () => {
           dispatch({
             type: "login",
             payload: {
+              id: res.data.id,
               token: token,
               username: res.data.username,
               name: res.data.name,
@@ -56,6 +58,7 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/employer" element={<Employer />} />
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </Container>
           <Footer />

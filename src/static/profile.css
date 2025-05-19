@@ -1,0 +1,8 @@
+.card {
+  border-radius: 15px;
+}
+
+.card h3 {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}

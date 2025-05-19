@@ -13,6 +13,8 @@ export const endpoints = {
     'login': '/login',
     'profile': '/secure/profile',
     'oauth':'/oauth-login',
+    'users': '/users',
+    'updated': '/user/update',
 }
 
 export const authApis = () => {
