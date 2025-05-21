@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { MyUserContext } from "../configs/MyContexts";
 import { authApis, endpoints } from "../configs/Api";
@@ -15,7 +16,6 @@ const Profile = () => {
         try {
           const res = await authApis().get(`${endpoints["users"]}/${user.id}`);
           const data = res.data;
-          // Định dạng ngày sinh cho input[type=date]
           if (data.birthday)
             data.birthday = new Date(data.birthday).toISOString().split("T")[0];
 
@@ -59,11 +59,17 @@ const Profile = () => {
       <Card className="shadow p-4 mb-4">
         <h3 className="mb-4">Thông Tin Cá Nhân</h3>
         <Row>
-          <Col md={6}>
+          <Col md={3} className="text-center">
+            <img
+              src={profile.avatar || "/default-avatar.png"}
+              alt="Avatar"
+              className="img-thumbnail rounded-circle mb-3"
+              style={{ width: "150px", height: "150px", objectFit: "cover" }}
+            />
+          </Col>
+          <Col md={9}>
             <p><strong>👤 Tên:</strong> {profile.name}</p>
             <p><strong>📧 Email:</strong> {profile.email}</p>
-          </Col>
-          <Col md={6}>
             <p><strong>📍 Địa chỉ:</strong> {profile.address || "Chưa cập nhật"}</p>
             <p><strong>📞 Số điện thoại:</strong> {profile.sdt || "Chưa cập nhật"}</p>
             <p><strong>🎂 Ngày sinh:</strong> {
@@ -86,6 +92,16 @@ const Profile = () => {
         <Card className="shadow p-4">
           <h4 className="mb-3">Cập Nhật Thông Tin</h4>
           <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Họ tên</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Nhập họ tên"
+                value={profile.name || ""}
+                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+              />
+            </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>Số điện thoại</Form.Label>
               <InputGroup>

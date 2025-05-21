@@ -44,7 +44,7 @@ public class SpringSecurityConfig {
     private JwtFilter jwtFilter;
 
     @Autowired
-    private UserDetailsService userDetailsService; // Đảm bảo được tiêm
+    private UserDetailsService userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -61,23 +61,24 @@ public class SpringSecurityConfig {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 
-
-     @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
             Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(c -> c.disable()).authorizeHttpRequests(requests
                 -> requests.requestMatchers("/").authenticated()
-                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/job_postings").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/job_postings/**").hasAnyRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/users/update").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/job_postings/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/user/update").authenticated()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form.loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true").permitAll())
                 .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
