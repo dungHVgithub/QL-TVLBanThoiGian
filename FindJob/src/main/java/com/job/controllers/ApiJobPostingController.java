@@ -8,8 +8,8 @@ package com.job.controllers;
  *
  * @author AN515-57
  */
-import com.job.services.JobPostingService;
 import com.job.pojo.JobPosting;
+import com.job.services.JobPostingService;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,17 +1,39 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ *
+ * @author AN515-57
+ */
 @Entity
 @Table(name = "employer")
 @NamedQueries({
-        @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
-        @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
-        @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company.id = :company")})
+    @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
+    @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
+    @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
+    @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
 public class Employer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,28 +42,19 @@ public class Employer implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-
     @JoinColumn(name = "company", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private CompanyInformation company;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
-    @JsonIgnore
-    private Set<FollowNotice> followNoticeSet;
-
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
-    @JsonIgnore
-    private User userId;
-
-    @OneToMany(mappedBy = "employerId")
-    @JsonIgnore
-    private Set<JobPosting> jobPostingSet;
-
-    // Thêm trường createdAt
-    @Column(name = "created_at", nullable = false, updatable = false)
+    private CompanyInformation company;
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
+    private Set<FollowNotice> followNoticeSet;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne
+    private User userId;
+    @OneToMany(mappedBy = "employerId")
+    private Set<JobPosting> jobPostingSet;
 
     public Employer() {
     }
@@ -58,12 +71,14 @@ public class Employer implements Serializable {
         this.id = id;
     }
 
-    public CompanyInformation getCompany() {
-        return company;
+
+
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCompany(CompanyInformation company) {
-        this.company = company;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Set<FollowNotice> getFollowNoticeSet() {
@@ -90,14 +105,6 @@ public class Employer implements Serializable {
         this.jobPostingSet = jobPostingSet;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -107,6 +114,7 @@ public class Employer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Employer)) {
             return false;
         }
@@ -120,5 +128,13 @@ public class Employer implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.Employer[ id=" + id + " ]";
+    }
+
+    public CompanyInformation getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyInformation company) {
+        this.company = company;
     }
 }

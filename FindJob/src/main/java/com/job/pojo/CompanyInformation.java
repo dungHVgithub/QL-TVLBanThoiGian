@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,7 +21,7 @@ import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "company_information")
@@ -50,9 +49,7 @@ public class CompanyInformation implements Serializable {
     @Column(name = "tax_code")
     private String taxCode;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
-    @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
-    
 
     public CompanyInformation() {
     }

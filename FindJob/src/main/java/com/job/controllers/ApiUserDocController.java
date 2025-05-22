@@ -5,22 +5,15 @@
 package com.job.controllers;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import com.job.formatter.CCCDParser;
-import com.job.pojo.JobPosting;
-import com.job.pojo.User;
 import com.job.pojo.UserDocuments;
-import com.job.services.JobPostingService;
 import com.job.services.UserDocService;
 import com.job.services.UserService;
-import java.io.IOException;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,10 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *

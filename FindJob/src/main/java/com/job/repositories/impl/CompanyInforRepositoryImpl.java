@@ -4,9 +4,7 @@
  */
 package com.job.repositories.impl;
 
-import com.job.pojo.Category;
 import com.job.pojo.CompanyInformation;
-import com.job.pojo.JobPosting;
 import com.job.repositories.CompanyInfoRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;

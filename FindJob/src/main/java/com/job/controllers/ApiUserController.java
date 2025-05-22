@@ -1,6 +1,5 @@
 package com.job.controllers;
 
-import com.job.pojo.JobPosting;
 import com.job.pojo.User;
 import com.job.services.UserService;
 import com.job.utils.JwtUtils;
@@ -110,8 +109,6 @@ public class ApiUserController {
                 user.setName(name);
                 user.setAvatar(avatar);
                 user.setRole("ROLE_EMPLOYEE");
-                user.setVerificationStatus(true);
-
                 user = userDetailsService.addUpdateUser(user);
             }
 

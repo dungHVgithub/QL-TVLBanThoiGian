@@ -1,7 +1,7 @@
 package com.job.controllers;
 
-import com.job.services.StatisticService;
 import com.job.pojo.StatisticSummary;
+import com.job.services.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,8 @@ public class ApiStatisticController {
 
     @GetMapping("/statistics/time-series")
     public ResponseEntity<List<Map<String, Object>>> getTimeSeriesData(
-            @RequestParam(value = "interval", defaultValue = "month") String interval) {
-        return new ResponseEntity<>(statisticService.getTimeSeriesData(interval), HttpStatus.OK);
+            @RequestParam(value = "type", defaultValue = "month") String type,
+            @RequestParam(value = "range", defaultValue = "1") String range) {
+        return new ResponseEntity<>(statisticService.getTimeSeriesData(type, Integer.parseInt(range)), HttpStatus.OK);
     }
 }

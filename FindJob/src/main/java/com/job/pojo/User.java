@@ -1,27 +1,36 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Date;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ *
+ * @author AN515-57
+ */
 @Entity
 @Table(name = "user")
 @NamedQueries({
-        @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
-        @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
-        @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
-        @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
-        @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
-        @NamedQuery(name = "User.findByAvatar", query = "SELECT u FROM User u WHERE u.avatar = :avatar"),
-        @NamedQuery(name = "User.findByAddress", query = "SELECT u FROM User u WHERE u.address = :address"),
-        @NamedQuery(name = "User.findBySdt", query = "SELECT u FROM User u WHERE u.sdt = :sdt"),
-        @NamedQuery(name = "User.findByBirthday", query = "SELECT u FROM User u WHERE u.birthday = :birthday"),
-        @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role"),
-        @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-        @NamedQuery(name = "User.findByVerificationStatus", query = "SELECT u FROM User u WHERE u.verificationStatus = :verificationStatus")})
+    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
+    @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
+    @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
+    @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
+    @NamedQuery(name = "User.findByAvatar", query = "SELECT u FROM User u WHERE u.avatar = :avatar"),
+    @NamedQuery(name = "User.findByAddress", query = "SELECT u FROM User u WHERE u.address = :address"),
+    @NamedQuery(name = "User.findBySdt", query = "SELECT u FROM User u WHERE u.sdt = :sdt"),
+    @NamedQuery(name = "User.findByBirthday", query = "SELECT u FROM User u WHERE u.birthday = :birthday"),
+    @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role"),
+    @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+    @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
+    @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt")})
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,61 +39,46 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-
     @Size(max = 50)
     @Column(name = "username")
     private String username;
-
     @Size(max = 100)
     @Column(name = "password")
     private String password;
-
     @Size(max = 100)
     @Column(name = "name")
     private String name;
-
     @Size(max = 255)
     @Column(name = "avatar")
     private String avatar;
-
+    @Transient
+    private MultipartFile file;
     @Size(max = 255)
     @Column(name = "address")
     private String address;
-
     @Size(max = 20)
     @Column(name = "sdt")
     private String sdt;
-
     @Column(name = "birthday")
     @Temporal(TemporalType.DATE)
     private Date birthday;
-
     @Size(max = 13)
     @Column(name = "role")
     private String role;
-
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 100)
     @Column(name = "email")
     private String email;
-
-    @Column(name = "verification_status")
-    private Boolean verificationStatus;
-
-    @OneToOne(mappedBy = "userId")
-    @JsonIgnore
-    private Employer employer;
-
-    @OneToOne(mappedBy = "userId")
-    @JsonIgnore
-    private Employee employee;
-
-    @Transient
-    private MultipartFile file;
-
-    // Thêm trường createdAt
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+    @OneToOne(mappedBy = "userId")
+    private Employer employer;
+    @OneToOne(mappedBy = "userId")
+    private Employee employee;
 
     public User() {
     }
@@ -173,12 +167,20 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public Boolean getVerificationStatus() {
-        return verificationStatus;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setVerificationStatus(Boolean verificationStatus) {
-        this.verificationStatus = verificationStatus;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Employer getEmployer() {
@@ -197,22 +199,6 @@ public class User implements Serializable {
         this.employee = employee;
     }
 
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -222,6 +208,7 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof User)) {
             return false;
         }
@@ -235,5 +222,13 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.User[ id=" + id + " ]";
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 }

@@ -1,10 +1,10 @@
 package com.job.services.impl;
 
+import com.job.pojo.StatisticSummary;
 import com.job.repositories.EmployerRepository;
 import com.job.repositories.JobPostingRepository;
 import com.job.repositories.UserRepository;
 import com.job.services.StatisticService;
-import com.job.pojo.StatisticSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,14 +56,14 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<Map<String, Object>> getTimeSeriesData(String interval) {
+    public List<Map<String, Object>> getTimeSeriesData(String type, int range) {
         List<Map<String, Object>> timeSeriesData = new ArrayList<>();
         LocalDate now = LocalDate.now();
 
-        if ("day".equalsIgnoreCase(interval)) {
-            // Thống kê theo ngày (7 ngày gần nhất)
+        if ("day".equalsIgnoreCase(type)) {
+            // Thống kê theo ngày (range ngày gần nhất)
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            for (int i = 6; i >= 0; i--) {
+            for (int i = range - 1; i >= 0; i--) {
                 LocalDate date = now.minusDays(i);
                 String day = date.format(formatter);
 
@@ -79,9 +79,9 @@ public class StatisticServiceImpl implements StatisticService {
                 timeSeriesData.add(dataPoint);
             }
         } else {
-            // Thống kê theo tháng (mặc định, 6 tháng gần nhất)
+            // Thống kê theo tháng (range tháng gần nhất)
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-            for (int i = 5; i >= 0; i--) {
+            for (int i = range - 1; i >= 0; i--) {
                 LocalDate date = now.minusMonths(i);
                 String month = date.format(formatter);
 

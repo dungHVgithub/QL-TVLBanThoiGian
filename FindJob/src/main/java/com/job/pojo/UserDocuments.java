@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +22,7 @@ import java.util.Date;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "user_documents")
@@ -56,7 +55,6 @@ public class UserDocuments implements Serializable {
     private String userDocumentscol;
     @JoinColumn(name = "employee_id", referencedColumnName = "user_id")
     @ManyToOne
-    @JsonIgnore
     private Employee employeeId;
 
     public UserDocuments() {

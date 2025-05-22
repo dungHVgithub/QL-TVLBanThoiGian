@@ -1,6 +1,6 @@
 package com.job.services;
 
-import com.job.pojo.StatisticSummary; // Import StatisticSummary
+import com.job.pojo.StatisticSummary;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ public interface StatisticService {
     long getTotalJobs();
     long getJobsByState(String state);
     StatisticSummary getSummary();
-    List<Map<String, Object>> getTimeSeriesData(String interval);
+    List<Map<String, Object>> getTimeSeriesData(String type, int range);
+
 
 }

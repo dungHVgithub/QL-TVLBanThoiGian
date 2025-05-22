@@ -1,5 +1,4 @@
 package com.job.repositories.impl;
-
 import com.job.pojo.JobDescription;
 import com.job.repositories.JobDetailRepository;
 import jakarta.persistence.Query;

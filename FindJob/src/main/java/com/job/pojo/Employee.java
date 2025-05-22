@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,7 +23,7 @@ import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "employee")
@@ -44,17 +43,13 @@ public class Employee implements Serializable {
     @Column(name = "level")
     private String level;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
-    @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
     @OneToMany(mappedBy = "employeeId")
-    @JsonIgnore
     private Set<UserDocuments> userDocumentsSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
-    @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
-    @JsonIgnore
     private User userId;
 
     public Employee() {
@@ -136,5 +131,5 @@ public class Employee implements Serializable {
     public String toString() {
         return "com.job.pojo.Employee[ id=" + id + " ]";
     }
-
+    
 }

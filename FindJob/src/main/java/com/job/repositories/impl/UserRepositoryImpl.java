@@ -165,4 +165,15 @@ public class UserRepositoryImpl implements UserRepository {
         );
         return s.createQuery(q).getSingleResult();
     }
+
+    @Override
+    public List<User> getUsersByRole(String role) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        Root<User> root = q.from(User.class);
+        q.select(root);
+        q.where(b.equal(root.get("role"), role));
+        return s.createQuery(q).getResultList();
+    }
 }

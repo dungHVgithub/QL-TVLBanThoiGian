@@ -18,16 +18,41 @@
 <!-- Nội dung chính -->
 <div class="container">
     <h1>Thống kê số lượng Job, Employer, Employee</h1>
-    <!-- Dropdown để chọn interval -->
+    <!-- Dropdowns để chọn loại và khoảng thời gian -->
     <div class="mb-3">
-        <label for="intervalSelect">Chọn khoảng thời gian:</label>
-        <select id="intervalSelect" onchange="updateChart()">
-            <option value="month" selected>Theo tháng</option>
-            <option value="day">Theo ngày</option>
+        <label for="typeSelect">Chọn loại:</label>
+        <select id="typeSelect">
+            <option value="month" selected>Tháng</option>
+            <option value="day">Ngày</option>
+        </select>
+        <label for="rangeSelect">Chọn khoảng thời gian:</label>
+        <select id="rangeSelect">
+            <option value="1" selected>1</option>
+            <option value="3">3</option>
+            <option value="7">7</option>
         </select>
     </div>
-    <!-- Div để chứa biểu đồ -->
-    <div id="chart_div" style="width: 100%; height: 500px;"></div>
+    <!-- Nội dung chính: Biểu đồ và thông tin tổng quan -->
+    <div class="content-wrapper">
+        <!-- Biểu đồ -->
+        <div id="chart_div" class="chart-container"></div>
+        <!-- Thông tin tổng quan -->
+        <div class="summary-container">
+            <h2>Tổng quan</h2>
+            <div class="summary-item">
+                <span>Tổng số Job:</span>
+                <span id="totalJobs">0</span>
+            </div>
+            <div class="summary-item">
+                <span>Tổng số Employer:</span>
+                <span id="totalEmployers">0</span>
+            </div>
+            <div class="summary-item">
+                <span>Tổng số Employee:</span>
+                <span id="totalEmployees">0</span>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Kế thừa footer từ base.html -->

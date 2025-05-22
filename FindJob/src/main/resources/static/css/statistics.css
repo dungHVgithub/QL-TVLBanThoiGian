@@ -41,16 +41,53 @@ select {
     background-color: #ffffff;
     cursor: pointer;
     transition: border-color 0.3s ease;
+    margin-right: 25px;
 }
 
 select:hover {
     border-color: #2980b9;
 }
 
-#chart_div {
-    margin: 0 auto;
+.content-wrapper {
+    display: flex;
+    gap: 20px;
+}
+
+.chart-container {
+    width: 70%;
     background-color: #ffffff;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.summary-container {
+    width: 30%;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.summary-container h2 {
+    font-size: 1.5em;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: #34495e;
+}
+
+.summary-item span:first-child {
+    font-weight: bold;
+}
+
+.summary-item span:last-child {
+    color: #3498db;
 }

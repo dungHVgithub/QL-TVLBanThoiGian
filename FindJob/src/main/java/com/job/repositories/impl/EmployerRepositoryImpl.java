@@ -1,5 +1,4 @@
 package com.job.repositories.impl;
-
 import com.job.pojo.Employer;
 import com.job.repositories.EmployerRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
