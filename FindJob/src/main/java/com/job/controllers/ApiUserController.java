@@ -132,8 +132,6 @@ public class ApiUserController {
                 user.setName(name);
                 user.setAvatar(avatar);
                 user.setRole("ROLE_EMPLOYEE");
-                user.setVerificationStatus(true);
-
                 user = userDetailsService.addUpdateUser(user);
             }
 
@@ -144,5 +142,14 @@ public class ApiUserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi đăng nhập OAuth");
         }
     }
-
+    @GetMapping("/users/count/employees")
+    public ResponseEntity<Map<String, Long>> countEmployees() {
+        long count = userDetailsService.countEmployees();
+        return ResponseEntity.ok(Collections.singletonMap("totalEmployees", count));
+    }
+    @GetMapping("/users/count/employers")
+    public ResponseEntity<Map<String, Long>> countEmployer() {
+        long count = userDetailsService.countEmployer();
+        return ResponseEntity.ok(Collections.singletonMap("totalEmployers", count));
+    }
 }

@@ -1,10 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.repositories.impl;
 
-import com.job.pojo.JobPosting;
 import com.job.pojo.User;
 import com.job.repositories.UserRepository;
 import jakarta.persistence.NoResultException;
@@ -24,10 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- * @author DUNG
- */
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
@@ -46,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
             q.setParameter("username", username);
             return (User) q.getSingleResult();
         } catch (NoResultException e) {
-            return null; 
+            return null;
         }
     }
 
@@ -58,14 +49,12 @@ public class UserRepositoryImpl implements UserRepository {
         } else {
             s.merge(u);
         }
-
         return u;
     }
 
     @Override
     public boolean authenticate(String username, String password) {
         User u = this.getUserByUserName(username);
-
         return this.passwordEncoder.matches(password, u.getPassword());
     }
 
@@ -78,24 +67,18 @@ public class UserRepositoryImpl implements UserRepository {
         q.select(root);
         if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
-
-            //Loc theo ten
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
             }
-            //Loc theo so dien thoai
             String sdt = params.get("sdt");
             if (sdt != null && !sdt.isEmpty()) {
                 predicates.add(b.like(root.get("sdt"), String.format("%%%s%%", sdt)));
             }
-
-            //Loc theo role
             String role = params.get("role");
             if (role != null && !role.isEmpty()) {
                 predicates.add(b.like(root.get("role"), String.format("%%%s%%", role)));
             }
-
             q.where(predicates.toArray(Predicate[]::new));
             String orderBy = params.get("orderBy");
             if (orderBy != null && !orderBy.isEmpty()) {
@@ -135,8 +118,62 @@ public class UserRepositoryImpl implements UserRepository {
         } catch (NoResultException | NonUniqueResultException ex) {
             return null;
         } catch (Exception ex) {
-            ex.printStackTrace(); // In ra lỗi backend
+            ex.printStackTrace();
             throw new RuntimeException("Lỗi khi truy vấn user theo email");
         }
+    }
+
+    @Override
+    public long countByRole(String role) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<User> root = q.from(User.class);
+        q.select(b.count(root));
+        q.where(b.equal(root.get("role"), role));
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public long countByRoleAndMonth(String role, String month) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<User> root = q.from(User.class);
+        q.select(b.count(root));
+        q.where(
+                b.and(
+                        b.equal(root.get("role"), role),
+                        b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m")), month)
+                )
+        );
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public long countByRoleAndDate(String role, String date) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Long> q = b.createQuery(Long.class);
+        Root<User> root = q.from(User.class);
+        q.select(b.count(root));
+        q.where(
+                b.and(
+                        b.equal(root.get("role"), role),
+                        b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m-%d")), date)
+                )
+        );
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public List<User> getUsersByRole(String role) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        Root<User> root = q.from(User.class);
+        q.select(root);
+        q.where(b.equal(root.get("role"), role));
+        return s.createQuery(q).getResultList();
     }
 }

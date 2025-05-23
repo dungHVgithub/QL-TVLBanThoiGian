@@ -5,9 +5,8 @@
 package com.job.controllers;
 
 import com.job.pojo.CompanyInformation;
-import com.job.pojo.JobPosting;
 import com.job.services.CompanyInfoService;
-import com.job.services.JobPostingService;
+
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;

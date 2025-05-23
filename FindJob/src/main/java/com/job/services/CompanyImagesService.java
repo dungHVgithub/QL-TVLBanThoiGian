@@ -5,6 +5,7 @@
 package com.job.services;
 
 import com.job.pojo.CompanyImages;
+
 import java.util.List;
 
 public interface CompanyImagesService {

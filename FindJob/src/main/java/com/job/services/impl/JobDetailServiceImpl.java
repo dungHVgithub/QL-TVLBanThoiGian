@@ -33,4 +33,13 @@ public class JobDetailServiceImpl implements JobDetailService {
         }
         return jobDescription;
     }
+
+    @Override
+    public JobDescription getJobDetailByJobPostingId(int jobPostingId) {
+        JobDescription jobDescription = jobDetailRepository.getJobDetailByJobPostingId(jobPostingId);
+        if (jobDescription == null) {
+            throw new RuntimeException("JobDescription not found for JobPosting id: " + jobPostingId);
+        }
+        return jobDescription;
+    }
 }

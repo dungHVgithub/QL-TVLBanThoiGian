@@ -5,6 +5,7 @@
 package com.job.services;
 
 import com.job.pojo.JobPosting;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,4 +18,6 @@ public interface JobPostingService {
     JobPosting getJobById(int id); 
     JobPosting addOrUpdate (JobPosting j);
     void deleteJob ( int id);
+    long countJobs(); // Đếm tổng số JobPosting
+    long countJobsByState(String state); // Đếm theo trạng thái
 }

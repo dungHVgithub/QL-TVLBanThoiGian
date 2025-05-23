@@ -50,7 +50,7 @@
                     <tr th:each="j : ${job_postings}">
                         <td th:text="${j.id}"></td>
                         <td th:text="${j.description}"></td>
-                        <td th:text = "${j.state} " </td>
+                        <td th:text = "${j.state} "> </td>
                         <td th:text="${j.salary + ' $ ' }"></td>
                         <td>
                             <a th:href="@{'/job_postings/' + ${j.id}}" class="btn btn-outline-success btn-sm">

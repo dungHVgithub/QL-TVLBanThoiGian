@@ -10,10 +10,9 @@ import com.job.pojo.User;
 import com.job.repositories.UserRepository;
 import com.job.services.UserService;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +112,21 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        // Xử lý createdAt và updatedAt
+        LocalDateTime now = LocalDateTime.now();
+        // Chuyển đổi LocalDateTime sang Date, sử dụng múi giờ Asia/Ho_Chi_Minh (+07:00)
+        Date currentDate = Date.from(now.atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant());
+
+        if (u.getId() == null) {
+            // Khi add mới: đặt cả createdAt và updatedAt giống nhau
+            u.setCreatedAt(currentDate);
+            u.setUpdatedAt(currentDate);
+        } else {
+            // Khi update: chỉ cập nhật updatedAt
+            u.setUpdatedAt(currentDate);
+            // createdAt giữ nguyên, không cần set lại
+        }
+
         return this.userRepo.addUpdateUser(u);
     }
 
@@ -125,4 +139,21 @@ public class UserServiceImpl implements UserService {
     public User getUserByEmail(String email) {
         return this.userRepo.getUserByEmail(email);
     }
+
+    @Override
+    public long countEmployees() {
+       return this.userRepo.countByRole("ROLE_EMPLOYEE");
+    }
+
+    @Override
+    public long countEmployer() {
+        return this.userRepo.countByRole("ROLE_EMPLOYER");
+    }
+
+    @Override
+    public List<User> getUsersByRole(String role) {
+        return this.userRepo.getUsersByRole(role);
+    }
+
+
 }

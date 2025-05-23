@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png";
+import iconCate from "../img/iconCate.png"; // Toàn bộ hình ảnh chứa 4 icon
 import "../static/home.css";
 
 const Home = () => {
   const [jobPostings, setJobPostings] = useState([]);
   const [companyImages, setCompanyImages] = useState({});
-  const [companyInfos, setCompanyInfos] = useState({});
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [q] = useSearchParams();
@@ -33,19 +33,18 @@ const Home = () => {
       if (kw) url += `&kw=${kw}`;
 
       const res = await Api.get(url);
-
+      let filteredJobs = Array.isArray(res.data) ? res.data : [];
+      // Lọc theo địa điểm
       let location = q.get("location");
-      let filteredJobs = res.data;
-
       if (location) {
         const lowerLocation = location.toLowerCase();
         filteredJobs = filteredJobs.filter(job => {
-          const companyId = job.employerId?.company;
-          const info = companyInfos[companyId];
-          return info?.address?.toLowerCase().includes(lowerLocation);
+          const address = job.employerId?.company?.address;
+          return address?.toLowerCase().includes(lowerLocation) || false;
         });
       }
 
+      // Lọc theo lương
       const minSalary = q.get("salary");
       if (minSalary) {
         filteredJobs = filteredJobs.filter(job =>
@@ -53,13 +52,13 @@ const Home = () => {
         );
       }
 
+      // Lọc theo tên công ty
       const companyName = q.get("companyName");
       if (companyName) {
         const lowerCompany = companyName.toLowerCase();
         filteredJobs = filteredJobs.filter(job => {
-          const companyId = job.employerId?.company;
-          const info = companyInfos[companyId];
-          return info?.name?.toLowerCase().includes(lowerCompany);
+          const name = job.employerId?.company?.name;
+          return name?.toLowerCase().includes(lowerCompany) || false;
         });
       }
 
@@ -74,6 +73,7 @@ const Home = () => {
       }
     } catch (error) {
       console.error("Lỗi khi lấy danh sách công việc:", error);
+      setJobPostings([]);
     } finally {
       setLoading(false);
     }
@@ -82,18 +82,23 @@ const Home = () => {
   const loadCompanyImage = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
-      const companyIds = [...new Set(jobs.map(job => job.employerId?.company).filter(id => id))];
+      const companyIds = [...new Set(
+        jobs.map(job => job.employerId?.company?.id)
+           .filter(id => id && (typeof id === 'number'))
+      )];
       const images = { ...companyImages };
 
       for (const companyId of companyIds) {
         if (!images[companyId]) {
           try {
             const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
-            const logo = res.data
-              .filter(img => img.caption?.toLowerCase().startsWith("logo"))
-              .sort((a, b) => b.uploadTime - a.uploadTime)[0];
+            // Xử lý mảng hoặc object đơn lẻ
+            const data = Array.isArray(res.data) ? res.data : [res.data];
+            const logo = data
+              .sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Lấy hình ảnh mới nhất
             images[companyId] = logo?.imagePath || ou;
-          } catch {
+          } catch (error) {
+            console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, error.message, error.response?.data);
             images[companyId] = ou;
           }
         }
@@ -105,32 +110,12 @@ const Home = () => {
     }
   };
 
-  const loadCompanyInfos = async (jobs) => {
-    if (!jobs || jobs.length === 0) return;
-    try {
-      const companyIds = [...new Set(jobs.map(job => job.employerId?.company).filter(id => id))];
-      const infos = { ...companyInfos };
-
-      const res = await Api.get(endpoints["company_info"]);
-      for (const id of companyIds) {
-        if (!infos[id]) {
-          const found = res.data.find(c => c.id === id);
-          infos[id] = found || { name: "Chưa xác định", address: "Chưa xác định" };
-        }
-      }
-
-      setCompanyInfos(infos);
-    } catch (error) {
-      console.error("Lỗi khi load thông tin công ty:", error);
-    }
-  };
-
   const getCompanyInfo = (employer) => {
-    const companyId = employer?.company;
+    const company = employer?.company;
     return {
-      name: companyInfos[companyId]?.name || "Chưa xác định",
-      address: companyInfos[companyId]?.address || "Chưa xác định",
-      imagePath: companyImages[companyId] || ou,
+      name: company?.name || "Chưa xác định",
+      address: company?.address || "Chưa xác định",
+      imagePath: companyImages[company?.id] || ou,
     };
   };
 
@@ -150,7 +135,6 @@ const Home = () => {
   }, [page, q]);
 
   useEffect(() => {
-    loadCompanyInfos(jobPostings);
     loadCompanyImage(jobPostings);
   }, [jobPostings]);
 
@@ -158,7 +142,6 @@ const Home = () => {
     setPage(1);
     setJobPostings([]);
     setCompanyImages({});
-    setCompanyInfos({});
   }, [q]);
 
   const loadMore = () => {
@@ -183,7 +166,9 @@ const Home = () => {
     nav("/", { replace: true });
   };
 
-  const approvedJobs = jobPostings.filter((job) => job.state === "approved") || [];
+  const approvedJobs = Array.isArray(jobPostings)
+    ? jobPostings.filter((job) => job.state === "approved")
+    : [];
 
   return (
     <div className="home-container">
@@ -214,21 +199,37 @@ const Home = () => {
         approvedJobs.map((job) => {
           const companyInfo = getCompanyInfo(job.employerId);
           return (
-            <div key={job.id} className="job-card">
-              <Link to={`/company/${job.employerId?.company}`}>
-                <img
-                  src={companyInfo.imagePath}
-                  alt={companyInfo.name}
-                  className="job-logo"
-                  onError={(e) => { e.target.src = ou; }}
-                />
-              </Link>
+            <div
+              key={job.id}
+              className="job-card"
+              onClick={() => nav(`/job_detail/${job.id}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src={companyInfo.imagePath}
+                alt={companyInfo.name}
+                className="job-logo"
+                onError={(e) => {
+                  console.error("Lỗi tải hình ảnh:", e.target.src);
+                  e.target.src = ou;
+                }}
+              />
               <div className="job-content">
-                <Link to={`/jobs/${job.id}`} className="job-title-link">
+                <Link
+                  to={`/job-detail/${job.id}`}
+                  className="job-title-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
                 </Link>
                 <p className="job-details">
-                  💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} - 📅 {job.submitEnd ? `Hạn nộp: ${formatDate(job.submitEnd)}` : "Hạn nộp: Chưa xác định"}
+                  💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} -
+                  <img
+                    src={iconCate}
+                    alt="Loại công việc"
+                    style={{ width: "20px", height: "20px", margin: "7px", verticalAlign: "middle" }}
+                  />
+                  Loại công việc: {job.categoryId?.name || "Chưa xác định"}
                 </p>
                 <p className="job-time">
                   🕒 Bắt đầu: {formatTime(job.timeStart)} - Kết thúc: {formatTime(job.timeEnd)}
@@ -237,7 +238,7 @@ const Home = () => {
                   🏢 Công ty: {companyInfo.name} - 📍 Địa chỉ: {companyInfo.address}
                 </p>
               </div>
-              <div className="action-buttons">
+              <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
                 <button className="apply-btn">Ứng tuyển</button>
                 <span className="heart-icon">♡</span>
               </div>

@@ -5,6 +5,7 @@
 package com.job.repositories;
 
 import com.job.pojo.CompanyImages;
+
 import java.util.List;
 
 public interface CompanyImagesRepository {

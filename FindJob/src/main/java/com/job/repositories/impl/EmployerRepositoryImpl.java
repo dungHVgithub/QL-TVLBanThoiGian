@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.repositories.impl;
 import com.job.pojo.Employer;
 import com.job.repositories.EmployerRepository;
@@ -28,7 +24,6 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         CriteriaQuery<Employer> q = b.createQuery(Employer.class);
         Root<Employer> root = q.from(Employer.class);
         q.select(root);
-        // Fetch company để tránh LazyInitializationException
         root.fetch("company", jakarta.persistence.criteria.JoinType.LEFT);
         return s.createQuery(q).getResultList();
     }
@@ -40,9 +35,8 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         CriteriaQuery<Employer> q = b.createQuery(Employer.class);
         Root<Employer> root = q.from(Employer.class);
         q.select(root).where(b.equal(root.get("id"), id));
-        // Fetch company
         root.fetch("company", jakarta.persistence.criteria.JoinType.LEFT);
-
         return s.createQuery(q).getSingleResultOrNull();
     }
+
 }

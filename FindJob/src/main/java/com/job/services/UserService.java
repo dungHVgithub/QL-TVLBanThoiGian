@@ -4,9 +4,10 @@
  */
 package com.job.services;
 
-import com.job.pojo.User;
 import java.util.List;
 import java.util.Map;
+
+import com.job.pojo.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,4 +25,8 @@ public interface UserService extends UserDetailsService {
     void deleteUser(int id);
     boolean authenticate(String username, String password);
     User getUserByEmail(String email);
+    long countEmployees(); //Method dem employeee
+    long countEmployer();
+
+    List<User> getUsersByRole(String role);
 }

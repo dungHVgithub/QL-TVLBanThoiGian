@@ -8,8 +8,10 @@ package com.job.controllers;
  *
  * @author AN515-57
  */
-import com.job.services.JobPostingService;
 import com.job.pojo.JobPosting;
+import com.job.services.JobPostingService;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,20 @@ public class ApiJobPostingController {
     public ResponseEntity<JobPosting> retrieve(@PathVariable(value = "jobPostingId") int id) {
         return new ResponseEntity<>(this.jobService.getJobById(id), HttpStatus.OK);
     }
-    
+    @GetMapping("/job_postings/count")
+    public ResponseEntity<Map<String, Long>> countJobs() {
+        long count = jobService.countJobs();
+        return ResponseEntity.ok(Collections.singletonMap("totalJobs", count));
+    }
+
+    @GetMapping("/job_postings/count/{state}")
+    public ResponseEntity<Map<String, Object>> countJobsByState(@PathVariable("state") String state) {
+        String normalizedState = state.toUpperCase();
+        if (!normalizedState.equals("PENDING") && !normalizedState.equals("APPROVED") && !normalizedState.equals("REJECTED")) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Invalid state"));
+        }
+        long count = jobService.countJobsByState(normalizedState);
+        return ResponseEntity.ok(Collections.singletonMap("totalJobsByState", count));
+    }
     
 }

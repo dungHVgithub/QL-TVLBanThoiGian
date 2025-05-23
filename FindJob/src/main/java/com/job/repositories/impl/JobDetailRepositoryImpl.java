@@ -1,5 +1,4 @@
 package com.job.repositories.impl;
-
 import com.job.pojo.JobDescription;
 import com.job.repositories.JobDetailRepository;
 import jakarta.persistence.Query;
@@ -20,8 +19,6 @@ import java.util.Map;
 @Repository
 @Transactional
 public class JobDetailRepositoryImpl implements JobDetailRepository {
-
-
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -65,8 +62,21 @@ public class JobDetailRepositoryImpl implements JobDetailRepository {
     }
 
     @Override
+    public JobDescription getJobDetailByJobPostingId(int jobPostingId) {
+        Session session = factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<JobDescription> query = builder.createQuery(JobDescription.class);
+        Root<JobDescription> root = query.from(JobDescription.class);
+        query.select(root);
+        // Điều kiện lọc: jobPosting.id = jobPostingId
+        query.where(builder.equal(root.get("jobPosting").get("id"), jobPostingId));
+        Query finalQuery = session.createQuery(query);
+        List<JobDescription> results = finalQuery.getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    @Override
     public JobDescription getJobDetailById(int id) {
         Session session = factory.getObject().getCurrentSession();
-        return session.get(JobDescription.class, id);
-    }
+        return session.get(JobDescription.class, id);    }
 }

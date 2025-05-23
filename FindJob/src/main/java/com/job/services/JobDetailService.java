@@ -9,4 +9,6 @@ public interface JobDetailService {
     List<JobDescription> getJobDetail (Map<String, String> params);
     public void deleteJobDetail (int id);
     JobDescription getJobDetailById(int id);
+    JobDescription getJobDetailByJobPostingId(int jobPostingId);
+
 }

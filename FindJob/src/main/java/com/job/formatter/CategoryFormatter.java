@@ -4,9 +4,10 @@
  */
 package com.job.formatter;
 
-import com.job.pojo.Category;
 import java.text.ParseException;
 import java.util.Locale;
+
+import com.job.pojo.Category;
 import org.springframework.format.Formatter;
 
 /**

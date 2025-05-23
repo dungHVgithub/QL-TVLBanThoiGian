@@ -5,7 +5,7 @@
 package com.job.repositories;
 
 import com.job.pojo.CompanyInformation;
-import com.job.pojo.JobPosting;
+
 import java.util.List;
 import java.util.Map;
 

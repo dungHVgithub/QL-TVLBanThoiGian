@@ -23,7 +23,7 @@ import java.util.Date;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "user_documents")
@@ -51,7 +51,7 @@ public class UserDocuments implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    @ManyToOne  
+    @ManyToOne
     private Employee employeeId;
 
     public UserDocuments() {

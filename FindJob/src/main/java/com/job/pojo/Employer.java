@@ -18,29 +18,36 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "employer")
 @NamedQueries({
     @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
     @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
-    @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company")})
+    @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
+    @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
 public class Employer implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "company")
-    private Integer company;
+    @JoinColumn(name = "company", referencedColumnName = "id")
+    @OneToOne
+    private CompanyInformation company;
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
     @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
@@ -67,12 +74,14 @@ public class Employer implements Serializable {
         this.id = id;
     }
 
-    public Integer getCompany() {
-        return company;
+
+
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCompany(Integer company) {
-        this.company = company;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Set<FollowNotice> getFollowNoticeSet() {
@@ -124,4 +133,11 @@ public class Employer implements Serializable {
         return "com.job.pojo.Employer[ id=" + id + " ]";
     }
 
+    public CompanyInformation getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyInformation company) {
+        this.company = company;
+    }
 }

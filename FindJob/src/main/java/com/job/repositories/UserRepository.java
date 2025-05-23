@@ -5,6 +5,7 @@
 package com.job.repositories;
 
 import com.job.pojo.User;
+
 import java.util.List;
 import java.util.Map;
 
@@ -27,5 +28,9 @@ public interface UserRepository {
     boolean authenticate(String username, String password);
 
     User getUserByEmail(String email);
+    long countByRole(String role); //Thong ke user theo vai tro
+    long countByRoleAndMonth(String role, String month);
+    long countByRoleAndDate(String role, String date); // Thêm phương thức mới
+    List<User> getUsersByRole(String role);
 
 }

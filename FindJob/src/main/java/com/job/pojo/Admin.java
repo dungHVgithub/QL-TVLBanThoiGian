@@ -4,22 +4,15 @@
  */
 package com.job.pojo;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.util.Set;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "admin")
@@ -37,7 +30,8 @@ public class Admin implements Serializable {
     private Integer id;
     @Column(name = "user_id")
     private Integer userId;
-    @OneToMany(mappedBy = "approvedByAdminId")
+    @OneToMany(mappedBy = "approvedByAdminId",fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<JobPosting> jobPostingSet;
 
     public Admin() {

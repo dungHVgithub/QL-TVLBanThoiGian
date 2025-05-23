@@ -1,149 +1,156 @@
 .home-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 15px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .job-card {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease; /* Thêm để chuyển động mượt mà */
+}
+
+.job-card:hover {
+  transform: scale(1.05); /* Phóng to 5% khi hover */
 }
 
 .job-logo {
-    width: 50px;
-    height: 50px;
-    margin-right: 15px;
-    object-fit: contain;
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+  object-fit: contain;
 }
 
 .job-content {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .job-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0 0 5px 0;
-    color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: #333;
 }
 
 .job-details {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0 0 5px 0;
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 5px 0;
 }
 
-.job-details::before,
-.job-time::before {
-    margin-right: 5px;
+.job-details::before {
+  margin-right: 5px;
 }
 
 .job-time {
-    font-size: 0.85rem;
-    color: #777;
-    margin: 0;
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0;
 }
 
 .action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .apply-btn {
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    font-size: 0.9rem;
-    line-height: 1.5;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .apply-btn:hover {
-    background-color: #218838;
+  background-color: #218838;
 }
 
 .heart-icon {
-    font-size: 2rem;
-    color: #ccc;
-    cursor: pointer;
-    transition: color 0.2s;
-    line-height: 1;
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
 }
 
 .heart-icon:hover {
-    color: #ff0000;
+  color: #ff0000;
 }
 
 .load-more-btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.load-more-btn:hover:not(:disabled) {
-    background-color: #0056b3;
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
 .load-more-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
+
 .filter-section {
   margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
 }
 
 .filter-form {
   display: flex;
   gap: 15px;
-  align-items: flex-end;
+  flex-wrap: wrap;
 }
 
 .filter-group {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  min-width: 200px;
 }
 
 .filter-group label {
+  display: block;
   margin-bottom: 5px;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .filter-group input {
+  width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 .filter-btn {
-  padding: 8px 16px;
+  padding: 12px 12px;
   background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  color: #fff;
+  border: 1px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
 }
 
 .filter-btn:hover {
   background-color: #0056b3;
+}
+
+.reset-btn {
+  background-color: #6c757d;
+}
+
+.reset-btn:hover {
+  background-color: #5a6268;
 }

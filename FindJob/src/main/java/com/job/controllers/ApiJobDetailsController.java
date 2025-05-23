@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/job-details")
+@RequestMapping("/api/job_details")
 public class ApiJobDetailsController {
 
     @Autowired
@@ -34,5 +34,11 @@ public class ApiJobDetailsController {
     public void destroy(@PathVariable("id") int id)
     {
         this.jobDetailService.deleteJobDetail(id);
+    }
+
+    @GetMapping("/jobPosting/{jobPostingId}")
+    public ResponseEntity<JobDescription> getJobDetailByJobPostingId(@PathVariable("jobPostingId") int jobPostingId) {
+        JobDescription jobDetail = jobDetailService.getJobDetailByJobPostingId(jobPostingId);
+        return ResponseEntity.ok(jobDetail);
     }
 }

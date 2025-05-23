@@ -25,4 +25,6 @@ public class EmployerServiceImpl implements EmployerService {
     public Employer getEmployerById(int id) {
         return employerRepository.getEmployerById(id);
     }
+
+
 }

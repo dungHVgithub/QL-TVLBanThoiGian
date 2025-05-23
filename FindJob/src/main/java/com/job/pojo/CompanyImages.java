@@ -4,30 +4,17 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.Serializable;
 import java.util.Date;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "company_images")
@@ -50,6 +37,8 @@ public class CompanyImages implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "image_path")
     private String imagePath;
+    @Transient
+    private MultipartFile file;
     @Size(max = 255)
     @Column(name = "caption")
     private String caption;
@@ -59,8 +48,6 @@ public class CompanyImages implements Serializable {
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private CompanyInformation companyId;
-    @Transient
-    private MultipartFile file;
 
     public CompanyImages() {
     }
@@ -139,18 +126,11 @@ public class CompanyImages implements Serializable {
         return "com.job.pojo.CompanyImages[ id=" + id + " ]";
     }
 
-    /**
-     * @return the file
-     */
     public MultipartFile getFile() {
         return file;
     }
 
-    /**
-     * @param file the file to set
-     */
     public void setFile(MultipartFile file) {
         this.file = file;
     }
-    
 }

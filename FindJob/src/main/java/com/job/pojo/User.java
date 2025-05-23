@@ -4,28 +4,16 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.Serializable;
 import java.util.Date;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "user")
@@ -41,7 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "User.findByBirthday", query = "SELECT u FROM User u WHERE u.birthday = :birthday"),
     @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role"),
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-    @NamedQuery(name = "User.findByVerificationStatus", query = "SELECT u FROM User u WHERE u.verificationStatus = :verificationStatus")})
+    @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
+    @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt")})
 public class User implements Serializable {
 
     @Size(max = 50)
@@ -76,19 +65,21 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Transient
+    private MultipartFile file;
     @Column(name = "birthday")
     @Temporal(TemporalType.DATE)
     private Date birthday;
-    @Column(name = "verification_status")
-    private Boolean verificationStatus;
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
     @OneToOne(mappedBy = "userId")
-     @JsonIgnore
     private Employer employer;
     @OneToOne(mappedBy = "userId")
-    @JsonIgnore
     private Employee employee;
-    @Transient
-    private MultipartFile file;
 
     public User() {
     }
@@ -104,8 +95,6 @@ public class User implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
-
     public Date getBirthday() {
         return birthday;
     }
@@ -210,21 +199,92 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
 
-    public String getAddress() {
-        return address;
+
+
+
+
+    public Employer getEmployer() {
+        return employer;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setEmployer(Employer employer) {
+        this.employer = employer;
     }
 
-    public String getSdt() {
-        return sdt;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof User)) {
+            return false;
+        }
+        User other = (User) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.job.pojo.User[ id=" + id + " ]";
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+
 
     public String getRole() {
         return role;
@@ -234,12 +294,5 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
 }
