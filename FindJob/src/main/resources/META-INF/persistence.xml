@@ -12,7 +12,7 @@
     <class>com.job.pojo.JobPosting</class>
     <class>com.job.pojo.Category</class>
     <class>com.job.pojo.JobDescription</class>
-    <class>com.job.pojo.User</class>
     <class>com.job.pojo.UserDocuments</class>
+    <class>com.job.pojo.User</class>
   </persistence-unit>
 </persistence>
