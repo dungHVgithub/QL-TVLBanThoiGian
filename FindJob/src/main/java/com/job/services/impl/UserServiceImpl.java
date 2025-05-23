@@ -146,6 +146,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long countEmployer() {
+        return this.userRepo.countByRole("ROLE_EMPLOYER");
+    }
+
+    @Override
     public List<User> getUsersByRole(String role) {
         return this.userRepo.getUsersByRole(role);
     }

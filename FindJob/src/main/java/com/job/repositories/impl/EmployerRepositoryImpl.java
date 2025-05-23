@@ -39,39 +39,4 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         return s.createQuery(q).getSingleResultOrNull();
     }
 
-    @Override
-    public long count() {
-        Session s = this.factory.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Long> q = b.createQuery(Long.class);
-        Root<Employer> root = q.from(Employer.class);
-        q.select(b.count(root));
-        return s.createQuery(q).getSingleResult();
-    }
-
-    @Override
-    public long countByMonth(String month) {
-        Session s = this.factory.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Long> q = b.createQuery(Long.class);
-        Root<Employer> root = q.from(Employer.class);
-        q.select(b.count(root));
-        q.where(
-                b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m")), month)
-        );
-        return s.createQuery(q).getSingleResult();
-    }
-
-    @Override
-    public long countByDate(String date) {
-        Session s = this.factory.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Long> q = b.createQuery(Long.class);
-        Root<Employer> root = q.from(Employer.class);
-        q.select(b.count(root));
-        q.where(
-                b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m-%d")), date)
-        );
-        return s.createQuery(q).getSingleResult();
-    }
 }

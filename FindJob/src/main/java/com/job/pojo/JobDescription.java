@@ -16,8 +16,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -28,7 +31,9 @@ import java.io.Serializable;
 @NamedQueries({
     @NamedQuery(name = "JobDescription.findAll", query = "SELECT j FROM JobDescription j"),
     @NamedQuery(name = "JobDescription.findById", query = "SELECT j FROM JobDescription j WHERE j.id = :id"),
-    @NamedQuery(name = "JobDescription.findByType", query = "SELECT j FROM JobDescription j WHERE j.type = :type")})
+    @NamedQuery(name = "JobDescription.findByLevel", query = "SELECT j FROM JobDescription j WHERE j.level = :level"),
+    @NamedQuery(name = "JobDescription.findByExperience", query = "SELECT j FROM JobDescription j WHERE j.experience = :experience"),
+    @NamedQuery(name = "JobDescription.findBySubmitEnd", query = "SELECT j FROM JobDescription j WHERE j.submitEnd = :submitEnd")})
 public class JobDescription implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,12 +46,22 @@ public class JobDescription implements Serializable {
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
-    @Size(max = 17)
-    @Column(name = "type")
-    private String type;
-    @JoinColumn(name = "job_posting_id", referencedColumnName = "id")
+    @Size(max = 6)
+    @Column(name = "level")
+    private String level;
+    @Size(max = 50)
+    @Column(name = "experience")
+    private String experience;
+    @Column(name = "submit_end")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date submitEnd;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "benefit")
+    private String benefit;
+    @JoinColumn(name = "job_posting", referencedColumnName = "id")
     @ManyToOne
-    private JobPosting jobPostingId;
+    private JobPosting jobPosting;
 
     public JobDescription() {
     }
@@ -71,20 +86,44 @@ public class JobDescription implements Serializable {
         this.description = description;
     }
 
-    public String getType() {
-        return type;
+    public String getLevel() {
+        return level;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setLevel(String level) {
+        this.level = level;
     }
 
-    public JobPosting getJobPostingId() {
-        return jobPostingId;
+    public String getExperience() {
+        return experience;
     }
 
-    public void setJobPostingId(JobPosting jobPostingId) {
-        this.jobPostingId = jobPostingId;
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public Date getSubmitEnd() {
+        return submitEnd;
+    }
+
+    public void setSubmitEnd(Date submitEnd) {
+        this.submitEnd = submitEnd;
+    }
+
+    public String getBenefit() {
+        return benefit;
+    }
+
+    public void setBenefit(String benefit) {
+        this.benefit = benefit;
+    }
+
+    public JobPosting getJobPosting() {
+        return jobPosting;
+    }
+
+    public void setJobPosting(JobPosting jobPosting) {
+        this.jobPosting = jobPosting;
     }
 
     @Override

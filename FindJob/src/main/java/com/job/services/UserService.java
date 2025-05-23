@@ -26,6 +26,7 @@ public interface UserService extends UserDetailsService {
     boolean authenticate(String username, String password);
     User getUserByEmail(String email);
     long countEmployees(); //Method dem employeee
+    long countEmployer();
 
     List<User> getUsersByRole(String role);
 }

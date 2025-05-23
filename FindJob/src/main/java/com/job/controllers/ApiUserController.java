@@ -124,4 +124,9 @@ public class ApiUserController {
         long count = userDetailsService.countEmployees();
         return ResponseEntity.ok(Collections.singletonMap("totalEmployees", count));
     }
+    @GetMapping("/users/count/employers")
+    public ResponseEntity<Map<String, Long>> countEmployer() {
+        long count = userDetailsService.countEmployer();
+        return ResponseEntity.ok(Collections.singletonMap("totalEmployers", count));
+    }
 }

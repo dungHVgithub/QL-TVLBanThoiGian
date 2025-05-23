@@ -19,8 +19,7 @@ import java.util.Map;
 public class StatisticServiceImpl implements StatisticService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private EmployerRepository employerRepository;
+
     @Autowired
     private JobPostingRepository jobPostingRepository;
 
@@ -31,7 +30,7 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public long getTotalEmployers() {
-        return employerRepository.count();
+        return userRepository.countByRole("ROLE_EMPLOYER");
     }
 
     @Override
@@ -68,7 +67,7 @@ public class StatisticServiceImpl implements StatisticService {
                 String day = date.format(formatter);
 
                 long employees = userRepository.countByRoleAndDate("ROLE_EMPLOYEE", day);
-                long employers = employerRepository.countByDate(day);
+                long employers = userRepository.countByRoleAndDate("ROLE_EMPLOYER",day);
                 long jobs = jobPostingRepository.countByDate(day);
 
                 Map<String, Object> dataPoint = new HashMap<>();
@@ -86,7 +85,7 @@ public class StatisticServiceImpl implements StatisticService {
                 String month = date.format(formatter);
 
                 long employees = userRepository.countByRoleAndMonth("ROLE_EMPLOYEE", month);
-                long employers = employerRepository.countByMonth(month);
+                long employers = userRepository.countByRoleAndMonth("ROLE_EMPLOYER",month);
                 long jobs = jobPostingRepository.countByMonth(month);
 
                 Map<String, Object> dataPoint = new HashMap<>();

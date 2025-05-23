@@ -34,9 +34,4 @@ public class ApiEmployerController {
                 ? new ResponseEntity<>(employer, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/employers/count")
-    public ResponseEntity<Map<String, Long>> countEmployers() {
-        long count = employerService.countEmployer();
-        return ResponseEntity.ok(Collections.singletonMap("totalEmployers", count));
-    }
 }

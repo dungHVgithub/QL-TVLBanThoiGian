@@ -5,22 +5,7 @@
 package com.job.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Basic;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -43,16 +28,20 @@ import java.util.Set;
     @NamedQuery(name = "JobPosting.findByUpdatedAt", query = "SELECT j FROM JobPosting j WHERE j.updatedAt = :updatedAt")})
 public class JobPosting implements Serializable {
 
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "description")
+    private String description;
+    @Size(max = 8)
+    @Column(name = "state")
+    private String state;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "description")
-    private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "salary")
     private Double salary;
@@ -62,9 +51,6 @@ public class JobPosting implements Serializable {
     @Column(name = "time_end")
     @Temporal(TemporalType.TIME)
     private Date timeEnd;
-    @Size(max = 8)
-    @Column(name = "state")
-    private String state;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -74,11 +60,14 @@ public class JobPosting implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
     @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
-    @OneToMany(mappedBy = "jobPostingId")
+    @OneToMany(mappedBy = "jobPosting")
+    @JsonIgnore
     private Set<JobDescription> jobDescriptionSet;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
+    @JsonIgnore
     @ManyToOne
     private Admin approvedByAdminId;
+
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
     private Category categoryId;
@@ -101,13 +90,6 @@ public class JobPosting implements Serializable {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public Double getSalary() {
         return salary;
@@ -133,13 +115,6 @@ public class JobPosting implements Serializable {
         this.timeEnd = timeEnd;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -220,6 +195,22 @@ public class JobPosting implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
 }

@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -35,7 +36,6 @@ import java.util.Set;
     @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
     @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
 public class Employer implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,11 +49,14 @@ public class Employer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
+    @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
+    @JsonIgnore
     private User userId;
     @OneToMany(mappedBy = "employerId")
+    @JsonIgnore
     private Set<JobPosting> jobPostingSet;
 
     public Employer() {
