@@ -9,7 +9,14 @@ import com.job.pojo.CompanyImages;
 import java.util.List;
 
 public interface CompanyImagesService {
+
     List<CompanyImages> getAllCompanyImages();
+
     List<CompanyImages> getCompanyImagesByCompanyId(int companyId);
-    void addCompanyImage(CompanyImages companyImage); // Thêm phương thức mới
+
+    void addCompanyImage(CompanyImages companyImage);
+
+    CompanyImages getCompanyImageById(int id);
+
+    void updateCompanyImage(CompanyImages companyImage);
 }

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api")
 @CrossOrigin
 public class ApiCompanyImagesController {
+
     @Autowired
     private CompanyImagesService companyImagesService;
 
@@ -71,7 +72,52 @@ public class ApiCompanyImagesController {
         }
     }
 
-    // Inject Cloudinary (đảm bảo đã cấu hình trong ứng dụng)
+    @PutMapping(path = "/company_images/{companyId}/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CompanyImages> updateCompanyImage(
+            @PathVariable("companyId") int companyId,
+            @PathVariable("id") int id,
+            @RequestParam Map<String, String> params,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            // Lấy ảnh cần sửa
+            CompanyImages existingImage = companyImagesService.getCompanyImageById(id);
+
+            // Kiểm tra ID hợp lệ
+            if (existingImage == null || existingImage.getCompanyId().getId() != companyId) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Cập nhật caption nếu có
+            if (params.containsKey("caption")) {
+                existingImage.setCaption(params.get("caption"));
+            }
+
+            // Cập nhật thời gian nếu có
+            if (params.containsKey("uploadTime")) {
+                existingImage.setUploadTime(new Date(Long.parseLong(params.get("uploadTime"))));
+            }
+
+            // Cập nhật ảnh nếu có
+            if (file != null && !file.isEmpty()) {
+                Map res = cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                existingImage.setImagePath(res.get("secure_url").toString());
+            }
+
+//            // Gán lại công ty (nếu cần thiết – không bắt buộc vì bạn đã check rồi)
+//            CompanyInformation companyInfo = new CompanyInformation();
+//            companyInfo.setId(companyId);
+//            existingImage.setCompanyId(companyInfo);
+
+            // Gọi service cập nhật (dùng merge bên dưới)
+            companyImagesService.updateCompanyImage(existingImage);
+
+            return new ResponseEntity<>(existingImage, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @Autowired
     private Cloudinary cloudinary;
 }

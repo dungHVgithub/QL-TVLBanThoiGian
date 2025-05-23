@@ -61,4 +61,32 @@ public void addCompanyImage(CompanyImages companyImage) {
 
     companyImagesRepository.addCompanyImage(companyImage);
     }
+
+    @Override
+    public CompanyImages getCompanyImageById(int id) {
+  return companyImagesRepository.getCompanyImageById(id);    }
+
+    @Override
+    public void updateCompanyImage(CompanyImages companyImage) {
+       if (companyImage.getFile() != null && !companyImage.getFile().isEmpty()) {
+        try {
+            Map res = cloudinary.uploader().upload(companyImage.getFile().getBytes(),
+                    ObjectUtils.asMap("resource_type", "auto"));
+            companyImage.setImagePath(res.get("secure_url").toString());
+        } catch (IOException ex) {
+            Logger.getLogger(CompanyImagesServiceImpl.class.getName()).log(Level.SEVERE, "Error uploading to Cloudinary", ex);
+            throw new RuntimeException("Failed to upload image to Cloudinary", ex);
+        }
+    }
+
+    if (companyImage.getUploadTime() == null) {
+        companyImage.setUploadTime(new Date());
+    }
+
+    if (companyImage.getCompanyId() == null || companyImage.getCompanyId().getId() == null) {
+        throw new IllegalArgumentException("companyId is required");
+    }
+
+    companyImagesRepository.updateCompanyImage(companyImage);
+    }
 }

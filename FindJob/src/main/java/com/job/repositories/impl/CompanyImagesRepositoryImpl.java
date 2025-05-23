@@ -20,6 +20,7 @@ import java.util.List;
 @Repository
 @Transactional
 public class CompanyImagesRepositoryImpl implements CompanyImagesRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -56,4 +57,17 @@ public class CompanyImagesRepositoryImpl implements CompanyImagesRepository {
         Session s = this.factory.getObject().getCurrentSession();
         s.persist(companyImage);
     }
+
+    @Override
+    public CompanyImages getCompanyImageById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(CompanyImages.class, id);
+    }
+
+    @Override
+    public void updateCompanyImage(CompanyImages companyImage) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.merge(companyImage); 
+    }
+
 }
