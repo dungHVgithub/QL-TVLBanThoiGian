@@ -24,4 +24,4 @@ hs_err_pid*
 replay_pid*
 /SpingFindJobApp/target/
 /FindJob/target/
-/node_modules
+node_modules/

@@ -1,0 +1,219 @@
+.job-detail-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-detail-title {
+  text-align: center;
+  color: #1a2b49;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.job-detail-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Phần thông tin công việc (60%) */
+.job-detail-info {
+  flex: 1 1 60%;
+}
+
+.job-section {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.job-section-title {
+  color: #1a2b49;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.job-section p {
+  font-size: 0.95rem;
+  color: #333;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+}
+
+.job-section p .icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon-location { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>'); }
+.icon-calendar { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12zM7 10h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>'); }
+.icon-money { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2c2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4 1.79-4 4-4zm0 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-6 4h12v2H6v-2z"/></svg>'); }
+.icon-user { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>'); }
+.icon-clock { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'); }
+.icon-check { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'); }
+.icon-description { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a2b49"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 14h-3v3h-2v-3H8v-2h3v-3h2v3h3v2zm-3-7V3.5L17.5 8H13z"/></svg>'); }
+
+/* Phần hình ảnh công ty và công ty liên quan (40%) */
+.job-company-section {
+  flex: 1 1 40%;
+}
+
+.company-images {
+  margin-bottom: 20px;
+}
+
+.company-images-title,
+.related-companies-title {
+  color: #1a2b49;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.images-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.image-item {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.company-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.company-image:hover {
+  transform: scale(1.05);
+}
+
+.image-caption {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.no-images {
+  text-align: center;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.related-companies {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.companies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.company-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.company-item:hover {
+  transform: translateY(-2px);
+}
+
+.company-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.company-info {
+  flex-grow: 1;
+}
+
+.company-info p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.company-info .icon-money {
+  width: 14px;
+  height: 14px;
+  margin-right: 5px;
+}
+
+.company-link {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.company-link:hover {
+  text-decoration: underline;
+}
+
+.job-detail-loading,
+.job-detail-error {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+}
+
+.job-detail-loading {
+  color: #5bc0de;
+}
+
+.job-detail-error {
+  color: #d9534f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .job-detail-wrapper {
+    flex-direction: column;
+  }
+
+  .job-detail-info,
+  .job-company-section {
+    flex: 1 1 100%;
+  }
+
+  .company-image {
+    height: 120px;
+  }
+
+  .images-list {
+    max-height: 250px;
+  }
+
+  .company-logo {
+    width: 30px;
+    height: 30px;
+  }
+}

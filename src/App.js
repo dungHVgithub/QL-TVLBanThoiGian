@@ -11,7 +11,9 @@ import { MyDispatchContext } from "./configs/MyContexts";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Employer from "./components/Employer";
+import JobDetail from "./components/JobDetail";
 import Api, { endpoints } from "./configs/Api";
+
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
   useEffect(() => {
@@ -56,6 +58,7 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/employer" element={<Employer />} />
+              <Route path="/job_detail/:id" element= {< JobDetail/>}/>
             </Routes>
           </Container>
           <Footer />

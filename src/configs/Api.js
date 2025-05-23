@@ -8,6 +8,8 @@ export const endpoints = {
     'job_postings' : 'job_postings',
     'company_info' : 'company_info',
     'company_images' : 'company_images',
+    'job_details' : 'job_details',
+    'job_details_by_job_posting' : 'job_details/jobPosting',  
     'employers': '/employers',
     'register': '/users',
     'login': '/login',

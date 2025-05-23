@@ -23,7 +23,6 @@ const Header = () => {
     try {
       let res = await Api.get(endpoints['categories']);
       setCategories(res.data);
-      console.info(res.data);
     } catch (error) {
       console.error("Error loading categories:", error);
     }

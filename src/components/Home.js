@@ -1,62 +1,104 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png";
+import iconCate from "../img/iconCate.png"; // Toàn bộ hình ảnh chứa 4 icon
 import "../static/home.css";
 
 const Home = () => {
   const [jobPostings, setJobPostings] = useState([]);
   const [companyImages, setCompanyImages] = useState({});
-  const [companyInfos, setCompanyInfos] = useState({});
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [q] = useSearchParams();
+  const nav = useNavigate();
 
-  // Load danh sách công việc
+  // Gộp tất cả filter vào 1 state
+  const [filters, setFilters] = useState({
+    kw: "",
+    location: "",
+    salary: "",
+    companyName: ""
+  });
+
   const loadJob = async () => {
-    if (page > 0) {
-      try {
-        setLoading(true);
-        let url = `${endpoints["job_postings"]}?page=${page}`;
-        let cateId = q.get("categoryId");
-        if (cateId) url += `&categoryId=${cateId}`;
-        let kw = q.get("kw");
-        if (kw) url += `&kw=${kw}`;
-        const res = await Api.get(url);
-        if (res.data.length === 0) {
-          setPage(0);
-        } else {
-          if (page === 1) {
-            setJobPostings(res.data);
-          } else {
-            setJobPostings(prev => [...prev, ...res.data]);
-          }
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách công việc:", error);
-      } finally {
-        setLoading(false);
+    if (page <= 0) return;
+
+    try {
+      setLoading(true);
+      let url = `${endpoints["job_postings"]}?page=${page}`;
+      const cateId = q.get("categoryId");
+      if (cateId) url += `&categoryId=${cateId}`;
+      const kw = q.get("kw");
+      if (kw) url += `&kw=${kw}`;
+
+      const res = await Api.get(url);
+      let filteredJobs = Array.isArray(res.data) ? res.data : [];
+      // Lọc theo địa điểm
+      let location = q.get("location");
+      if (location) {
+        const lowerLocation = location.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => {
+          const address = job.employerId?.company?.address;
+          return address?.toLowerCase().includes(lowerLocation) || false;
+        });
       }
+
+      // Lọc theo lương
+      const minSalary = q.get("salary");
+      if (minSalary) {
+        filteredJobs = filteredJobs.filter(job =>
+          job.salary && parseFloat(job.salary) >= parseFloat(minSalary)
+        );
+      }
+
+      // Lọc theo tên công ty
+      const companyName = q.get("companyName");
+      if (companyName) {
+        const lowerCompany = companyName.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => {
+          const name = job.employerId?.company?.name;
+          return name?.toLowerCase().includes(lowerCompany) || false;
+        });
+      }
+
+      if (filteredJobs.length === 0) {
+        setPage(0);
+      } else {
+        if (page === 1) {
+          setJobPostings(filteredJobs);
+        } else {
+          setJobPostings(prev => [...prev, ...filteredJobs]);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách công việc:", error);
+      setJobPostings([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Load logo công ty (ảnh có caption bắt đầu bằng "Logo")
   const loadCompanyImage = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
-      const companyIds = [...new Set(jobs.map(job => job.employerId?.company).filter(id => id))];
+      const companyIds = [...new Set(
+        jobs.map(job => job.employerId?.company?.id)
+           .filter(id => id && (typeof id === 'number'))
+      )];
       const images = { ...companyImages };
 
       for (const companyId of companyIds) {
         if (!images[companyId]) {
           try {
-            const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
-            const logo = res.data
-              .filter(img => img.caption?.toLowerCase().startsWith("logo"))
-              .sort((a, b) => b.uploadTime - a.uploadTime)[0];
+            const res = await Api.get(`${endpoints["company_images"]}/${companyId}`); 
+            // Xử lý mảng hoặc object đơn lẻ
+            const data = Array.isArray(res.data) ? res.data : [res.data];
+            const logo = data
+              .sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Lấy hình ảnh mới nhất
             images[companyId] = logo?.imagePath || ou;
-          } catch (err) {
-            console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, err);
+          } catch (error) {
+            console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, error.message, error.response?.data);
             images[companyId] = ou;
           }
         }
@@ -68,111 +110,126 @@ const Home = () => {
     }
   };
 
-  // Load thông tin công ty từ API company_info
-  const loadCompanyInfos = async (jobs) => {
-    if (!jobs || jobs.length === 0) return;
-    try {
-      const companyIds = [...new Set(jobs.map(job => job.employerId?.company).filter(id => id))];
-      const infos = { ...companyInfos };
-
-      const res = await Api.get(endpoints["company_info"]);
-      for (const id of companyIds) {
-        if (!infos[id]) {
-          const found = res.data.find(c => c.id === id);
-          if (found) {
-            infos[id] = {
-              name: found.name,
-              address: found.address,
-            };
-          } else {
-            infos[id] = {
-              name: "Chưa xác định",
-              address: "Chưa xác định",
-            };
-          }
-        }
-      }
-
-      setCompanyInfos(infos);
-    } catch (error) {
-      console.error("Lỗi khi load thông tin công ty:", error);
-    }
-  };
-
-  // Lấy thông tin công ty từ state
   const getCompanyInfo = (employer) => {
-    const companyId = employer?.company;
-    if (!companyId) {
-      return { name: "Chưa xác định", address: "Chưa xác định", imagePath: ou };
-    }
-
+    const company = employer?.company;
     return {
-      name: companyInfos[companyId]?.name || "Chưa xác định",
-      address: companyInfos[companyId]?.address || "Chưa xác định",
-      imagePath: companyImages[companyId] || ou,
+      name: company?.name || "Chưa xác định",
+      address: company?.address || "Chưa xác định",
+      imagePath: companyImages[company?.id] || ou,
     };
   };
 
-  // Hàm định dạng thời gian
   const formatTime = (time) => {
     if (!time) return "Chưa xác định";
     return time.split(":").slice(0, 2).join(":");
   };
 
-  // Hàm định dạng ngày tháng từ timestamp
   const formatDate = (timestamp) => {
     if (!timestamp) return "Chưa xác định";
     const date = new Date(timestamp);
     return isNaN(date.getTime()) ? "Chưa xác định" : date.toLocaleDateString();
   };
 
-  // Khi component mount hoặc page/query thay đổi
   useEffect(() => {
     loadJob();
   }, [page, q]);
 
-  // Khi jobPostings thay đổi, gọi load dữ liệu phụ trợ
   useEffect(() => {
-    loadCompanyInfos(jobPostings);
     loadCompanyImage(jobPostings);
   }, [jobPostings]);
 
-  // Reset khi query thay đổi
   useEffect(() => {
     setPage(1);
     setJobPostings([]);
     setCompanyImages({});
-    setCompanyInfos({});
   }, [q]);
 
   const loadMore = () => {
     if (!loading && page > 0) {
-      setPage(page + 1);
+      setPage(prev => prev + 1);
     }
   };
 
-  const approvedJobs = jobPostings.filter((job) => job.state === "approved") || [];
+  const search = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value?.trim()) params.append(key, value);
+    });
+
+    nav("/?" + params.toString());
+  };
+
+  const clearFilters = () => {
+    setFilters({ kw: "", location: "", salary: "", companyName: "" });
+    nav("/", { replace: true });
+  };
+
+  const approvedJobs = Array.isArray(jobPostings) 
+    ? jobPostings.filter((job) => job.state === "approved") 
+    : [];
 
   return (
     <div className="home-container">
+      <div className="filter-section">
+        <form onSubmit={search} className="filter-form">
+          {[
+            { label: "Tìm công việc", placeholder: "Nhập tên công việc", name: "kw", type: "search" },
+            { label: "Địa điểm", placeholder: "Nhập địa điểm", name: "location", type: "search" },
+            { label: "Lương tối thiểu ($)", placeholder: "VD: 1000", name: "salary", type: "number" },
+            { label: "Tên công ty", placeholder: "VD: FPT", name: "companyName", type: "search" }
+          ].map(({ label, placeholder, name, type }) => (
+            <div className="filter-group" key={name}>
+              <label>{label}</label>
+              <input
+                type={type}
+                placeholder={placeholder}
+                value={filters[name]}
+                onChange={e => setFilters({ ...filters, [name]: e.target.value })}
+              />
+            </div>
+          ))}
+          <button type="submit" className="filter-btn">Lọc</button>
+          <button type="button" className="filter-btn reset-btn" onClick={clearFilters}>Xoá bộ lọc</button>
+        </form>
+      </div>
+
       {approvedJobs.length > 0 ? (
         approvedJobs.map((job) => {
           const companyInfo = getCompanyInfo(job.employerId);
           return (
-            <div key={job.id} className="job-card">
+            <div 
+              key={job.id} 
+              className="job-card" 
+              onClick={() => nav(`/job_detail/${job.id}`)} 
+              style={{ cursor: "pointer" }}
+            >
               <img
                 src={companyInfo.imagePath}
                 alt={companyInfo.name}
                 className="job-logo"
                 onError={(e) => {
+                  console.error("Lỗi tải hình ảnh:", e.target.src);
                   e.target.src = ou;
                 }}
               />
               <div className="job-content">
-                <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
+                <Link 
+                  to={`/job-detail/${job.id}`} 
+                  className="job-title-link" 
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
+                </Link>
                 <p className="job-details">
                   💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} - 
-                  📅 {job.submitEnd ? `Hạn nộp: ${formatDate(job.submitEnd)}` : "Hạn nộp: Chưa xác định"}
+                  <img 
+                    src={iconCate} 
+                    alt="Loại công việc" 
+                    style={{ width: "20px", height: "20px", margin: "7px", verticalAlign: "middle" }} 
+                  />
+                  Loại công việc: {job.categoryId?.name || "Chưa xác định"}
                 </p>
                 <p className="job-time">
                   🕒 Bắt đầu: {formatTime(job.timeStart)} - Kết thúc: {formatTime(job.timeEnd)}
@@ -181,7 +238,7 @@ const Home = () => {
                   🏢 Công ty: {companyInfo.name} - 📍 Địa chỉ: {companyInfo.address}
                 </p>
               </div>
-              <div className="action-buttons">
+              <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
                 <button className="apply-btn">Ứng tuyển</button>
                 <span className="heart-icon">♡</span>
               </div>
