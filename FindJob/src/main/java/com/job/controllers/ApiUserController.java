@@ -118,6 +118,7 @@ public class ApiUserController {
             String email = payload.get("email");
             String name = payload.get("name");
             String avatar = payload.get("avatar");
+            String role = payload.get("role");
 
             if (email == null || email.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Email là bắt buộc!");
@@ -126,30 +127,34 @@ public class ApiUserController {
             User user = userDetailsService.getUserByEmail(email);
 
             if (user == null) {
-                // Tạo user mới
-                user = new User();
-                user.setEmail(email);
-                user.setName(name);
-                user.setAvatar(avatar);
-                user.setRole("ROLE_EMPLOYEE");
-                user = userDetailsService.addUpdateUser(user);
+                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                         .body("Người dùng chưa đăng ký bằng Google/Facebook");
             }
+            
 
             String token = JwtUtils.generateToken(email);
             return ResponseEntity.ok(Collections.singletonMap("token", token));
         } catch (Exception ex) {
-            ex.printStackTrace(); // Log chi tiết để dễ debug
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi đăng nhập OAuth");
         }
     }
+
     @GetMapping("/users/count/employees")
     public ResponseEntity<Map<String, Long>> countEmployees() {
         long count = userDetailsService.countEmployees();
         return ResponseEntity.ok(Collections.singletonMap("totalEmployees", count));
     }
+
     @GetMapping("/users/count/employers")
     public ResponseEntity<Map<String, Long>> countEmployer() {
         long count = userDetailsService.countEmployer();
         return ResponseEntity.ok(Collections.singletonMap("totalEmployers", count));
+    }
+
+    @GetMapping("/users/check_email_exists")
+    public ResponseEntity<Map<String, Boolean>> checkEmailExists(@RequestParam String email) {
+        boolean exists = userDetailsService.getUserByEmail(email) != null;
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 }

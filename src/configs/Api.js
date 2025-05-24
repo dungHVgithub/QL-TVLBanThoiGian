@@ -4,19 +4,24 @@ import cookie from "react-cookies"
 const BASE_URL = 'http://localhost:8080/FindJob/api/';
 
 export const endpoints = {
-    'categories' : '/categories',
-    'job_postings' : 'job_postings',
-    'company_info' : 'company_info',
-    'company_images' : 'company_images',
-    'job_details' : 'job_details',
-    'job_details_by_job_posting' : 'job_details/jobPosting',  
+    'categories': '/categories',
+    'job_postings': 'job_postings',
+    'company_info': 'company_info',
+    'company_images': 'company_images',
     'employers': '/employers',
     'register': '/users',
     'login': '/login',
     'profile': '/secure/profile',
-    'oauth':'/oauth-login',
+    'oauth': '/oauth-login',
     'users': '/users',
     'updated': '/user/update',
+    'job_details': 'job_details',
+    'job_details_by_job_posting': 'job_details/jobPosting',
+    'documentsByUser': 'user_documents/by_user',
+    'updateDocument': '/user_documents',
+      'checkEmailExists': '/users/check_email_exists'
+
+
 }
 
 export const authApis = () => {
@@ -30,5 +35,5 @@ export const authApis = () => {
     })
 }
 export default axios.create({
-    baseURL : BASE_URL
+    baseURL: BASE_URL
 });

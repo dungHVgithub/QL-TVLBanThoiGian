@@ -4,16 +4,9 @@
  */
 package com.job.repositories.impl;
 
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.Feature;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
-import com.google.protobuf.ByteString;
 import com.job.pojo.UserDocuments;
 import com.job.repositories.UserDocRepository;
-import jakarta.persistence.Query;
+import org.hibernate.query.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -46,34 +39,6 @@ public class UserDocRepositoryImpl implements UserDocRepository {
         Root root = q.from(UserDocuments.class);
         q.select(root);
 
-//        if (params != null) {
-//            List<Predicate> predicates = new ArrayList<>();
-//            String kw = params.get("kw");
-//            if (kw != null && !kw.isEmpty()) {
-//                predicates.add(b.like(root.get("description"), String.format("%%%s%%", kw)));
-//            }
-//
-//            String fromPrice = params.get("fromSalary");
-//            if (fromPrice != null && !fromPrice.isEmpty()) {
-//                predicates.add(b.greaterThanOrEqualTo(root.get("salary"), fromPrice));
-//            }
-//
-//            String toPrice = params.get("toSalary");
-//            if (toPrice != null && !toPrice.isEmpty()) {
-//                predicates.add(b.lessThanOrEqualTo(root.get("salary"), toPrice));
-//            }
-//
-//            String cateId = params.get("categoryId");
-//            if (cateId != null && !cateId.isEmpty()) {
-//                predicates.add(b.equal(root.get("categoryId").as(Integer.class), cateId));
-//            }
-//
-//            q.where(predicates.toArray(Predicate[]::new));
-//            String orderBy = params.get("orderBy");
-//            if (orderBy != null && !orderBy.isEmpty()) {
-//                q.orderBy(b.asc(root.get(orderBy)));
-//            }
-//        }
         Query query = s.createQuery(q);
 
         if (params != null && params.containsKey("page")) {
@@ -118,27 +83,12 @@ public class UserDocRepositoryImpl implements UserDocRepository {
     }
 
     @Override
-    public String extractTextFromImage(byte[] fileBytes) throws Exception {
-        ByteString imgBytes = ByteString.copyFrom(fileBytes);
-        Image image = Image.newBuilder().setContent(imgBytes).build();
-        Feature feature = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
-        AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
-                .addFeatures(feature)
-                .setImage(image)
-                .build();
-
-        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
-            BatchAnnotateImagesResponse response = client.batchAnnotateImages(List.of(request));
-            AnnotateImageResponse imageResponse = response.getResponses(0);
-
-            if (imageResponse.hasError()) {
-                throw new Exception("Google Vision API Error: " + imageResponse.getError().getMessage());
-            }
-
-            return imageResponse.getFullTextAnnotation().getText();
-        }
+    public List<UserDocuments> getDocsByUserId(int userId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String hql = "FROM UserDocuments u WHERE u.employeeId.userId.id = :uid";
+        Query<UserDocuments> q = s.createQuery(hql, UserDocuments.class);
+        q.setParameter("uid", userId);
+        return q.getResultList();
     }
-
-    
 
 }

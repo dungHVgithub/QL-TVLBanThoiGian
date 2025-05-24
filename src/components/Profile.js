@@ -9,6 +9,8 @@ const Profile = () => {
   const user = useContext(MyUserContext);
   const [profile, setProfile] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [documents, setDocuments] = useState([]);
+  const [documentsBeingEdited, setDocumentsBeingEdited] = useState({});
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -25,7 +27,20 @@ const Profile = () => {
         }
       }
     };
+
+    const loadDocuments = async () => {
+      if (user?.id) {
+        try {
+          const res = await authApis().get(`${endpoints["documentsByUser"]}/${user.id}`);
+          setDocuments(res.data);
+        } catch (err) {
+          console.error("Không thể tải tài liệu:", err);
+        }
+      }
+    };
+
     loadProfile();
+    loadDocuments();
   }, [user]);
 
   const handleSubmit = async (e) => {
@@ -51,6 +66,33 @@ const Profile = () => {
       alert("Có lỗi xảy ra khi lưu thông tin.");
     }
   };
+  const handleDocSubmit = async (e, docId) => {
+    e.preventDefault();
+    const doc = documentsBeingEdited[docId];
+
+    try {
+      const res = await authApis().put(
+        `${endpoints.updateDocument}/${docId}`,
+        {
+          name: doc.name,
+          type: doc.document_type
+        }
+      );
+
+      const updatedDocs = documents.map(d => (d.id === docId ? res.data : d));
+      setDocuments(updatedDocs);
+
+      const newEditing = { ...documentsBeingEdited };
+      delete newEditing[docId];
+      setDocumentsBeingEdited(newEditing);
+
+      alert("Cập nhật tài liệu thành công!");
+    } catch (err) {
+      console.error("Lỗi khi cập nhật tài liệu:", err);
+      alert("Có lỗi xảy ra khi cập nhật tài liệu.");
+    }
+  };
+
 
   if (!profile) return <p className="text-center mt-5">Đang tải thông tin...</p>;
 
@@ -154,7 +196,111 @@ const Profile = () => {
             </div>
           </Form>
         </Card>
+
       )}
+      <Card className="shadow p-4 mt-4">
+        <h4 className="mb-3">Tài Liệu Cá Nhân</h4>
+        {documents.length === 0 ? (
+          <p>Chưa có tài liệu nào.</p>
+        ) : (
+          documents.map((doc) => {
+            const isEditing = !!documentsBeingEdited[doc.id];
+            const editedDoc = documentsBeingEdited[doc.id] || {};
+
+            return (
+              <Form key={doc.id} onSubmit={(e) => handleDocSubmit(e, doc.id)}>
+                <Row className="align-items-center mb-4">
+                  <Col md={3} className="text-center">
+                    <img
+                      src={doc.documentPath}
+                      alt={`Tài liệu: ${doc.name}`}
+                      className="img-fluid rounded border"
+                      style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                    />
+                  </Col>
+
+                  <Col md={6}>
+                    {isEditing ? (
+                      <>
+                        <Form.Group className="mb-2">
+                          <Form.Label>Tên tài liệu</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={editedDoc.name}
+                            onChange={(e) =>
+                              setDocumentsBeingEdited({
+                                ...documentsBeingEdited,
+                                [doc.id]: {
+                                  ...editedDoc,
+                                  name: e.target.value
+                                }
+                              })
+                            }
+                          />
+                        </Form.Group>
+
+                        <Form.Group className="mb-2">
+                          <Form.Label>Loại tài liệu</Form.Label>
+                          <Form.Select
+                            value={editedDoc.document_type}
+                            onChange={(e) =>
+                              setDocumentsBeingEdited({
+                                ...documentsBeingEdited,
+                                [doc.id]: {
+                                  ...editedDoc,
+                                  type: e.target.value
+                                }
+                              })
+                            }
+                          >
+                            <option value="CV">CV</option>
+                            <option value="ID">ID</option>
+                            <option value="Certificate">Certificate</option>
+                          </Form.Select>
+                        </Form.Group>
+
+                        <Button variant="success" type="submit" className="me-2">
+                          💾 Lưu
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            const newEditing = { ...documentsBeingEdited };
+                            delete newEditing[doc.id];
+                            setDocumentsBeingEdited(newEditing);
+                          }}
+                        >
+                          ❌ Hủy
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <p><strong>📃 Tên tài liệu:</strong> {doc.name}</p>
+                        <p><strong>📄 Loại tài liệu:</strong> {doc.document_type}</p>
+                        <p><strong>📅 Ngày tạo:</strong> {new Date(doc.createdDate).toLocaleDateString("vi-VN")}</p>
+                        <Button
+                          variant="primary"
+                          onClick={() =>
+                            setDocumentsBeingEdited({
+                              ...documentsBeingEdited,
+                              [doc.id]: {
+                                name: doc.name,
+                                type: doc.document_type
+                              }
+                            })
+                          }
+                        >
+                          ✏️ Chỉnh sửa
+                        </Button>
+                      </>
+                    )}
+                  </Col>
+                </Row>
+              </Form>
+            );
+          })
+        )}
+      </Card>
     </Container>
   );
 };

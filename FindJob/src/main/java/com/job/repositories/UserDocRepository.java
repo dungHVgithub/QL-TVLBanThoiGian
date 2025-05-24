@@ -22,7 +22,8 @@ public interface UserDocRepository {
     UserDocuments addOrUpdate(UserDocuments j);
 
     void deleteUserDocs(int id);
+    List<UserDocuments> getDocsByUserId(int userId);
 
-    String extractTextFromImage(byte[] fileBytes) throws Exception;
+   
 
 }

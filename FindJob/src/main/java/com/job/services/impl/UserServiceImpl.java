@@ -44,16 +44,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = this.getUserByUserName(username);
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        User u = this.getUserByUserName(usernameOrEmail);
+
+      
         if (u == null) {
-            throw new UsernameNotFoundException("Invalid username");
+            u = this.getUserByEmail(usernameOrEmail);
         }
-        System.out.println("Loaded user: " + u.getUsername() + ", Role: " + u.getRole());
+
+        if (u == null) {
+            throw new UsernameNotFoundException("Không tìm thấy người dùng");
+        }
+
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(u.getRole()));
+
         return new org.springframework.security.core.userdetails.User(
-                u.getUsername(), u.getPassword(), authorities);
+                u.getUsername() != null ? u.getUsername() : u.getEmail(),
+                u.getPassword() != null ? u.getPassword() : "", // OAuth có thể không có password
+                authorities
+        );
     }
 
     @Override
@@ -96,12 +106,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUpdateUser(User u) {
-        
+
         if (u.getPassword() != null && !u.getPassword().isEmpty()) {
             u.setPassword(this.passwordEncoder.encode(u.getPassword()));
         }
 
-       
         if (u.getFile() != null && !u.getFile().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(u.getFile().getBytes(),
@@ -142,7 +151,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long countEmployees() {
-       return this.userRepo.countByRole("ROLE_EMPLOYEE");
+        return this.userRepo.countByRole("ROLE_EMPLOYEE");
     }
 
     @Override
@@ -154,6 +163,5 @@ public class UserServiceImpl implements UserService {
     public List<User> getUsersByRole(String role) {
         return this.userRepo.getUsersByRole(role);
     }
-
 
 }

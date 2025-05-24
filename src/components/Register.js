@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Alert, Button, FloatingLabel, Form, Col, Row } from "react-bootstrap";
+import { Alert, Button, FloatingLabel, Form, Col, Row, ProgressBar } from "react-bootstrap";
 import Api, { endpoints } from "../configs/Api";
 import { useNavigate } from "react-router-dom";
 import MySpinner from "./layouts/MySpinner";
@@ -7,6 +7,7 @@ import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfi
 import { signInWithPopup } from "firebase/auth";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import cookie from "react-cookies";
+import SelectRoleModal from "./SelectRoleModal";
 
 const Register = () => {
     const info = [
@@ -22,9 +23,43 @@ const Register = () => {
     const [msg, setMsg] = useState("");
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false);
+    const [showRoleModal, setShowRoleModal] = useState(false);
+    const [tempUserInfo, setTempUserInfo] = useState(null);
+    const [passwordStrength, setPasswordStrength] = useState(0);
     const nav = useNavigate();
 
-    const setState = (value, field) => setUser({ ...user, [field]: value });
+    const setState = (value, field) => {
+        if (field === "phone") {
+            if (!/^\d*$/.test(value)) return;
+            if (value.length > 0 && value[0] !== "0") return;
+        }
+        if (field === "name") {
+            if (/[^a-zA-ZÀ-ỹ\s]/.test(value)) return;
+        }
+        if (field === "password") {
+            updatePasswordStrength(value);
+        }
+        setUser({ ...user, [field]: value });
+    };
+
+    const updatePasswordStrength = (value) => {
+        let score = 0;
+        if (value.length >= 6) score += 1;
+        if (/[A-Z]/.test(value)) score += 1;
+        if (/[0-9]/.test(value)) score += 1;
+        if (/[^A-Za-z0-9]/.test(value)) score += 1;
+        setPasswordStrength(score);
+    };
+
+    const getPasswordStrengthVariant = () => {
+        switch (passwordStrength) {
+            case 1: return { variant: "danger", label: "Yếu" };
+            case 2: return { variant: "warning", label: "Trung bình" };
+            case 3:
+            case 4: return { variant: "success", label: "Mạnh" };
+            default: return { variant: "danger", label: "" };
+        }
+    };
 
     const register = async (e) => {
         e.preventDefault();
@@ -60,8 +95,33 @@ const Register = () => {
         }
     };
 
+    const proceedOAuthLogin = async (firebaseUser, role) => {
+        const payload = {
+            name: firebaseUser.displayName,
+            email: firebaseUser.email,
+            avatar: firebaseUser.photoURL,
+            provider: "google",
+            role
+        };
+
+        const res = await Api.post(endpoints.oauth, payload);
+        const token = res.data.token;
+        cookie.save("token", token);
+        alert("✅ Đăng ký thành công!");
+        alert("✅ Hãy đăng nhập!");
+        nav("/login");
+    };
+
+    const handleRoleSelect = async (role) => {
+        if (tempUserInfo) {
+            await proceedOAuthLogin(tempUserInfo.firebaseUser, role);
+            setTempUserInfo(null);
+        }
+    };
+
     const loginWithProvider = async (provider) => {
         if (loading) return;
+
         try {
             setLoading(true);
             const result = await signInWithPopup(auth, provider);
@@ -73,19 +133,15 @@ const Register = () => {
                 if (!email.trim()) throw new Error("Email là bắt buộc!");
             }
 
-            const payload = {
-                name: firebaseUser.displayName,
-                email,
-                avatar: firebaseUser.photoURL,
-                provider: provider === googleProvider ? "google" : "facebook"
-            };
+            const checkRes = await Api.get(`${endpoints.checkEmailExists}?email=${email}`);
+            const emailExists = checkRes.data.exists;
 
-            const res = await Api.post(endpoints.oauth, payload);
-            const token = res.data.token;
-            cookie.save("token", token);
-
-            alert("✅ Đăng ký bằng tài khoản mạng xã hội thành công!");
-            nav("/");
+            if (emailExists) {
+                await proceedOAuthLogin(firebaseUser, "ROLE_EMPLOYEE");
+            } else {
+                setTempUserInfo({ firebaseUser, provider });
+                setShowRoleModal(true);
+            }
         } catch (error) {
             console.error("OAuth đăng ký lỗi:", error);
             setMsg("❌ Đăng ký bằng mạng xã hội thất bại!");
@@ -122,6 +178,14 @@ const Register = () => {
                                     onChange={(e) => setState(e.target.value, f.field)}
                                 />
                             </FloatingLabel>
+                            {f.field === "password" && user.password && (
+                                <ProgressBar
+                                    now={passwordStrength * 25}
+                                    variant={getPasswordStrengthVariant().variant}
+                                    label={getPasswordStrengthVariant().label}
+                                    className="mt-1"
+                                />
+                            )}
                         </Col>
                     ))}
                 </Row>
@@ -174,8 +238,14 @@ const Register = () => {
                     )}
                 </div>
             </Form>
+
+            <SelectRoleModal
+                show={showRoleModal}
+                onClose={() => setShowRoleModal(false)}
+                onSelect={handleRoleSelect}
+            />
         </div>
-    );  
+    );
 };
 
 export default Register;

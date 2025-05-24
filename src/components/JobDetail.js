@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png"; // Hình ảnh mặc định
 import '../static/job_detail.css';
-import { IconName } from "react-icons/fc";
+
 
 
 const JobDetail = () => {

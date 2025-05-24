@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,7 +55,6 @@ public class User implements Serializable {
     @Size(max = 13)
     @Column(name = "role")
     private String role;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 100)
     @Column(name = "email")
     private String email;
@@ -79,6 +79,7 @@ public class User implements Serializable {
     @OneToOne(mappedBy = "userId")
     private Employer employer;
     @OneToOne(mappedBy = "userId")
+    @JsonIgnore
     private Employee employee;
 
     public User() {

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -67,85 +68,33 @@ public class ApiUserDocController {
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
 
-//    @PostMapping(
-//            path = "/user_documents/ocr/cccd",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-//    )
-//    public ResponseEntity<?> extractAndUpdateFromCCCD(
-//            @RequestPart("file") MultipartFile file,
-//            @RequestPart("userId") String userIdStr) {
-//
-//        System.out.println("=== Enter OCR endpoint ===");
-//        System.out.println("file==null? " + (file == null));
-//        System.out.println("userIdStr=" + userIdStr);
-//
-//        try {
-//            // Chuyển đổi userId từ String sang int
-//            int userId = Integer.parseInt(userIdStr);
-//
-//            // Kiểm tra sự tồn tại của người dùng
-//            User user = userService.getUserById(userId);
-//            if (user == null) {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                        .body(Map.of("error", "User with ID " + userId + " not found."));
-//            }
-//
-//            // Đọc bytes từ file một lần
-//            byte[] fileBytes = file.getBytes();
-//
-//            // Trích xuất văn bản từ ảnh
-//            String ocrText = userDocService.extractTextFromImage(fileBytes);
-//
-//            // Phân tích thông tin từ văn bản OCR
-//            Map<String, String> parsedInfo = CCCDParser.parse(ocrText);
-//
-//            // Tải ảnh lên Cloudinary
-//            Map<?, ?> uploadResult = cloudinary.uploader().upload(fileBytes, ObjectUtils.emptyMap());
-//            String imageUrl = (String) uploadResult.get("secure_url");
-//
-//            // Tạo đối tượng UserDocuments mới
-//            UserDocuments doc = new UserDocuments();
-//            doc.setId(null); // auto-increment
-//            doc.setUserid(user);
-//            doc.setCreatedDate(new Date());
-//            doc.setDocumentType("ID");
-//            doc.setDocumentPath(imageUrl);
-//            doc.setStatus("pending");
-//
-//            userDocService.addOrUpdate(doc);
-//
-//            // Cập nhật thông tin người dùng
-//            if (parsedInfo.containsKey("name")) {
-//                user.setName(parsedInfo.get("name"));
-//            }
-//            if (parsedInfo.containsKey("address")) {
-//                user.setAddress(parsedInfo.get("address"));
-//            }
-//            if (parsedInfo.containsKey("birthday")) {
-//                String[] parts = parsedInfo.get("birthday").split("/");
-//                if (parts.length == 3) {
-//                    String isoDate = parts[2] + "-" + parts[1] + "-" + parts[0];
-//                    user.setBirthday(java.sql.Date.valueOf(isoDate));
-//                }
-//            }
-//
-//            userService.addUpdateUser(user);
-//
-//            // Trả kết quả
-//            return ResponseEntity.ok(Map.of(
-//                    "documentUrl", imageUrl,
-//                    "ocrText", ocrText,
-//                    "parsedFields", parsedInfo
-//            ));
-//
-//        } catch (NumberFormatException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body(Map.of("error", "Invalid userId format."));
-//        } catch (Exception e) {
-//            e.printStackTrace(); // In ra lỗi để debug
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(Map.of("error", e.getMessage()));
-//        }
-//    }
+    @GetMapping("/user_documents/by_user/{userId}")
+    public ResponseEntity<List<UserDocuments>> getDocumentsByUserId(@PathVariable("userId") int userId) {
+        List<UserDocuments> docs = this.userDocService.getDocsByUserId(userId);
+        return new ResponseEntity<>(docs, HttpStatus.OK);
+    }
 
+    @PutMapping("/user_documents/{id}")
+    public ResponseEntity<UserDocuments> updateUserDocument(
+            @PathVariable("id") int id,
+            @RequestBody UserDocuments updatedDoc) {
+        try {
+            UserDocuments existing = this.userDocService.getUserDocsById(id);
+            if (existing == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Cập nhật các trường cần thiết
+            existing.setName(updatedDoc.getName());
+            existing.setDocumentType(updatedDoc.getDocumentType());
+
+            UserDocuments saved = this.userDocService.addOrUpdate(existing);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
 }

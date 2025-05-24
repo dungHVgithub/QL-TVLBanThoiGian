@@ -71,6 +71,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/job_postings/**").hasAnyRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/user/update").authenticated()
+                        .requestMatchers("/api/user_documents/**").authenticated()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form.loginPage("/login")

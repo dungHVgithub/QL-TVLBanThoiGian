@@ -104,10 +104,7 @@ public class ApiCompanyImagesController {
                 existingImage.setImagePath(res.get("secure_url").toString());
             }
 
-//            // Gán lại công ty (nếu cần thiết – không bắt buộc vì bạn đã check rồi)
-//            CompanyInformation companyInfo = new CompanyInformation();
-//            companyInfo.setId(companyId);
-//            existingImage.setCompanyId(companyInfo);
+
 
             // Gọi service cập nhật (dùng merge bên dưới)
             companyImagesService.updateCompanyImage(existingImage);
