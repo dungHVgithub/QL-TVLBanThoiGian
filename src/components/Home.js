@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png";
-import iconCate from "../img/iconCate.png"; // Toàn bộ hình ảnh chứa 4 icon
+import iconCate from "../img/iconCate.png";
 import "../static/home.css";
 
 const Home = () => {
@@ -13,7 +13,6 @@ const Home = () => {
   const [q] = useSearchParams();
   const nav = useNavigate();
 
-  // Gộp tất cả filter vào 1 state
   const [filters, setFilters] = useState({
     kw: "",
     location: "",
@@ -34,7 +33,6 @@ const Home = () => {
 
       const res = await Api.get(url);
       let filteredJobs = Array.isArray(res.data) ? res.data : [];
-      // Lọc theo địa điểm
       let location = q.get("location");
       if (location) {
         const lowerLocation = location.toLowerCase();
@@ -44,7 +42,6 @@ const Home = () => {
         });
       }
 
-      // Lọc theo lương
       const minSalary = q.get("salary");
       if (minSalary) {
         filteredJobs = filteredJobs.filter(job =>
@@ -52,7 +49,6 @@ const Home = () => {
         );
       }
 
-      // Lọc theo tên công ty
       const companyName = q.get("companyName");
       if (companyName) {
         const lowerCompany = companyName.toLowerCase();
@@ -92,10 +88,11 @@ const Home = () => {
         if (!images[companyId]) {
           try {
             const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
-            // Xử lý mảng hoặc object đơn lẻ
             const data = Array.isArray(res.data) ? res.data : [res.data];
-            const logo = data
-              .sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Lấy hình ảnh mới nhất
+            // Ưu tiên chọn ảnh có caption chứa "logo" (không phân biệt hoa thường)
+            const logo = data.find(image => 
+              image.caption?.toLowerCase().includes("logo")
+            ) || data.sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Nếu không có, chọn ảnh mới nhất
             images[companyId] = logo?.imagePath || ou;
           } catch (error) {
             console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, error.message, error.response?.data);
@@ -220,7 +217,7 @@ const Home = () => {
                   className="job-title-link"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <h3 className="job-title">{job.description || "Mô tả công việc"}</h3>
+                  <h3 className="job-title">{job.name || "Tên công việc"}</h3>
                 </Link>
                 <p className="job-details">
                   💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} -

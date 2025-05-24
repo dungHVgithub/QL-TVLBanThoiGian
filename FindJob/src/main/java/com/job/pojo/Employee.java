@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,10 +45,13 @@ public class Employee implements Serializable {
     @Column(name = "id")
     private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
     @OneToMany(mappedBy = "employeeId")
+    @JsonIgnore
     private Set<UserDocuments> userDocumentsSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne

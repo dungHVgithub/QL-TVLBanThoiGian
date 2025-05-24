@@ -25,6 +25,7 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         Root<Employer> root = q.from(Employer.class);
         q.select(root);
         root.fetch("company", jakarta.persistence.criteria.JoinType.LEFT);
+        root.fetch("userId", jakarta.persistence.criteria.JoinType.LEFT); // Thêm fetch cho userId
         return s.createQuery(q).getResultList();
     }
 
@@ -36,7 +37,7 @@ public class EmployerRepositoryImpl implements EmployerRepository {
         Root<Employer> root = q.from(Employer.class);
         q.select(root).where(b.equal(root.get("id"), id));
         root.fetch("company", jakarta.persistence.criteria.JoinType.LEFT);
+        root.fetch("userId", jakarta.persistence.criteria.JoinType.LEFT); // Thêm fetch cho userId
         return s.createQuery(q).getSingleResultOrNull();
     }
-
 }

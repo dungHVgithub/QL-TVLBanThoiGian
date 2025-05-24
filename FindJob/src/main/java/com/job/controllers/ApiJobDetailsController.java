@@ -29,11 +29,57 @@ public class ApiJobDetailsController {
         return ResponseEntity.ok(jobDetail);
     }
 
+    @PostMapping
+    public ResponseEntity<JobDescription> createJobDetail(@RequestBody JobDescription jobDetail) {
+        try {
+            // Kiểm tra jobPosting có id không
+            if (jobDetail.getJobPosting() == null || jobDetail.getJobPosting().getId() == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            JobDescription savedJobDetail = jobDetailService.saveJobDetail(jobDetail);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedJobDetail);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<JobDescription> updateJobDetail(@PathVariable("id") int id, @RequestBody JobDescription jobDetail) {
+        try {
+            JobDescription existingJobDetail = jobDetailService.getJobDetailById(id);
+            if (existingJobDetail == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Cập nhật các trường
+            existingJobDetail.setDescription(jobDetail.getDescription());
+            existingJobDetail.setLevel(jobDetail.getLevel());
+            existingJobDetail.setExperience(jobDetail.getExperience());
+            existingJobDetail.setSubmitEnd(jobDetail.getSubmitEnd());
+            existingJobDetail.setBenefit(jobDetail.getBenefit());
+            if (jobDetail.getJobPosting() != null && jobDetail.getJobPosting().getId() != null) {
+                existingJobDetail.setJobPosting(jobDetail.getJobPosting());
+            }
+
+            JobDescription updatedJobDetail = jobDetailService.saveJobDetail(existingJobDetail);
+            return ResponseEntity.ok(updatedJobDetail);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void destroy(@PathVariable("id") int id)
-    {
-        this.jobDetailService.deleteJobDetail(id);
+    public ResponseEntity<Void> deleteJobDetail(@PathVariable("id") int id) {
+        try {
+            JobDescription jobDetail = jobDetailService.getJobDetailById(id);
+            if (jobDetail == null) {
+                return ResponseEntity.notFound().build();
+            }
+            jobDetailService.deleteJobDetail(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/jobPosting/{jobPostingId}")

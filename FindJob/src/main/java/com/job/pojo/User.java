@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,8 +78,10 @@ public class User implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @OneToOne(mappedBy = "userId")
+    @JsonIgnore
     private Employer employer;
     @OneToOne(mappedBy = "userId")
+    @JsonIgnore
     private Employee employee;
 
     public User() {

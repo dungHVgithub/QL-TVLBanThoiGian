@@ -30,8 +30,8 @@ public class JobPosting implements Serializable {
 
     @Lob
     @Size(max = 65535)
-    @Column(name = "description")
-    private String description;
+    @Column(name = "name")
+    private String name;
     @Size(max = 8)
     @Column(name = "state")
     private String state;
@@ -197,13 +197,7 @@ public class JobPosting implements Serializable {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
 
-    public String getDescription() {
-        return description;
-    }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getState() {
         return state;
@@ -213,4 +207,11 @@ public class JobPosting implements Serializable {
         this.state = state;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

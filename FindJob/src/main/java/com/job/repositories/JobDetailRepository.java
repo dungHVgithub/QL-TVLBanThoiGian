@@ -10,5 +10,7 @@ public interface JobDetailRepository {
     public void deleteJobDetail (int id);
     JobDescription getJobDetailByJobPostingId(int jobPostingId);
     JobDescription getJobDetailById(int id);
+    JobDescription save(JobDescription jobDetail);
+
 
 }

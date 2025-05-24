@@ -10,5 +10,7 @@ public interface JobDetailService {
     public void deleteJobDetail (int id);
     JobDescription getJobDetailById(int id);
     JobDescription getJobDetailByJobPostingId(int jobPostingId);
+    JobDescription saveJobDetail(JobDescription jobDetail);
+
 
 }

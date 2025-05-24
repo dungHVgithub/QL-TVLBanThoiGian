@@ -28,9 +28,8 @@ const Login = () => {
             setLoading(true);
             const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
-            
             cookie.save("token", token);
-
+            localStorage.setItem(token);
             const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;
 
@@ -40,7 +39,8 @@ const Login = () => {
                     token: token,
                     username: userInfo.username,
                     name: userInfo.name,
-                    role: userInfo.role
+                    role: userInfo.role,
+                    id: userInfo.id // Sửa user_id thành id
                 },
             });
 
@@ -61,58 +61,56 @@ const Login = () => {
     };
 
     const loginWithProvider = async (provider) => {
-  try {
-    alert("Vui lòng không đóng cửa sổ popup cho đến khi hoàn tất đăng nhập!");
-    setLoading(true);
+        try {
+            alert("Vui lòng không đóng cửa sổ popup cho đến khi hoàn tất đăng nhập!");
+            setLoading(true);
 
-    const result = await signInWithPopup(auth, provider);
-    const firebaseUser = result.user;
+            const result = await signInWithPopup(auth, provider);
+            const firebaseUser = result.user;
 
-    let email = firebaseUser.email;
-    if (!email && provider === facebookProvider) {
-      email = prompt("Facebook không cung cấp email. Nhập email để tiếp tục:");
-      if (!email) throw new Error("Email bắt buộc!");
-    }
+            let email = firebaseUser.email;
+            if (!email && provider === facebookProvider) {
+                email = prompt("Facebook không cung cấp email. Nhập email để tiếp tục:");
+                if (!email) throw new Error("Email bắt buộc!");
+            }
 
-    const payload = {
-      name: firebaseUser.displayName,
-      email,
-      avatar: firebaseUser.photoURL,
+            const payload = {
+                name: firebaseUser.displayName,
+                email,
+                avatar: firebaseUser.photoURL,
+            };
+
+            const res = await Api.post(endpoints.oauth, payload);
+            const token = res.data.token;
+
+            cookie.save("token", token);
+            localStorage.setItem("token", token);
+
+            const profileRes = await authApis().get(endpoints.profile);
+            const userInfo = profileRes.data;
+
+            dispatch({
+                type: "login",
+                payload: {
+                    token: token,
+                    ...userInfo,
+                },
+            });
+
+            nav("/");
+        } catch (err) {
+            console.error("OAuth login error:", err);
+            if (err.code === "auth/account-exists-with-different-credential") {
+                setMsg("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
+            } else if (err.code === "auth/popup-closed-by-user") {
+                setMsg("Bạn đã đóng cửa sổ đăng nhập quá sớm.");
+            } else {
+                setMsg("Đăng nhập mạng xã hội thất bại!");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
-
-    const res = await Api.post(endpoints.oauth, payload);
-    const token = res.data.token;
-
-    cookie.save("token", token);
-    localStorage.setItem("token", token);
-
-    const profileRes = await authApis().get(endpoints.profile);
-    const userInfo = profileRes.data;
-
-    dispatch({
-      type: "login",
-      payload: {
-        token: token,
-        ...userInfo,
-      },
-    });
-
-    nav("/");
-  } catch (err) {
-    console.error("OAuth login error:", err);
-    if (err.code === "auth/account-exists-with-different-credential") {
-      setMsg("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
-    } else if (err.code === "auth/popup-closed-by-user") {
-      setMsg("Bạn đã đóng cửa sổ đăng nhập quá sớm.");
-    } else {
-      setMsg("Đăng nhập mạng xã hội thất bại!");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-
-
 
     return (
         <>

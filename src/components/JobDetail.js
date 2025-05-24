@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom';
 import Api, { endpoints } from "../configs/Api";
 import ou from "../img/ou.png"; // Hình ảnh mặc định
 import '../static/job_detail.css';
-import { IconName } from "react-icons/fc";
-
+import { FaMapMarkerAlt, FaCalendarAlt, FaDollarSign, FaUser, FaClock, FaCheckCircle, FaFileAlt } from "react-icons/fa";
 
 const JobDetail = () => {
   const { id } = useParams();
@@ -41,7 +40,20 @@ const JobDetail = () => {
   const formatDate = (timestamp) => {
     if (!timestamp) return "Chưa xác định";
     const date = new Date(timestamp);
-    return isNaN(date.getTime()) ? "Chưa xác định" : date.toLocaleDateString();
+    if (isNaN(date.getTime())) return "Chưa xác định";
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // Định dạng DD/MM/YYYY
+  };
+
+  // Hàm xử lý khi nhấn nút Ứng tuyển
+  const handleApply = () => {
+    console.log("Người dùng đã nhấn nút Ứng tuyển cho công việc ID:", id);
+    // Thêm logic ứng tuyển tại đây (gọi API, mở modal, v.v.)
+  };
+
+  // Hàm xử lý khi nhấn nút Thêm yêu thích
+  const handleFavorite = () => {
+    console.log("Người dùng đã thêm công việc ID:", id, "vào danh sách yêu thích");
+    // Thêm logic thêm vào danh sách yêu thích tại đây (gọi API, cập nhật trạng thái, v.v.)
   };
 
   useEffect(() => {
@@ -62,24 +74,34 @@ const JobDetail = () => {
     <div className="job-detail-container">
       <h2 className="job-detail-title">Chi tiết công việc</h2>
       <div className="job-detail-wrapper">
-        {/* Phần thông tin công việc (60%) */}
+        {/* Phần thông tin công việc (70%) */}
         <div className="job-detail-info">
           <div className="job-section">
             <h3 className="job-section-title">Thông tin công việc</h3>
-            <p><span className="icon-location"></span> Địa điểm: {jobDetail.jobPosting?.employerId?.company?.address || "Chưa xác định"}</p>
-            <p><span className="icon-calendar"></span> Ngày đăng: {formatDate(jobDetail.jobPosting?.createdAt)}</p>
-            <p><span className="icon-money"></span> Lương: {jobDetail.jobPosting?.salary ? `${jobDetail.jobPosting.salary} $` : "Thỏa thuận"}</p>
-            <p><span className="icon-user"></span> Kinh nghiệm: {jobDetail.experience || "Chưa xác định"}</p>
-            <p><span className="icon-clock"></span> Hạn nộp: {formatDate(jobDetail.submitEnd)}</p>
-            <p><span className="icon-check"></span> Phúc lợi: {jobDetail.benefit || "Chưa xác định"}</p>
+            <div className="job-info-row">
+              <p><FaMapMarkerAlt className="icon" /> Địa điểm: {jobDetail.jobPosting?.employerId?.company?.address || "Chưa xác định"}</p>
+              <p>
+                <FaCalendarAlt className="icon" /> 
+                Ngày đăng: {formatDate(jobDetail.jobPosting?.createdAt)} - 
+                Ngày cập nhật: {formatDate(jobDetail.jobPosting?.updatedAt)}
+              </p>
+            </div>
+            <div className="job-info-row">
+              <p><FaDollarSign className="icon" /> Lương: {jobDetail.jobPosting?.salary ? `${jobDetail.jobPosting.salary} $` : "Thỏa thuận"}</p>
+              <p><FaUser className="icon" /> Kinh nghiệm: {jobDetail.experience ? `${jobDetail.experience} năm` : "Chưa xác định"} - Cấp độ: {jobDetail.level || "Chưa xác định"}</p>
+            </div>
+            <div className="job-info-row">
+              <p><FaClock className="icon" /> Hạn nộp: {formatDate(jobDetail.submitEnd)}</p>
+              <p><FaCheckCircle className="icon" /> Phúc lợi: {jobDetail.benefit || "Chưa xác định"}</p>
+            </div>
           </div>
           <div className="job-section">
             <h3 className="job-section-title">Mô tả công việc</h3>
-            <p><span className="icon-description"></span> {jobDetail.description || "Chưa có mô tả"}</p>
+            <p><FaFileAlt className="icon" /> {jobDetail.description || "Chưa có mô tả"}</p>
           </div>
         </div>
 
-        {/* Phần hình ảnh công ty (40%) */}
+        {/* Phần hình ảnh công ty (30%) */}
         <div className="job-company-section">
           <div className="company-images">
             <h3 className="company-images-title">Hình ảnh công ty</h3>
@@ -102,6 +124,10 @@ const JobDetail = () => {
             )}
           </div>
         </div>
+      </div>
+      <div className="job-actions">
+        <button className="apply-button" onClick={handleApply}>Ứng tuyển</button>
+        <button className="favorite-button" onClick={handleFavorite}>Thêm yêu thích</button>
       </div>
     </div>
   );

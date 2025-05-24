@@ -42,4 +42,9 @@ public class JobDetailServiceImpl implements JobDetailService {
         }
         return jobDescription;
     }
+
+    @Override
+    public JobDescription saveJobDetail(JobDescription jobDetail) {
+        return jobDetailRepository.save(jobDetail);
+    }
 }

@@ -43,8 +43,10 @@ const Header = () => {
                 return <Link className="dropdown-item" key={c.id} to={url}>{c.name}</Link>;
               })}
             </NavDropdown>
+            {user && user.role === "ROLE_EMPLOYER" && (
+              <Link to="/employer" className="nav-link">Đăng tin tuyển dụng</Link>
+            )}
           </Nav>
-
           {/* Bên phải */}
           <Nav className="ms-auto d-flex align-items-center">
             {user === null ? (
@@ -70,12 +72,11 @@ const Header = () => {
                   <Link to="/profile" className="nav-link text-primary fw-bold mb-0 ms-1">Chào {user.name}</Link>
                 </div>
 
-              <Link to="/" className="nav-link text-success">
-              <Button variant="outline-danger" size="sm" onClick={() => dispatch({ type: "logout" })}>
-                  Đăng xuất
-                </Button>
-              </Link>
-                
+                <Link to="/" className="nav-link text-success">
+                  <Button variant="outline-danger" size="sm" onClick={() => dispatch({ type: "logout" })}>
+                    Đăng xuất
+                  </Button>
+                </Link>
               </>
             )}
           </Nav>

@@ -79,4 +79,15 @@ public class JobDetailRepositoryImpl implements JobDetailRepository {
     public JobDescription getJobDetailById(int id) {
         Session session = factory.getObject().getCurrentSession();
         return session.get(JobDescription.class, id);    }
+
+    @Override
+    public JobDescription save(JobDescription jobDetail) {
+        Session session = factory.getObject().getCurrentSession();
+        if (jobDetail.getId() == null) {
+            session.persist(jobDetail); // Thêm mới
+        } else {
+            session.merge(jobDetail); // Cập nhật
+        }
+        return jobDetail;
+    }
 }

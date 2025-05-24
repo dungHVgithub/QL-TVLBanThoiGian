@@ -12,8 +12,8 @@
     <h1 class="mb-4">Quản Lý Công Việc</h1>
     <form method="post" th:action="@{/add}" th:object="${job_posting}">
         <div class="mb-3">
-            <label for="description" class="form-label">Tên công việc:</label>
-            <input type="text" class="form-control" id="description" th:field="*{description}" required>
+            <label for="name" class="form-label">Tên công việc:</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" required>
         </div>
 
         <div class="mb-3">
@@ -29,13 +29,13 @@
         </div>
 
         <div class="mb-3">
-            <label for="categoryId" class="form-label">Nhà tuyển dụng:</label>
+            <label for="categoryId" class="form-label">Loại công việc:</label>
             <select class="form-select" id="categoryId" th:field="*{categoryId}" required>
                 <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>
             </select>
         </div>
         <div class="mb-3">
-            <label for="employerId" class="form-label">Loại công việc:</label>
+            <label for="employerId" class="form-label">Nhà tuyển dụng:</label>
             <select class="form-select" id="employerId" th:field="*{employerId}" required>
                 <option th:each="e : ${employers}" th:value="${e.id}" th:text="${e.userId.name}"></option>
             </select>
