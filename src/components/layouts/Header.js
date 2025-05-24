@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import cookie from "react-cookies"
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -73,7 +74,11 @@ const Header = () => {
                 </div>
 
                 <Link to="/" className="nav-link text-success">
-                  <Button variant="outline-danger" size="sm" onClick={() => dispatch({ type: "logout" })}>
+                  <Button variant="outline-danger" size="sm" onClick={() => {
+                    dispatch({ type: "logout" });
+                    cookie.remove("token");
+                    localStorage.removeItem("token");
+                  }}>
                     Đăng xuất
                   </Button>
                 </Link>
