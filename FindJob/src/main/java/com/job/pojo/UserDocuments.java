@@ -20,19 +20,22 @@ import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "user_documents")
 @NamedQueries({
     @NamedQuery(name = "UserDocuments.findAll", query = "SELECT u FROM UserDocuments u"),
     @NamedQuery(name = "UserDocuments.findById", query = "SELECT u FROM UserDocuments u WHERE u.id = :id"),
+    @NamedQuery(name = "UserDocuments.findByName", query = "SELECT u FROM UserDocuments u WHERE u.name = :name"),
     @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
     @NamedQuery(name = "UserDocuments.findByDocumentPath", query = "SELECT u FROM UserDocuments u WHERE u.documentPath = :documentPath"),
-    @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate")})
+    @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate"),
+    @NamedQuery(name = "UserDocuments.findByUpdatedDate", query = "SELECT u FROM UserDocuments u WHERE u.updatedDate = :updatedDate")})
 public class UserDocuments implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,6 +44,9 @@ public class UserDocuments implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 45)
+    @Column(name = "name")
+    private String name;
     @Size(max = 7)
     @Column(name = "document_type")
     private String documentType;
@@ -50,6 +56,10 @@ public class UserDocuments implements Serializable {
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+    @UpdateTimestamp
+    @Column(name = "updated_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDate;
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
     private Employee employeeId;
@@ -67,6 +77,14 @@ public class UserDocuments implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDocumentType() {
@@ -91,6 +109,14 @@ public class UserDocuments implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public Employee getEmployeeId() {

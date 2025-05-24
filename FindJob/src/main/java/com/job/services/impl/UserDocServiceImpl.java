@@ -17,35 +17,35 @@ import org.springframework.stereotype.Service;
  * @author DUNG
  */
 @Service
-public class UserDocServiceImpl implements UserDocService{
-    
+public class UserDocServiceImpl implements UserDocService {
+
     @Autowired
     private UserDocRepository UserDocRepo;
 
     @Override
     public List<UserDocuments> getUserDocs(Map<String, String> params) {
-      return this.UserDocRepo.getUserDocs(params);
+        return this.UserDocRepo.getUserDocs(params);
     }
 
     @Override
     public UserDocuments getUserDocsById(int id) {
-         return this.UserDocRepo.getUserDocsById(id);}
+        return this.UserDocRepo.getUserDocsById(id);
+    }
 
     @Override
     public UserDocuments addOrUpdate(UserDocuments j) {
         return this.UserDocRepo.addOrUpdate(j);
-    
+
     }
 
     @Override
     public void deleteUserDocs(int id) {
-     this.UserDocRepo.deleteUserDocs(id);
+        this.UserDocRepo.deleteUserDocs(id);
     }
 
     @Override
-    public String extractTextFromImage(byte[] fileBytes) throws Exception {
-        return this.UserDocRepo.extractTextFromImage(fileBytes);
+    public List<UserDocuments> getDocsByUserId(int userId) {
+        return this.UserDocRepo.getDocsByUserId(userId);
     }
-    
-    
+
 }

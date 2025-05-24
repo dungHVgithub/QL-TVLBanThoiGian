@@ -23,5 +23,6 @@ public interface UserDocService {
 
     void deleteUserDocs(int id);
 
-    String extractTextFromImage(byte[] fileBytes) throws Exception;
+    List<UserDocuments> getDocsByUserId(int userId);
+
 }

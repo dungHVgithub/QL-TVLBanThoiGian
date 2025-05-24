@@ -17,6 +17,9 @@ export const endpoints = {
     'oauth':'/oauth-login',
     'users': '/users',
     'updated': '/user/update',
+    'documentsByUser': 'user_documents/by_user',
+    'updateDocument': '/user_documents',
+
 }
 
 export const authApis = () => {
