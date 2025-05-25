@@ -68,7 +68,7 @@ const Employer = () => {
   };
 
   useEffect(() => {
-    console.log("Current user:", user);
+   
     if (isLoadingUser) {
       const token = cookie.load("token") || localStorage.getItem("token");
       if (token && !user) {

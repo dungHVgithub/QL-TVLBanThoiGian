@@ -19,6 +19,7 @@ export const endpoints = {
     'updated': '/user/update',
     'documentsByUser': 'user_documents/by_user',
     'updateDocument': '/user_documents',
+    'checkEmailExists': '/users/check_email_exists'
 
 }
 

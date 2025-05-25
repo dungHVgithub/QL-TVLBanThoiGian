@@ -8,6 +8,7 @@ import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfi
 import { signInWithPopup } from "firebase/auth";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import cookie from "react-cookies";
+import RoleSelectionModal from "./RoleSelectionModal";
 
 const Login = () => {
     const info = [
@@ -21,6 +22,9 @@ const Login = () => {
     const [user, setUser] = useState({ username: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [, setMsg] = useState("");
+    const [showRoleModal, setShowRoleModal] = useState(false);
+    const [googleUser, setGoogleUser] = useState(null);
+    const [, setEmailExists] = useState(undefined);
 
     const login = async (e) => {
         e.preventDefault();
@@ -28,8 +32,10 @@ const Login = () => {
             setLoading(true);
             const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
+
             cookie.save("token", token);
-            localStorage.setItem(token);
+            localStorage.setItem("token", token);
+
             const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;
 
@@ -40,7 +46,7 @@ const Login = () => {
                     username: userInfo.username,
                     name: userInfo.name,
                     role: userInfo.role,
-                    id: userInfo.id // Sửa user_id thành id
+                    id: userInfo.id
                 },
             });
 
@@ -50,7 +56,7 @@ const Login = () => {
                 nav("/employer");
             else nav("/");
         } catch (err) {
-            console.error("Lỗi đăng nhập:", err);
+            console.error("❌ Lỗi đăng nhập:", err);
         } finally {
             setLoading(false);
         }
@@ -62,7 +68,6 @@ const Login = () => {
 
     const loginWithProvider = async (provider) => {
         try {
-            alert("Vui lòng không đóng cửa sổ popup cho đến khi hoàn tất đăng nhập!");
             setLoading(true);
 
             const result = await signInWithPopup(auth, provider);
@@ -74,10 +79,57 @@ const Login = () => {
                 if (!email) throw new Error("Email bắt buộc!");
             }
 
-            const payload = {
+            const userPayload = {
                 name: firebaseUser.displayName,
                 email,
                 avatar: firebaseUser.photoURL,
+            };
+
+            const checkRes = await Api.get(endpoints.checkEmailExists + `?email=${encodeURIComponent(email)}`);
+            const exists = checkRes.data.exists;
+            setEmailExists(exists);
+
+            if (!exists) {
+                setGoogleUser(userPayload);
+                setShowRoleModal(true);
+            } else {
+                const res = await Api.post(endpoints.oauth, userPayload);
+                const token = res.data.token;
+
+                cookie.save("token", token);
+                localStorage.setItem("token", token);
+
+                const profileRes = await authApis().get(endpoints.profile);
+                const userInfo = profileRes.data;
+
+                dispatch({
+                    type: "login",
+                    payload: {
+                        token: token,
+                        ...userInfo,
+                    },
+                });
+
+                if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
+                    nav("/");
+                else if (userInfo.role === "ROLE_EMPLOYER")
+                    nav("/employer");
+                else
+                    nav("/");
+            }
+        } catch (err) {
+            console.error("❌ OAuth login error:", err);
+            setMsg("Đăng nhập mạng xã hội thất bại!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRoleSelect = async (role) => {
+        try {
+            const payload = {
+                ...googleUser,
+                role: role
             };
 
             const res = await Api.post(endpoints.oauth, payload);
@@ -97,16 +149,16 @@ const Login = () => {
                 },
             });
 
-            nav("/");
+            setShowRoleModal(false);
+
+            if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
+                nav("/");
+            else if (userInfo.role === "ROLE_EMPLOYER")
+                nav("/employer");
+            else
+                nav("/");
         } catch (err) {
-            console.error("OAuth login error:", err);
-            if (err.code === "auth/account-exists-with-different-credential") {
-                setMsg("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
-            } else if (err.code === "auth/popup-closed-by-user") {
-                setMsg("Bạn đã đóng cửa sổ đăng nhập quá sớm.");
-            } else {
-                setMsg("Đăng nhập mạng xã hội thất bại!");
-            }
+            console.error("❌ Xử lý vai trò thất bại:", err);
         } finally {
             setLoading(false);
         }
@@ -151,6 +203,12 @@ const Login = () => {
                     </Button>
                 )}
             </Form>
+
+            <RoleSelectionModal
+                show={showRoleModal}
+                onSelect={handleRoleSelect}
+                onClose={() => setShowRoleModal(false)}
+            />
         </>
     );
 };

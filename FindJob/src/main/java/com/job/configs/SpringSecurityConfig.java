@@ -69,6 +69,7 @@ public class SpringSecurityConfig {
                 -> requests.requestMatchers("/").authenticated()
                         .requestMatchers(HttpMethod.GET, "/job_postings").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/job_postings/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/check_email_exists").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/user/update").authenticated()
                         .requestMatchers("/api/**").permitAll()

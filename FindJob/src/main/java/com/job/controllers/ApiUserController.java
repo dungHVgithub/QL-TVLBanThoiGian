@@ -115,9 +115,10 @@ public class ApiUserController {
     @PostMapping("/oauth-login")
     public ResponseEntity<?> oauthLogin(@RequestBody Map<String, String> payload) {
         try {
-            String email = payload.get("email");
+            String email = payload.get("email").trim().toLowerCase();
             String name = payload.get("name");
             String avatar = payload.get("avatar");
+            String role = payload.get("role");
 
             if (email == null || email.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Email là bắt buộc!");
@@ -131,25 +132,33 @@ public class ApiUserController {
                 user.setEmail(email);
                 user.setName(name);
                 user.setAvatar(avatar);
-                user.setRole("ROLE_EMPLOYEE");
+                user.setRole(role);
                 user = userDetailsService.addUpdateUser(user);
             }
 
             String token = JwtUtils.generateToken(email);
             return ResponseEntity.ok(Collections.singletonMap("token", token));
         } catch (Exception ex) {
-            ex.printStackTrace(); // Log chi tiết để dễ debug
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi đăng nhập OAuth");
         }
     }
+
     @GetMapping("/users/count/employees")
     public ResponseEntity<Map<String, Long>> countEmployees() {
         long count = userDetailsService.countEmployees();
         return ResponseEntity.ok(Collections.singletonMap("totalEmployees", count));
     }
+
     @GetMapping("/users/count/employers")
     public ResponseEntity<Map<String, Long>> countEmployer() {
         long count = userDetailsService.countEmployer();
         return ResponseEntity.ok(Collections.singletonMap("totalEmployers", count));
+    }
+
+    @GetMapping("/users/check_email_exists")
+    public ResponseEntity<Map<String, Boolean>> checkEmailExists(@RequestParam("email") String email) {
+        boolean exists = userDetailsService.getUserByEmail(email.trim().toLowerCase()) != null;
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 }
