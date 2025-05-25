@@ -89,4 +89,9 @@ public void addCompanyImage(CompanyImages companyImage) {
 
     companyImagesRepository.updateCompanyImage(companyImage);
     }
+
+    @Override
+    public void deleteCompanyImage(int id) {
+        this.companyImagesRepository.deleteCompanyImage(id);
+    }
 }

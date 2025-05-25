@@ -27,7 +27,10 @@
                 <option th:each="state : ${states}" th:value="${state}" th:text="${state}"></option>
             </select>
         </div>
-
+        <div class="mb-3">
+            <label for="description" class="form-label">Nhập vào mức lương:</label>
+            <input type="text" class="form-control" id="description" th:field="*{salary}" required>
+        </div>
         <div class="mb-3">
             <label for="categoryId" class="form-label">Loại công việc:</label>
             <select class="form-select" id="categoryId" th:field="*{categoryId}" required>
@@ -49,7 +52,6 @@
         </div>
     </form>
 </div>
-
 <div th:replace="~{base :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

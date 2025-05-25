@@ -34,7 +34,8 @@ const Login = () => {
             const token = res.data.token;
 
             cookie.save("token", token);
-            localStorage.setItem("token", token);
+
+            localStorage.setItem("token",token);
 
             const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;

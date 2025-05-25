@@ -7,11 +7,9 @@ import com.job.pojo.JobPosting;
 import com.job.pojo.User;
 import com.job.services.EmployerService;
 import com.job.services.JobPostingService;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import com.job.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

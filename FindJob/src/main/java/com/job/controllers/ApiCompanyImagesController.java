@@ -1,6 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://.netbeans.org/templates/Classes/Class.java to edit this template
  */
 package com.job.controllers;
 
@@ -103,13 +102,6 @@ public class ApiCompanyImagesController {
                         ObjectUtils.asMap("resource_type", "auto"));
                 existingImage.setImagePath(res.get("secure_url").toString());
             }
-
-//            // Gán lại công ty (nếu cần thiết – không bắt buộc vì bạn đã check rồi)
-//            CompanyInformation companyInfo = new CompanyInformation();
-//            companyInfo.setId(companyId);
-//            existingImage.setCompanyId(companyInfo);
-
-            // Gọi service cập nhật (dùng merge bên dưới)
             companyImagesService.updateCompanyImage(existingImage);
 
             return new ResponseEntity<>(existingImage, HttpStatus.OK);
@@ -118,6 +110,24 @@ public class ApiCompanyImagesController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping("/company_images/{companyId}/{id}")
+    public ResponseEntity<Void> deleteCompanyImage(
+            @PathVariable("companyId") int companyId,
+            @PathVariable("id") int id) {
+        try {
+            CompanyImages companyImage = companyImagesService.getCompanyImageById(id);
+            if (companyImage == null || companyImage.getCompanyId().getId() != companyId) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            companyImagesService.deleteCompanyImage(id); // Gọi method xóa thực sự
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Autowired
     private Cloudinary cloudinary;
 }

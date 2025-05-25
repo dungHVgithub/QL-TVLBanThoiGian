@@ -1,0 +1,122 @@
+/* Container cho danh sách ảnh */
+.image-list-container {
+  padding-right: 15px;
+}
+
+/* Danh sách ảnh với thanh cuộn dọc */
+.image-list {
+  max-height: 500px; /* Chiều cao tối đa, có thể điều chỉnh */
+  overflow-y: auto; /* Thanh cuộn dọc */
+  padding-right: 10px;
+}
+
+/* Mỗi mục ảnh */
+.image-item {
+  margin-bottom: 20px;
+  position: relative; /* Để định vị thùng rác */
+}
+
+/* Style cho ảnh */
+.image-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  transition: opacity 0.3s ease;
+}
+
+/* Hiệu ứng mờ khi hover */
+.image-item.hover img {
+  opacity: 0.5; /* Mờ ảnh khi hover */
+}
+
+/* Thùng rác khi hover */
+.delete-icon {
+  display: none; /* Ẩn mặc định */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: red;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 50%;
+}
+
+/* Hiển thị thùng rác khi hover */
+.image-item.hover .delete-icon {
+  display: block;
+}
+
+/* Style cho chú thích ảnh */
+.image-item p {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Thanh cuộn tùy chỉnh */
+.image-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.image-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.image-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.image-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Style cho thông tin công ty */
+.company-info {
+  margin-left: 100px; /* Xích phần thông tin sang phải 20px */
+  padding: 15px 15px;
+}
+
+/* Style cho container chứa các nút */
+.button-container {
+  margin-left: 100px; /* Xích các nút sang phải 20px để đồng bộ với thông tin công ty */
+}
+
+/* Style cho form chỉnh sửa thông tin công ty */
+.edit-form {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  margin-left: 20px; /* Căn chỉnh form sang phải để khớp với thông tin */
+}
+
+/* Hiệu ứng trượt xuống */
+.edit-form.slide-down {
+  max-height: 300px; /* Điều chỉnh tùy theo nội dung form */
+}
+
+/* Tùy chỉnh style cho react-toastify */
+.toastify-container {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+.Toastify__toast--success {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+.Toastify__toast--error {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
