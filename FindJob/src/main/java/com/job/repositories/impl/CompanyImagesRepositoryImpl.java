@@ -70,4 +70,13 @@ public class CompanyImagesRepositoryImpl implements CompanyImagesRepository {
         session.merge(companyImage); 
     }
 
+    @Override
+    public void deleteCompanyImage(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CompanyImages companyImage = session.get(CompanyImages.class, id);
+        if (companyImage != null) {
+            session.remove(companyImage);
+        }
+    }
+
 }

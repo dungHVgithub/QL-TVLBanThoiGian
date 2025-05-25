@@ -5,15 +5,12 @@
 package com.job.controllers;
 
 import com.job.pojo.User;
-import com.job.services.CategoryService;
-import com.job.services.EmployerService;
-import com.job.services.JobPostingService;
+import com.job.services.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.job.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,18 +36,35 @@ public class IndexController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CompanyImagesService companyImagesService;
+
+    @Autowired
+    private JobDetailService jobDetailService;
+
+
     @ModelAttribute
     public void commonRespone(Model model) {
         model.addAttribute("categories", this.cateService.getCates());
     }
 
-        @ModelAttribute
+    @ModelAttribute
     public void responeEmployer(Model model){
         model.addAttribute("employers",this.employerService.getEmployers());
     }
     @ModelAttribute
     public void userList(Model model, @RequestParam(required = false) Map<String, String> params) {
         model.addAttribute("users", userService.getUser(params));
+    }
+    @ModelAttribute
+    public void companyImageList(Model model)
+    {
+        model.addAttribute("companyImages", companyImagesService.getAllCompanyImages());
+    }
+    @ModelAttribute
+    public void responseJobDetail (Model model, @RequestParam(required = false) Map <String,String> params)
+    {
+        model.addAttribute("jobDetails",jobDetailService.getJobDetail(params));
     }
     @RequestMapping("/")
     public String indexProduct(Model model, @RequestParam Map<String, String> params) {

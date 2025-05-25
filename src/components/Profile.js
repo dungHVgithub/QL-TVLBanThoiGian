@@ -3,6 +3,7 @@ import { MyUserContext } from "../configs/MyContexts";
 import { authApis, endpoints } from "../configs/Api";
 import { Container, Card, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { FaPhone, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const user = useContext(MyUserContext);
@@ -10,6 +11,20 @@ const Profile = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [documents, setDocuments] = useState([]);
   const [documentsBeingEdited, setDocumentsBeingEdited] = useState({});
+  const [companyId, setCompanyId] = useState(null);
+  const navigate = useNavigate();
+
+  // Hàm ánh xạ vai trò sang tên hiển thị thân thiện
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case "ROLE_EMPLOYER":
+        return "Nhà tuyển dụng";
+      case "ROLE_EMPLOYEE":
+        return "Ứng viên";
+      default:
+        return "Chưa xác định";
+    }
+  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -21,6 +36,24 @@ const Profile = () => {
             data.birthday = new Date(data.birthday).toISOString().split("T")[0];
 
           setProfile(data);
+
+          // Nếu là nhà tuyển dụng, lấy companyId từ endpoint /employers
+          if (data.role === "ROLE_EMPLOYER") {
+            try {
+              const employerRes = await authApis().get(`${endpoints["employers"]}`);
+              // Tìm employer có userId.id khớp với user.id
+              const matchedEmployer = employerRes.data.find(
+                (employer) => employer.userId.id === user.id
+              );
+              if (matchedEmployer) {
+                setCompanyId(matchedEmployer.company.id); // Lấy company.id từ employer khớp
+              } else {
+                console.error("Không tìm thấy employer khớp với user.id:", user.id);
+              }
+            } catch (err) {
+              console.error("Không thể tải thông tin công ty:", err);
+            }
+          }
         } catch (err) {
           console.error("Không thể tải profile:", err);
         }
@@ -109,22 +142,51 @@ const Profile = () => {
             />
           </Col>
           <Col md={9}>
-            <p><strong>👤 Tên:</strong> {profile.name}</p>
-            <p><strong>📧 Email:</strong> {profile.email}</p>
-            <p><strong>📍 Địa chỉ:</strong> {profile.address || "Chưa cập nhật"}</p>
-            <p><strong>📞 Số điện thoại:</strong> {profile.sdt || "Chưa cập nhật"}</p>
-            <p><strong>🎂 Ngày sinh:</strong> {
-              profile.birthday
-                ? new Date(profile.birthday).toLocaleDateString("vi-VN")
-                : "Chưa cập nhật"
-            }</p>
+            <Row>
+              <Col md={6}>
+                <p><strong>👤 Tên:</strong> {profile.name}</p>
+              </Col>
+              <Col md={6}>
+                <p><strong>📧 Email:</strong> {profile.email}</p>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <p><strong>📍 Địa chỉ:</strong> {profile.address || "Chưa cập nhật"}</p>
+              </Col>
+              <Col md={6}>
+                <p><strong>📞 Số điện thoại:</strong> {profile.sdt || "Chưa cập nhật"}</p>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <p><strong>🎂 Ngày sinh:</strong> {
+                  profile.birthday
+                    ? new Date(profile.birthday).toLocaleDateString("vi-VN")
+                    : "Chưa cập nhật"
+                }</p>
+              </Col>
+              <Col md={6}>
+                <p><strong>👑 Vai trò:</strong> {getRoleDisplayName(profile.role)}</p>
+              </Col>
+            </Row>
           </Col>
         </Row>
         {!showEditForm && (
           <div className="text-end mt-3">
-            <Button variant="primary" onClick={() => setShowEditForm(true)}>
+            <Button variant="primary" onClick={() => setShowEditForm(true)} className="me-2">
               ✏️ Chỉnh sửa
             </Button>
+            {profile.role === "ROLE_EMPLOYER" && companyId && (
+              <>
+                <Button
+                  variant="success"
+                  onClick={() => navigate(`/company_info/${companyId}`)}
+                >
+                  ℹ️ Thông tin công ty
+                </Button>
+              </>
+            )}
           </div>
         )}
       </Card>

@@ -75,6 +75,7 @@ const Employer = () => {
         const loadUserProfile = async () => {
           try {
             const res = await authApis().get(endpoints.profile);
+            console.log("Profile data:", res.data);
             dispatch({
               type: "login",
               payload: {
@@ -132,11 +133,14 @@ const Employer = () => {
       const jobPosting = {
         name: job.name,
         salary: parseFloat(job.salary),
-        timeStart: job.timeStart,
-        timeEnd: job.timeEnd,
+        timeStart: job.timeStart, // Chuỗi "HH:mm"
+        timeEnd: job.timeEnd, // Chuỗi "HH:mm"
         categoryId: parseInt(job.categoryId),
         employerId: employerId,
+        state: "pending"
       };
+
+      console.log("Sending job posting:", jobPosting);
 
       const jobPostingRes = await authApis().post(endpoints.job_postings, jobPosting);
       const jobPostingId = jobPostingRes.data.id;
@@ -158,7 +162,13 @@ const Employer = () => {
       }
     } catch (err) {
       console.error("Đăng tin thất bại:", err);
-      setMsg("❌ Đăng tin thất bại. Vui lòng kiểm tra dữ liệu và thử lại!");
+      if (err.response && err.response.status === 405) {
+        setMsg("❌ Server không hỗ trợ phương thức này. Vui lòng kiểm tra cấu hình backend!");
+      } else if (err.response && err.response.status === 400) {
+        setMsg("❌ Dữ liệu không hợp lệ. Vui lòng kiểm tra các trường nhập!");
+      } else {
+        setMsg("❌ Đăng tin thất bại. Vui lòng thử lại!");
+      }
     } finally {
       setLoading(false);
     }

@@ -19,4 +19,5 @@ public interface CompanyImagesService {
     CompanyImages getCompanyImageById(int id);
 
     void updateCompanyImage(CompanyImages companyImage);
+    void deleteCompanyImage(int id);
 }

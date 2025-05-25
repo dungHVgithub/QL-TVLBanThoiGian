@@ -29,7 +29,7 @@ const Login = () => {
             const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
             cookie.save("token", token);
-            localStorage.setItem(token);
+            localStorage.setItem("token",token);
             const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;
 

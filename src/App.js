@@ -14,6 +14,7 @@ import JobDetail from "./components/JobDetail";
 import Api, { authApis, endpoints } from "./configs/Api";
 import Profile from "./components/Profile";
 import cookie from "react-cookies";
+import CompanyInfo from "./components/CompanyInfo";
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/employer" element={<Employer />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/job_detail/:id" element={<JobDetail />} />
+              <Route path = "company_info/:companyId" element = {<CompanyInfo/>}/>
             </Routes>
           </Container>
           <Footer />
