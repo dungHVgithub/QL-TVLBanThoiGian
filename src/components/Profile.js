@@ -31,7 +31,7 @@ const Profile = () => {
       if (user?.id) {
         try {
           const res = await authApis().get(`${endpoints["users"]}/${user.id}`);
-          const data = res.data;
+          const data = res.data;  
           if (data.birthday)
             data.birthday = new Date(data.birthday).toISOString().split("T")[0];
 

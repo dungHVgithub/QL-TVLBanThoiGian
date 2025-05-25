@@ -4,8 +4,8 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Link } from 'react-router-dom';
-import Api, { endpoints } from '../../configs/Api';
+import { Link, useNavigate } from 'react-router-dom';
+import Api, { authApis, endpoints } from '../../configs/Api';
 import '../../static/header.css';
 import { Button } from 'react-bootstrap';
 import { MyDispatchContext, MyUserContext } from "../../configs/MyContexts";
@@ -15,6 +15,7 @@ const Header = () => {
   const [categories, setCategories] = useState([]);
   const user = useContext(MyUserContext);
   const dispatch = useContext(MyDispatchContext);
+  const navigate = useNavigate();
 
   const loadCates = async () => {
     try {
@@ -22,6 +23,32 @@ const Header = () => {
       setCategories(res.data);
     } catch (error) {
       console.error("Error loading categories:", error);
+    }
+  };
+
+  const loadEmployerId = async () => {
+    if (user && user.role === "ROLE_EMPLOYER" && user.id) {
+      try {
+        const employerRes = await authApis().get(endpoints["employers"]);
+        // Tìm employer có userId.id khớp với user.id
+        const matchedEmployer = employerRes.data.find(
+          (employer) => employer.userId.id === user.id
+        );
+        if (matchedEmployer) {
+          return matchedEmployer.id; // Trả về employerId
+        } else {
+          console.error("Không tìm thấy employer khớp với user.id:", user.id);
+          alert("Không thể tìm thấy thông tin nhà tuyển dụng. Vui lòng thử lại sau.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Không thể tải thông tin nhà tuyển dụng:", error);
+        alert("Có lỗi xảy ra khi lấy thông tin nhà tuyển dụng.");
+        return null;
+      }
+    } else {
+      alert("Bạn cần đăng nhập với vai trò nhà tuyển dụng để xem bài đăng.");
+      return null;
     }
   };
 
@@ -46,6 +73,21 @@ const Header = () => {
             </NavDropdown>
             {user && user.role === "ROLE_EMPLOYER" && (
               <Link to="/employer" className="nav-link">Đăng tin tuyển dụng</Link>
+            )}
+            {user && user.role === "ROLE_EMPLOYER" && (
+              <Link
+                to="/postList"
+                className="nav-link"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const employerId = await loadEmployerId();
+                  if (employerId) {
+                    navigate(`/postList/${employerId}`);
+                  }
+                }}
+              >
+                Bài đăng của bạn
+              </Link>
             )}
           </Nav>
           {/* Bên phải */}

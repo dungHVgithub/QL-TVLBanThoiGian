@@ -1,6 +1,6 @@
 /*
- * Click nbfs://SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nfs://SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.job.controllers;
 
@@ -62,7 +62,48 @@ public class ApiJobPostingController {
             JobPosting savedJob = jobService.addOrUpdate(jobPosting);
             return new ResponseEntity<>(savedJob, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/job_postings/{jobPostingId}")
+    public ResponseEntity<JobPosting> updateJobPosting(@PathVariable("jobPostingId") int id, @RequestBody JobPostingDTO dto) {
+        try {
+            JobPosting existingJob = jobService.getJobById(id);
+            if (existingJob == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Cập nhật các trường
+            existingJob.setName(dto.getName() != null ? dto.getName() : existingJob.getName());
+            existingJob.setSalary(dto.getSalary() != null ? dto.getSalary() : existingJob.getSalary());
+            existingJob.setState(dto.getState() != null ? dto.getState() : existingJob.getState());
+
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+            if (dto.getTimeStart() != null) {
+                existingJob.setTimeStart(timeFormat.parse(dto.getTimeStart()));
+            }
+            if (dto.getTimeEnd() != null) {
+                existingJob.setTimeEnd(timeFormat.parse(dto.getTimeEnd()));
+            }
+
+            if (dto.getCategoryId() != null) {
+                Category category = new Category();
+                category.setId(dto.getCategoryId());
+                existingJob.setCategoryId(category);
+            }
+            if (dto.getEmployerId() != null) {
+                Employer employer = new Employer();
+                employer.setId(dto.getEmployerId());
+                existingJob.setEmployerId(employer);
+            }
+
+            JobPosting updatedJob = jobService.addOrUpdate(existingJob);
+            return new ResponseEntity<>(updatedJob, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -100,5 +141,11 @@ public class ApiJobPostingController {
         }
         long count = jobService.countJobsByState(normalizedState);
         return ResponseEntity.ok(Collections.singletonMap("totalJobsByState", count));
+    }
+
+    @GetMapping("/job_postings/employer/{employerId}")
+    public ResponseEntity<List<JobPosting>> getJobsByEmployer(@PathVariable("employerId") int employerId) {
+        List<JobPosting> jobs = jobService.getJobPostingsByEmployerId(employerId);
+        return new ResponseEntity<>(jobs, HttpStatus.OK);
     }
 }

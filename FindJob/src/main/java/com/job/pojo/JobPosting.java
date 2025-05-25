@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -47,9 +48,11 @@ public class JobPosting implements Serializable {
     private Double salary;
     @Column(name = "time_start")
     @Temporal(TemporalType.TIME)
+    @JsonFormat(pattern = "HH:mm")
     private Date timeStart;
     @Column(name = "time_end")
     @Temporal(TemporalType.TIME)
+    @JsonFormat(pattern = "HH:mm")
     private Date timeEnd;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)

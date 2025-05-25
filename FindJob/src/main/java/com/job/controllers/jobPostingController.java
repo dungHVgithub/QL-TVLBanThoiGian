@@ -1,6 +1,6 @@
-    /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.job.controllers;
 import com.job.pojo.JobPosting;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 /**
  *
@@ -54,7 +53,9 @@ public class jobPostingController {
 
     @PostMapping("/add")
     public String add (@ModelAttribute (value = "jobPosting") JobPosting j){
-      this.jobService.addOrUpdate(j);
-      return "redirect:/";
+        this.jobService.addOrUpdate(j);
+        return "redirect:/";
     }
- }
+
+
+}

@@ -15,6 +15,10 @@ import Api, { authApis, endpoints } from "./configs/Api";
 import Profile from "./components/Profile";
 import cookie from "react-cookies";
 import CompanyInfo from "./components/CompanyInfo";
+import PostList from "./components/postList";
+import UpdateJob from "./components/updateJob";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
@@ -61,9 +65,23 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/job_detail/:id" element={<JobDetail />} />
               <Route path = "company_info/:companyId" element = {<CompanyInfo/>}/>
+              <Route path= "postList/:employerId" element = {<PostList/>}/>
+              <Route path= "updateJob/:jobId" element = {<UpdateJob/>}/>
             </Routes>
           </Container>
           <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </BrowserRouter>
       </MyDispatchContext.Provider>
     </MyUserContext.Provider>
