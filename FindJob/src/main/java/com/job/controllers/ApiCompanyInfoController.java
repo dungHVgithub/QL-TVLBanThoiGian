@@ -4,6 +4,7 @@
  */
 package com.job.controllers;
 
+import com.job.dto.CompanyShortDTO;
 import com.job.pojo.CompanyInformation;
 import com.job.services.CompanyInfoService;
 import java.util.List;
@@ -47,10 +48,14 @@ public class ApiCompanyInfoController {
     }
 
     @GetMapping("/company_info/{company_id}")
-    public ResponseEntity<CompanyInformation> retrieve(@PathVariable(value = "company_id") int id) {
-        return new ResponseEntity<>(this.companyInfoService.companyInformationById(id), HttpStatus.OK);
-    }
+public ResponseEntity<CompanyShortDTO> retrieve(@PathVariable("company_id") int id) {
+    CompanyInformation company = companyInfoService.companyInformationById(id);
+    if (company == null)
+        return ResponseEntity.notFound().build();
 
+    CompanyShortDTO dto = new CompanyShortDTO(company);
+    return ResponseEntity.ok(dto);
+}
     @PostMapping("/company_info")
     public ResponseEntity<CompanyInformation> create(@RequestBody CompanyInformation companyInfo) {
         try {

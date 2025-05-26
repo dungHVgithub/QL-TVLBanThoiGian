@@ -58,7 +58,7 @@ public class Employer implements Serializable {
     @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonIgnore
+    
     @OneToOne
     private User userId;
     @OneToMany(mappedBy = "employerId")

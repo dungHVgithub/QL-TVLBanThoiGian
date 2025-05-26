@@ -9,6 +9,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,8 +44,8 @@ public class CompanyInformation implements Serializable {
     @Size(max = 50)
     @Column(name = "tax_code")
     private String taxCode;
-    @OneToMany(mappedBy = "company")
-    @JsonIgnore
+    @OneToMany(mappedBy = "company",fetch = FetchType.EAGER)
+    @JsonIgnore 
     private Set<Employer> employerSet;
 
     private static final long serialVersionUID = 1L;

@@ -29,6 +29,8 @@ const Header = () => {
     loadCates();
   }, []);
 
+
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary" aria-label="Main navigation">
       <Container fluid>

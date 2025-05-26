@@ -5,6 +5,7 @@ package com.job.controllers;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.job.dto.CompanyImageDTO;
 import com.job.pojo.CompanyImages;
 import com.job.pojo.CompanyInformation;
 import com.job.services.CompanyImagesService;
@@ -34,9 +35,14 @@ public class ApiCompanyImagesController {
     }
 
     @GetMapping("/company_images/{companyId}")
-    public ResponseEntity<List<CompanyImages>> listByCompanyId(@PathVariable("companyId") int companyId) {
-        List<CompanyImages> companyImages = companyImagesService.getCompanyImagesByCompanyId(companyId);
-        return new ResponseEntity<>(companyImages, HttpStatus.OK);
+    public ResponseEntity<List<CompanyImageDTO>> listByCompanyId(@PathVariable("companyId") int companyId) {
+        List<CompanyImages> images = companyImagesService.getCompanyImagesByCompanyId(companyId);
+
+        List<CompanyImageDTO> result = images.stream()
+                .map(CompanyImageDTO::new)
+                .toList();
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(path = "/company_images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
