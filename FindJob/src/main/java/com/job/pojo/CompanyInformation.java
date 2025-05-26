@@ -18,6 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -34,12 +35,6 @@ import java.util.Set;
     @NamedQuery(name = "CompanyInformation.findByTaxCode", query = "SELECT c FROM CompanyInformation c WHERE c.taxCode = :taxCode")})
 public class CompanyInformation implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 100)
     @Column(name = "name")
     private String name;
@@ -49,6 +44,16 @@ public class CompanyInformation implements Serializable {
     @Size(max = 50)
     @Column(name = "tax_code")
     private String taxCode;
+    @OneToMany(mappedBy = "company")
+    @JsonIgnore
+    private Collection<Employer> employerCollection;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
     @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
@@ -68,29 +73,6 @@ public class CompanyInformation implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getTaxCode() {
-        return taxCode;
-    }
-
-    public void setTaxCode(String taxCode) {
-        this.taxCode = taxCode;
-    }
 
     public Set<CompanyImages> getCompanyImagesSet() {
         return companyImagesSet;
@@ -123,6 +105,38 @@ public class CompanyInformation implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.CompanyInformation[ id=" + id + " ]";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTaxCode() {
+        return taxCode;
+    }
+
+    public void setTaxCode(String taxCode) {
+        this.taxCode = taxCode;
+    }
+
+    public Collection<Employer> getEmployerCollection() {
+        return employerCollection;
+    }
+
+    public void setEmployerCollection(Collection<Employer> employerCollection) {
+        this.employerCollection = employerCollection;
     }
     
 }

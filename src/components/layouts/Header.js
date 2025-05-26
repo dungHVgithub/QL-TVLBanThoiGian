@@ -130,6 +130,21 @@ const Header = () => {
                 Công việc ứng tuyển
               </Link>
             )}
+             {user && user.role === "ROLE_EMPLOYEE" && (
+              <Link
+                to="/employee"
+                className="nav-link"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const employeeId = await loadEmployeeId();
+                  if (employeeId) {
+                    navigate(`/favoriteJob/${employeeId}`);
+                  }
+                }}
+              >
+                Công việc yêu thích 
+              </Link>
+            )}
           </Nav>
           {/* Bên phải */}
           <Nav className="ms-auto d-flex align-items-center">

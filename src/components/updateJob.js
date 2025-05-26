@@ -3,7 +3,7 @@ import { Alert, Button, FloatingLabel, Form, Col, Row } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { authApis, endpoints } from "../configs/Api";
 import MySpinner from "./layouts/MySpinner";
-import "../static/employer.css";
+import "../static/UpdateJob.css"; // Import CSS tùy chỉnh
 import { MyUserContext } from "../configs/MyContexts";
 import { toast } from 'react-toastify';
 
@@ -19,15 +19,15 @@ const UpdateJob = () => {
   const [employerId, setEmployerId] = useState(null);
 
   const info = [
-    { label: "Tên công việc", type: "text", field: "name", required: true, target: "job" },
-    { label: "Mô tả công việc", type: "text", field: "description", required: true, target: "jobDetail" },
-    { label: "Cấp độ", type: "text", field: "level", required: true, target: "jobDetail" },
-    { label: "Kinh nghiệm (năm)", type: "text", field: "experience", required: true, target: "jobDetail" },
-    { label: "Ngày hết hạn ứng tuyển", type: "date", field: "submitEnd", required: true, target: "jobDetail" },
-    { label: "Phúc lợi", type: "text", field: "benefit", required: true, target: "jobDetail" },
-    { label: "Lương ($)", type: "number", field: "salary", required: true, target: "job" },
-    { label: "Giờ bắt đầu", type: "time", field: "timeStart", required: true, target: "job" },
-    { label: "Giờ kết thúc", type: "time", field: "timeEnd", required: true, target: "job" },
+    { label: "Tên công việc", type: "text", field: "name", required: true, target: "job", icon: "💼" },
+    { label: "Mô tả công việc", type: "text", field: "description", required: true, target: "jobDetail", icon: "📝" },
+    { label: "Cấp độ", type: "text", field: "level", required: true, target: "jobDetail", icon: "📊" },
+    { label: "Kinh nghiệm (năm)", type: "text", field: "experience", required: true, target: "jobDetail", icon: "🎯" },
+    { label: "Ngày hết hạn ứng tuyển", type: "date", field: "submitEnd", required: true, target: "jobDetail", icon: "📅" },
+    { label: "Phúc lợi", type: "text", field: "benefit", required: true, target: "jobDetail", icon: "🎁" },
+    { label: "Lương ($)", type: "number", field: "salary", required: true, target: "job", icon: "💰" },
+    { label: "Giờ bắt đầu", type: "time", field: "timeStart", required: true, target: "job", icon: "🕐" },
+    { label: "Giờ kết thúc", type: "time", field: "timeEnd", required: true, target: "job", icon: "🕕" },
   ];
 
   const setState = (value, field) => {
@@ -213,52 +213,118 @@ const UpdateJob = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h1 className="text-center text-success mb-4">CẬP NHẬT TIN TUYỂN DỤNG</h1>
-
-      {msg && <Alert variant={msg.startsWith("✅") ? "success" : "danger"}>{msg}</Alert>}
-
-      {loading || !job.id ? (
-        <MySpinner />
-      ) : (
-        <Form onSubmit={updateJob} className="bg-light p-4 rounded shadow">
-          <Row>
-            {info.map((f) => (
-              <Col md={6} key={f.field} className="mb-3">
-                <FloatingLabel controlId={`floating${f.field}`} label={f.label}>
-                  <Form.Control
-                    type={f.type}
-                    placeholder={f.label}
-                    value={job[f.field] ?? (jobDetail[f.field] || "")}
-                    onChange={(e) => setState(e.target.value, f.field)}
-                  />
-                </FloatingLabel>
-              </Col>
-            ))}
-            <Col md={6} className="mb-3">
-              <FloatingLabel controlId="floatingCategoryId" label="Danh mục công việc">
-                <Form.Select
-                  value={job.categoryId || ""}
-                  onChange={(e) => setState(e.target.value, "categoryId")}
-                >
-                  <option value="">Chọn danh mục</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id.toString()}>
-                      {c.name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </FloatingLabel>
-            </Col>
-          </Row>
-
-          <div className="text-center">
-            <Button type="submit" variant="success" size="lg" className="px-5">
-              Cập nhật
-            </Button>
+    <div className="update-job-container">
+      <div className="container">
+        <div className="update-job-main-card">
+          <div className="update-job-header">
+            <h1 className="update-job-title">✨ Cập Nhật Tin Tuyển Dụng</h1>
+            <p className="update-job-subtitle">Chỉnh sửa thông tin tuyển dụng của bạn</p>
           </div>
-        </Form>
-      )}
+
+          {msg && (
+            <div className="px-4">
+              <Alert 
+                variant={msg.startsWith("✅") ? "success" : "danger"} 
+                className="update-job-alert"
+              >
+                {msg}
+              </Alert>
+            </div>
+          )}
+
+          {loading || !job.id ? (
+            <div className="update-job-spinner-container">
+              <MySpinner />
+              <div className="update-job-spinner-text">Đang tải thông tin công việc...</div>
+            </div>
+          ) : (
+            <Form onSubmit={updateJob} className="update-job-form">
+              <div className="update-job-section-title">
+                📋 Thông tin cơ bản
+              </div>
+              
+              <Row>
+                {info.slice(0, 3).map((f) => (
+                  <Col md={6} key={f.field} className="update-job-form-group">
+                    <FloatingLabel controlId={`floating${f.field}`} label={`${f.icon} ${f.label}`}>
+                      <Form.Control
+                        type={f.type}
+                        placeholder={f.label}
+                        value={job[f.field] ?? (jobDetail[f.field] || "")}
+                        onChange={(e) => setState(e.target.value, f.field)}
+                      />
+                    </FloatingLabel>
+                  </Col>
+                ))}
+                
+                <Col md={6} className="update-job-form-group">
+                  <FloatingLabel controlId="floatingCategoryId" label="🏷️ Danh mục công việc">
+                    <Form.Select
+                      value={job.categoryId || ""}
+                      onChange={(e) => setState(e.target.value, "categoryId")}
+                    >
+                      <option value="">Chọn danh mục</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id.toString()}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </FloatingLabel>
+                </Col>
+              </Row>
+
+              <div className="update-job-section-title">
+                💼 Chi tiết công việc
+              </div>
+              
+              <Row>
+                {info.slice(3, 6).map((f) => (
+                  <Col md={6} key={f.field} className="update-job-form-group">
+                    <FloatingLabel controlId={`floating${f.field}`} label={`${f.icon} ${f.label}`}>
+                      <Form.Control
+                        type={f.type}
+                        placeholder={f.label}
+                        value={job[f.field] ?? (jobDetail[f.field] || "")}
+                        onChange={(e) => setState(e.target.value, f.field)}
+                      />
+                    </FloatingLabel>
+                  </Col>
+                ))}
+              </Row>
+
+              <div className="update-job-section-title">
+                ⏰ Thời gian & Lương
+              </div>
+              
+              <Row>
+                {info.slice(6).map((f) => (
+                  <Col md={4} key={f.field} className="update-job-form-group">
+                    <FloatingLabel controlId={`floating${f.field}`} label={`${f.icon} ${f.label}`}>
+                      <Form.Control
+                        type={f.type}
+                        placeholder={f.label}
+                        value={job[f.field] ?? (jobDetail[f.field] || "")}
+                        onChange={(e) => setState(e.target.value, f.field)}
+                      />
+                    </FloatingLabel>
+                  </Col>
+                ))}
+              </Row>
+
+              <div className="update-job-submit-container">
+                <Button 
+                  type="submit" 
+                  className="update-job-submit-btn"
+                  disabled={loading}
+                >
+                  {loading ? "Đang cập nhật..." : "🚀 Cập nhật ngay"}
+                </Button>
+              </div>
+            </Form>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

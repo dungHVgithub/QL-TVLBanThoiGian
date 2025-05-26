@@ -17,7 +17,7 @@ const Employee = () => {
       try {
         setLoading(true);
         // Gọi API để lấy danh sách EmployeeJob theo employeeId
-        const res = await authApis().get(`${endpoints["employeeJob/employee/"]}${employeeId}`);
+        const res = await authApis().get(`${endpoints["employeeJob/employee"]}${employeeId}`);
         console.log("Dữ liệu từ API:", res.data);
         setEmployeeJobs(res.data);
       } catch (err) {

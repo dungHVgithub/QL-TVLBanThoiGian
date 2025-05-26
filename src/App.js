@@ -21,13 +21,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Apply from "./components/Apply";
 import Employee from "./components/employee";
+import FavoriteJob from "./components/favoriteJob"; // Import component
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
 
   useEffect(() => {
     const init = async () => {
-      // Kiểm tra token từ localStorage hoặc cookie
       let token = localStorage.getItem("token") || cookie.load("token");
       if (token) {
         try {
@@ -66,11 +66,12 @@ const App = () => {
               <Route path="/employer" element={<Employer />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/job_detail/:id" element={<JobDetail />} />
-              <Route path = "company_info/:companyId" element = {<CompanyInfo/>}/>
-              <Route path= "postList/:employerId" element = {<PostList/>}/>
-              <Route path= "updateJob/:jobId" element = {<UpdateJob/>}/>
-              <Route path = "Apply/:employeeId/:jobId" element = {<Apply/>} />
-              <Route path = "employee/:employeeId" element = {<Employee/>} />
+              <Route path="company_info/:companyId" element={<CompanyInfo />} />
+              <Route path="postList/:employerId" element={<PostList />} />
+              <Route path="updateJob/:jobId" element={<UpdateJob />} />
+              <Route path="Apply/:employeeId/:jobId" element={<Apply />} />
+              <Route path="employee/:employeeId" element={<Employee />} />
+              <Route path="favoriteJob/:employeeId" element={<FavoriteJob />} /> {/* Route đúng */}
             </Routes>
           </Container>
           <Footer />

@@ -16,12 +16,13 @@ const Home = () => {
   const nav = useNavigate();
   const user = useContext(MyUserContext); // Lấy thông tin người dùng từ context
   const dispatch = useContext(MyDispatchContext);
+  const [favoriteJobs, setFavoriteJobs] = useState([]); // Lưu danh sách công việc yêu thích
 
   const [filters, setFilters] = useState({
     kw: "",
     location: "",
     salary: "",
-    companyName: ""
+    companyName: "",
   });
 
   const loadJob = async () => {
@@ -40,7 +41,7 @@ const Home = () => {
       let location = q.get("location");
       if (location) {
         const lowerLocation = location.toLowerCase();
-        filteredJobs = filteredJobs.filter(job => {
+        filteredJobs = filteredJobs.filter((job) => {
           const address = job.employerId?.company?.address;
           return address?.toLowerCase().includes(lowerLocation) || false;
         });
@@ -48,15 +49,15 @@ const Home = () => {
 
       const minSalary = q.get("salary");
       if (minSalary) {
-        filteredJobs = filteredJobs.filter(job =>
-          job.salary && parseFloat(job.salary) >= parseFloat(minSalary)
+        filteredJobs = filteredJobs.filter(
+          (job) => job.salary && parseFloat(job.salary) >= parseFloat(minSalary)
         );
       }
 
       const companyName = q.get("companyName");
       if (companyName) {
         const lowerCompany = companyName.toLowerCase();
-        filteredJobs = filteredJobs.filter(job => {
+        filteredJobs = filteredJobs.filter((job) => {
           const name = job.employerId?.company?.name;
           return name?.toLowerCase().includes(lowerCompany) || false;
         });
@@ -68,7 +69,7 @@ const Home = () => {
         if (page === 1) {
           setJobPostings(filteredJobs);
         } else {
-          setJobPostings(prev => [...prev, ...filteredJobs]);
+          setJobPostings((prev) => [...prev, ...filteredJobs]);
         }
       }
     } catch (error) {
@@ -82,21 +83,23 @@ const Home = () => {
   const loadCompanyImage = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
     try {
-      const companyIds = [...new Set(
-        jobs.map(job => job.employerId?.company?.id)
-           .filter(id => id && (typeof id === 'number'))
-      )];
-      const images = { ...companyImages};
+      const companyIds = [
+        ...new Set(
+          jobs
+            .map((job) => job.employerId?.company?.id)
+            .filter((id) => id && typeof id === "number")
+        ),
+      ];
+      const images = { ...companyImages };
 
       for (const companyId of companyIds) {
         if (!images[companyId]) {
           try {
             const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
             const data = Array.isArray(res.data) ? res.data : [res.data];
-            // Ưu tiên chọn ảnh có caption chứa "logo" (không phân biệt hoa thường)
-            const logo = data.find(image => 
-              image.caption?.toLowerCase().includes("logo")
-            ) || data.sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Nếu không có, chọn ảnh mới nhất
+            const logo =
+              data.find((image) => image.caption?.toLowerCase().includes("logo")) ||
+              data.sort((a, b) => b.uploadTime - a.uploadTime)[0];
             images[companyId] = logo?.imagePath || ou;
           } catch (error) {
             console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, error.message, error.response?.data);
@@ -131,6 +134,91 @@ const Home = () => {
     return isNaN(date.getTime()) ? "Chưa xác định" : date.toLocaleDateString();
   };
 
+  // Lấy danh sách công việc yêu thích của người dùng
+  const loadFavoriteJobs = async (employeeId) => {
+    try {
+      const res = await authApis().get(`${endpoints["employeeJob/employee"]}${employeeId}`);
+      const jobs = res.data;
+      setFavoriteJobs(jobs.filter((job) => job.favoriteJob === 1));
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách công việc yêu thích:", error);
+      setFavoriteJobs([]);
+    }
+  };
+
+  // Lấy employeeId từ userId
+  const getEmployeeId = async () => {
+    if (!user || !user.id) return null;
+    try {
+      const res = await authApis().get(endpoints.employees);
+      const employees = res.data;
+      const matchingEmployee = employees.find(
+        (emp) => emp.userId && emp.userId.id === user.id
+      );
+      return matchingEmployee ? matchingEmployee.id : null;
+    } catch (error) {
+      console.error("Lỗi khi lấy employeeId:", error);
+      return null;
+    }
+  };
+
+  // Trong hàm handleFavorite
+  const handleFavorite = async (jobId) => {
+    if (!user || !user.id) {
+      nav("/login");
+      return;
+    }
+
+    const employeeId = await getEmployeeId();
+    if (!employeeId) {
+      alert("❌ Không tìm thấy thông tin Employee cho người dùng này!");
+      return;
+    }
+
+    try {
+      const res = await authApis().get(`${endpoints["employeeJob/employee"]}${employeeId}`);
+      const allEmployeeJobs = res.data;
+      const existingJob = allEmployeeJobs.find(
+        (job) => job.employeeId.id === employeeId && job.jobId.id === jobId
+      );
+
+      if (existingJob) {
+        const newFavoriteJob = existingJob.favoriteJob === 1 ? 0 : 1;
+        const response = await authApis().put(
+          `${endpoints["employeeJob/employee"]}${employeeId}/${existingJob.id}`,
+          {
+            jobState: existingJob.jobState, // Giữ nguyên jobState
+            favoriteJob: newFavoriteJob // Cập nhật favoriteJob
+          }
+        );
+        if (response.status === 200) {
+          if (newFavoriteJob === 1) {
+            setFavoriteJobs((prev) => [...prev, response.data]);
+          } else {
+            setFavoriteJobs((prev) => prev.filter((job) => job.id !== existingJob.id));
+          }
+        }
+      } else {
+        const newEmployeeJob = {
+          employeeId: { id: employeeId },
+          jobId: { id: jobId },
+          jobState: 0,
+          favoriteJob: 1,
+        };
+        const response = await authApis().post(
+          `${endpoints["employeeJob/employee"]}${employeeId}`,
+          newEmployeeJob
+        );
+        if (response.status === 201) {
+          setFavoriteJobs((prev) => [...prev, response.data]);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái yêu thích:", error);
+      alert("❌ Có lỗi xảy ra khi cập nhật trạng thái yêu thích. Vui lòng thử lại!");
+    }
+  };
+
   useEffect(() => {
     loadJob();
   }, [page, q]);
@@ -145,9 +233,20 @@ const Home = () => {
     setCompanyImages({});
   }, [q]);
 
+  useEffect(() => {
+    // Lấy danh sách công việc yêu thích khi user thay đổi
+    if (user && user.id) {
+      getEmployeeId().then((employeeId) => {
+        if (employeeId) {
+          loadFavoriteJobs(employeeId);
+        }
+      });
+    }
+  }, [user]);
+
   const loadMore = () => {
     if (!loading && page > 0) {
-      setPage(prev => prev + 1);
+      setPage((prev) => prev + 1);
     }
   };
 
@@ -174,13 +273,15 @@ const Home = () => {
     }
 
     try {
-      const res = await authApis().get(endpoints.employees); // Sử dụng endpoint /employees
+      const res = await authApis().get(endpoints.employees);
       const employees = res.data;
-      console.log("Employees data:", employees); // Debug dữ liệu từ API
-      const matchingEmployee = employees.find(emp => emp.userId && emp.userId.id === user.id); // So sánh emp.userId.id với user.id
+      console.log("Employees data:", employees);
+      const matchingEmployee = employees.find(
+        (emp) => emp.userId && emp.userId.id === user.id
+      );
       if (matchingEmployee) {
         const employeeId = matchingEmployee.id;
-        nav(`/Apply/${employeeId}/${jobId}`); // Điều hướng với employeeId và jobId
+        nav(`/Apply/${employeeId}/${jobId}`);
       } else {
         alert("❌ Không tìm thấy thông tin Employee cho người dùng này!");
       }
@@ -202,7 +303,7 @@ const Home = () => {
             { label: "Tìm công việc", placeholder: "Nhập tên công việc", name: "kw", type: "search" },
             { label: "Địa điểm", placeholder: "Nhập địa điểm", name: "location", type: "search" },
             { label: "Lương tối thiểu ($)", placeholder: "VD: 1000", name: "salary", type: "number" },
-            { label: "Tên công ty", placeholder: "VD: FPT", name: "companyName", type: "search" }
+            { label: "Tên công ty", placeholder: "VD: FPT", name: "companyName", type: "search" },
           ].map(({ label, placeholder, name, type }) => (
             <div className="filter-group" key={name}>
               <label>{label}</label>
@@ -210,18 +311,21 @@ const Home = () => {
                 type={type}
                 placeholder={placeholder}
                 value={filters[name]}
-                onChange={e => setFilters({ ...filters, [name]: e.target.value })}
+                onChange={(e) => setFilters({ ...filters, [name]: e.target.value })}
               />
             </div>
           ))}
           <button type="submit" className="filter-btn">Lọc</button>
-          <button type="button" className="filter-btn reset-btn" onClick={clearFilters}>Xoá bộ lọc</button>
+          <button type="button" className="filter-btn reset-btn" onClick={clearFilters}>
+            Xoá bộ lọc
+          </button>
         </form>
       </div>
 
       {approvedJobs.length > 0 ? (
         approvedJobs.map((job) => {
           const companyInfo = getCompanyInfo(job.employerId);
+          const isFavorite = favoriteJobs.some((favJob) => favJob.jobId.id === job.id);
           return (
             <div
               key={job.id}
@@ -264,8 +368,16 @@ const Home = () => {
               </div>
               {user && user.role === "ROLE_EMPLOYEE" && (
                 <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
-                  <button className="apply-btn" onClick={() => handleApply(job.id)}>Ứng tuyển</button>
-                  <span className="heart-icon">♡</span>
+                  <button className="apply-btn" onClick={() => handleApply(job.id)}>
+                    Ứng tuyển
+                  </button>
+                  <span
+                    className="heart-icon"
+                    style={{ cursor: "pointer", color: isFavorite ? "red" : "black" }}
+                    onClick={() => handleFavorite(job.id)}
+                  >
+                    {isFavorite ? "♥" : "♡"}
+                  </span>
                 </div>
               )}
             </div>

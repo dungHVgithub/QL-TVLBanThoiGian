@@ -8,6 +8,7 @@ import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfi
 import { signInWithPopup } from "firebase/auth";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import cookie from "react-cookies";
+import { toast } from "react-toastify";
 
 const Login = () => {
     const info = [
@@ -22,14 +23,44 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [, setMsg] = useState("");
 
+    const validateUsername = (username) => {
+        const usernameRegex = /^[a-zA-Z0-9_]+$/;
+        return usernameRegex.test(username);
+    };
+
     const login = async (e) => {
         e.preventDefault();
+
+        if (!user.username || user.username.trim() === "") {
+            toast.error("Tên đăng nhập không được để trống!", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+            return;
+        }
+
+        if (!validateUsername(user.username)) {
+            toast.error("Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới!", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+            return;
+        }
+
+        if (!user.password || user.password.trim() === "") {
+            toast.error("Mật khẩu không được để trống!", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+            return;
+        }
+
         try {
             setLoading(true);
             const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
             cookie.save("token", token);
-            localStorage.setItem("token",token);
+            localStorage.setItem("token", token);
             const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;
 
@@ -40,17 +71,29 @@ const Login = () => {
                     username: userInfo.username,
                     name: userInfo.name,
                     role: userInfo.role,
-                    id: userInfo.id, // Sửa user_id thành id
+                    id: userInfo.id,
                 },
             });
 
-            if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
-                nav("/");
-            else if (userInfo.role === "ROLE_EMPLOYER")
-                nav("/employer");
-            else nav("/");
+            toast.success("Đăng nhập thành công!", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+
+            // Thêm độ trễ nhỏ trước khi điều hướng
+            setTimeout(() => {
+                if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
+                    nav("/");
+                else if (userInfo.role === "ROLE_EMPLOYER")
+                    nav("/employer");
+                else nav("/");
+            }, 100); // Độ trễ 100ms
         } catch (err) {
             console.error("Lỗi đăng nhập:", err);
+            toast.error("Đăng nhập thất bại! Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu.", {
+                position: "top-right",
+                autoClose: 5000,
+            });
         } finally {
             setLoading(false);
         }
@@ -71,7 +114,13 @@ const Login = () => {
             let email = firebaseUser.email;
             if (!email && provider === facebookProvider) {
                 email = prompt("Facebook không cung cấp email. Nhập email để tiếp tục:");
-                if (!email) throw new Error("Email bắt buộc!");
+                if (!email) {
+                    toast.error("Email bắt buộc để tiếp tục đăng nhập!", {
+                        position: "top-right",
+                        autoClose: 5000,
+                    });
+                    throw new Error("Email bắt buộc!");
+                }
             }
 
             const payload = {
@@ -97,15 +146,32 @@ const Login = () => {
                 },
             });
 
-            nav("/");
+            toast.success("Đăng nhập bằng mạng xã hội thành công!", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+
+            // Thêm độ trễ nhỏ trước khi điều hướng
+            setTimeout(() => {
+                nav("/");
+            }, 100); // Độ trễ 100ms
         } catch (err) {
             console.error("OAuth login error:", err);
             if (err.code === "auth/account-exists-with-different-credential") {
-                setMsg("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
+                toast.error("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.", {
+                    position: "top-right",
+                    autoClose: 5000,
+                });
             } else if (err.code === "auth/popup-closed-by-user") {
-                setMsg("Bạn đã đóng cửa sổ đăng nhập quá sớm.");
+                toast.error("Bạn đã đóng cửa sổ đăng nhập quá sớm.", {
+                    position: "top-right",
+                    autoClose: 5000,
+                });
             } else {
-                setMsg("Đăng nhập mạng xã hội thất bại!");
+                toast.error("Đăng nhập mạng xã hội thất bại!", {
+                    position: "top-right",
+                    autoClose: 5000,
+                });
             }
         } finally {
             setLoading(false);

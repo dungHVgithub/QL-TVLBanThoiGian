@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
@@ -41,9 +40,6 @@ public class Employee implements Serializable {
     @OneToMany(mappedBy = "employeeId")
     @JsonIgnore
     private Collection<JobPosting> jobPostingCollection;
-    @JoinColumn(name = "jobFavorite", referencedColumnName = "id")
-    @ManyToOne
-    private JobPosting jobFavorite;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
     private User userId;
@@ -72,14 +68,6 @@ public class Employee implements Serializable {
 
     public void setJobPostingCollection(Collection<JobPosting> jobPostingCollection) {
         this.jobPostingCollection = jobPostingCollection;
-    }
-
-    public JobPosting getJobFavorite() {
-        return jobFavorite;
-    }
-
-    public void setJobFavorite(JobPosting jobFavorite) {
-        this.jobFavorite = jobFavorite;
     }
 
     public User getUserId() {

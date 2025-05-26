@@ -26,7 +26,8 @@ import java.io.Serializable;
 @NamedQueries({
     @NamedQuery(name = "EmployeeJob.findAll", query = "SELECT e FROM EmployeeJob e"),
     @NamedQuery(name = "EmployeeJob.findById", query = "SELECT e FROM EmployeeJob e WHERE e.id = :id"),
-    @NamedQuery(name = "EmployeeJob.findByJobState", query = "SELECT e FROM EmployeeJob e WHERE e.jobState = :jobState")})
+    @NamedQuery(name = "EmployeeJob.findByJobState", query = "SELECT e FROM EmployeeJob e WHERE e.jobState = :jobState"),
+    @NamedQuery(name = "EmployeeJob.findByFavoriteJob", query = "SELECT e FROM EmployeeJob e WHERE e.favoriteJob = :favoriteJob")})
 public class EmployeeJob implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,6 +38,8 @@ public class EmployeeJob implements Serializable {
     private Integer id;
     @Column(name = "jobState")
     private Short jobState;
+    @Column(name = "favoriteJob")
+    private Short favoriteJob;
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
     private Employee employeeId;
@@ -65,6 +68,14 @@ public class EmployeeJob implements Serializable {
 
     public void setJobState(Short jobState) {
         this.jobState = jobState;
+    }
+
+    public Short getFavoriteJob() {
+        return favoriteJob;
+    }
+
+    public void setFavoriteJob(Short favoriteJob) {
+        this.favoriteJob = favoriteJob;
     }
 
     public Employee getEmployeeId() {

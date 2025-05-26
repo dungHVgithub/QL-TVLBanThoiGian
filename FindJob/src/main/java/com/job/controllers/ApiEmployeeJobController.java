@@ -41,7 +41,6 @@ public class ApiEmployeeJobController {
             @PathVariable("employeeId") Integer employeeId,
             @RequestBody EmployeeJob employeeJob) {
         try {
-            // Đảm bảo employeeId trong body khớp với path variable
             if (employeeJob.getEmployeeId() == null || employeeJob.getEmployeeId().getId() != employeeId) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -52,7 +51,7 @@ public class ApiEmployeeJobController {
         }
     }
 
-    // PUT: Cập nhật trạng thái EmployeeJob (Duyệt hoặc Từ chối)
+    // PUT: Cập nhật trạng thái EmployeeJob (jobState hoặc favoriteJob)
     @PutMapping("/{employeeId}/{employeeJobId}")
     public ResponseEntity<EmployeeJob> updateEmployeeJob(
             @PathVariable("employeeId") Integer employeeId,
@@ -68,15 +67,25 @@ public class ApiEmployeeJobController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            // Cập nhật trạng thái jobState (0: Từ chối, 1: Duyệt) với kiểu Short
+            // Cập nhật jobState nếu có
             Short newJobState = employeeJob.getJobState();
             if (newJobState != null && (newJobState == 0 || newJobState == 1)) {
                 existingJob.setJobState(newJobState);
-                EmployeeJob updated = employeeJobService.addOrUpdate(existingJob);
-                return new ResponseEntity<>(updated, HttpStatus.OK);
-            } else {
+            }
+
+            // Cập nhật favoriteJob nếu có
+            Short newFavoriteJob = employeeJob.getFavoriteJob();
+            if (newFavoriteJob != null && (newFavoriteJob == 0 || newFavoriteJob == 1)) {
+                existingJob.setFavoriteJob(newFavoriteJob);
+            }
+
+            // Nếu không có thay đổi nào, trả về lỗi
+            if (newJobState == null && newFavoriteJob == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+
+            EmployeeJob updated = employeeJobService.addOrUpdate(existingJob);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -49,9 +49,6 @@ public class JobPosting implements Serializable {
     @Size(max = 8)
     @Column(name = "state")
     private String state;
-    @OneToMany(mappedBy = "jobFavorite")
-    @JsonIgnore
-    private Collection<Employee> employeeCollection;
     @OneToMany(mappedBy = "jobId")
     @JsonIgnore
     private Collection<EmployeeJob> employeeJobCollection;
@@ -205,6 +202,14 @@ public class JobPosting implements Serializable {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
 
+    public Collection<EmployeeJob> getEmployeeJobCollection() {
+        return employeeJobCollection;
+    }
+
+    public void setEmployeeJobCollection(Collection<EmployeeJob> employeeJobCollection) {
+        this.employeeJobCollection = employeeJobCollection;
+    }
+
     public String getName() {
         return name;
     }
@@ -219,22 +224,6 @@ public class JobPosting implements Serializable {
 
     public void setState(String state) {
         this.state = state;
-    }
-
-    public Collection<Employee> getEmployeeCollection() {
-        return employeeCollection;
-    }
-
-    public void setEmployeeCollection(Collection<Employee> employeeCollection) {
-        this.employeeCollection = employeeCollection;
-    }
-
-    public Collection<EmployeeJob> getEmployeeJobCollection() {
-        return employeeJobCollection;
-    }
-
-    public void setEmployeeJobCollection(Collection<EmployeeJob> employeeJobCollection) {
-        this.employeeJobCollection = employeeJobCollection;
     }
     
 }
