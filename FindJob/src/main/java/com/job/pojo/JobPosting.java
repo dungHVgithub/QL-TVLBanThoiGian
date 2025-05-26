@@ -35,6 +35,8 @@ public class JobPosting implements Serializable {
     @Size(max = 8)
     @Column(name = "state")
     private String state;
+    @OneToMany(mappedBy = "job")
+    private Set<Notification> notificationSet;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -198,6 +200,15 @@ public class JobPosting implements Serializable {
     }
 
 
+
+
+    public Set<Notification> getNotificationSet() {
+        return notificationSet;
+    }
+
+    public void setNotificationSet(Set<Notification> notificationSet) {
+        this.notificationSet = notificationSet;
+    }
 
     public String getName() {
         return name;

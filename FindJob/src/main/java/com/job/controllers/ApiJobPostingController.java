@@ -8,7 +8,9 @@ import com.job.dto.JobPostingDTO;
 import com.job.pojo.Category;
 import com.job.pojo.Employer;
 import com.job.pojo.JobPosting;
+import com.job.pojo.Notification;
 import com.job.services.JobPostingService;
+import com.job.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,11 @@ import java.util.Map;
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ApiJobPostingController {
+
     @Autowired
     private JobPostingService jobService;
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/job_postings")
     public ResponseEntity<JobPosting> createJobPosting(@RequestBody JobPostingDTO dto) {
@@ -38,7 +43,6 @@ public class ApiJobPostingController {
             jobPosting.setSalary(dto.getSalary());
             jobPosting.setState(dto.getState() != null ? dto.getState() : "pending");
 
-            // Chuyển đổi timeStart và timeEnd từ chuỗi "HH:mm" sang Date
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
             if (dto.getTimeStart() != null) {
                 jobPosting.setTimeStart(timeFormat.parse(dto.getTimeStart()));
@@ -47,21 +51,31 @@ public class ApiJobPostingController {
                 jobPosting.setTimeEnd(timeFormat.parse(dto.getTimeEnd()));
             }
 
-            // Thiết lập categoryId và employerId
             if (dto.getCategoryId() != null) {
                 Category category = new Category();
                 category.setId(dto.getCategoryId());
                 jobPosting.setCategoryId(category);
             }
-            if (dto.getEmployerId() != null) {
-                Employer employer = new Employer();
-                employer.setId(dto.getEmployerId());
-                jobPosting.setEmployerId(employer);
+
+            Employer employer = new Employer();
+            employer.setId(dto.getEmployerId());
+            jobPosting.setEmployerId(employer);
+
+            //  Save  tạm job 
+            JobPosting savedJob = jobService.addOrUpdate(jobPosting);
+
+            //  đợi admin duyệt mới gửi
+            if ("approved".equalsIgnoreCase(savedJob.getState())) {
+                Notification notification = new Notification();
+                notification.setContent("Nhà tuyển dụng vừa đăng tin tuyển dụng mới: " + savedJob.getName());
+                notification.setEmployerId(employer);
+
+                notificationService.addUserNotification(notification);
             }
 
-            JobPosting savedJob = jobService.addOrUpdate(jobPosting);
             return new ResponseEntity<>(savedJob, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

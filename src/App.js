@@ -5,8 +5,9 @@ import Home from "./components/Home";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { MyUserContext, MyDispatchContext } from "./configs/MyContexts";
 import MyUserReducer from "./reducers/MyUserReducer";
+import {  NotificationContext } from "./configs/MyContexts";
 import { Container } from "react-bootstrap";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Employer from "./components/Employer";
@@ -15,13 +16,15 @@ import Api, { authApis, endpoints } from "./configs/Api";
 import Profile from "./components/Profile";
 import cookie from "react-cookies";
 import CompanyInfo from "./components/CompanyInfo";
+import NotificationList from "./components/NotificationList";
+
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
+  const [unreadCount, setUnreadCount] = useState(0); // ✅
 
   useEffect(() => {
     const init = async () => {
-      // Kiểm tra token từ localStorage hoặc cookie
       let token = localStorage.getItem("token") || cookie.load("token");
       if (token) {
         try {
@@ -48,25 +51,28 @@ const App = () => {
   }, []);
 
   return (
-    <MyUserContext.Provider value={user}>
-      <MyDispatchContext.Provider value={dispatch}>
-        <BrowserRouter>
-          <Header />
-          <Container>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/employer" element={<Employer />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/job_detail/:id" element={<JobDetail />} />
-              <Route path = "company_info/:companyId" element = {<CompanyInfo/>}/>
-            </Routes>
-          </Container>
-          <Footer />
-        </BrowserRouter>
-      </MyDispatchContext.Provider>
-    </MyUserContext.Provider>
+    <NotificationContext.Provider value={{ unreadCount, setUnreadCount }}>
+      <MyUserContext.Provider value={user}>
+        <MyDispatchContext.Provider value={dispatch}>
+          <BrowserRouter>
+            <Header />
+            <Container>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/employer" element={<Employer />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/job_detail/:id" element={<JobDetail />} />
+                <Route path="company_info/:companyId" element={<CompanyInfo />} />
+                <Route path="/notifications" element={<NotificationList />} />
+              </Routes>
+            </Container>
+            <Footer />
+          </BrowserRouter>
+        </MyDispatchContext.Provider>
+      </MyUserContext.Provider>
+    </NotificationContext.Provider>
   );
 };
 

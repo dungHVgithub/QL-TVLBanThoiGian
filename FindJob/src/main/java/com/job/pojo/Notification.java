@@ -37,16 +37,20 @@ import java.util.Set;
     @NamedQuery(name = "Notification.findByCreatedAt", query = "SELECT n FROM Notification n WHERE n.createdAt = :createdAt")})
 public class Notification implements Serializable {
 
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "content")
+    private String content;
+    @JoinColumn(name = "job", referencedColumnName = "id")
+    @ManyToOne
+    private JobPosting job;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "content")
-    private String content;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -72,13 +76,6 @@ public class Notification implements Serializable {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -127,6 +124,23 @@ public class Notification implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.Notification[ id=" + id + " ]";
+    }
+
+
+    public JobPosting getJob() {
+        return job;
+    }
+
+    public void setJob(JobPosting job) {
+        this.job = job;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
     
 }

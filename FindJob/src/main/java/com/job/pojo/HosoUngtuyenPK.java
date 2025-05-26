@@ -63,7 +63,7 @@ public class HosoUngtuyenPK implements Serializable {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof HosoUngtuyenPK)) {
             return false;
-        }
+        }   
         HosoUngtuyenPK other = (HosoUngtuyenPK) object;
         if (this.jobId != other.jobId) {
             return false;
