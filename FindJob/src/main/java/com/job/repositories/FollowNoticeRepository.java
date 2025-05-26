@@ -4,10 +4,16 @@
  */
 package com.job.repositories;
 
-/**
- *
- * @author DUNG
- */
+import com.job.pojo.FollowNotice;
+import java.util.List;
+
 public interface FollowNoticeRepository {
-    
+    FollowNotice  addOrUpdateFollow(FollowNotice follow);
+    List<FollowNotice> getFollowsByEmployee(int employeeId);
+    List<FollowNotice> getFollowersByEmployer(int employerId);
+    long countFollowersByEmployer(int employerId);
+    boolean deleteFollow(int employeeId, int employerId);
+    boolean existsFollow(int employeeId, int employerId);
+    FollowNotice getFollowDetail(int employeeId, int employerId);
 }
+

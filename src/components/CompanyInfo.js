@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card, Row, Col, Button, Form } from "react-bootstrap";
-import { authApis, endpoints } from "../configs/Api";
+import Api, { authApis, endpoints } from "../configs/Api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../static/companyInfo.css"; // Import file CSS
@@ -15,7 +15,7 @@ const CompanyInfo = () => {
   // Hàm tải dữ liệu công ty và ảnh
   const loadCompanyImages = async () => {
     try {
-      const res = await authApis().get(`${endpoints["company_images"]}/${companyId}`);
+      const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
       console.log("Company Images Data:", res.data);
       setCompanyData(res.data); // Lưu toàn bộ mảng dữ liệu vào state
 
@@ -147,7 +147,7 @@ const CompanyInfo = () => {
           </Col>
 
           {/* Cột phải: Thông tin công ty (70%) */}
-          <Col md={8}>
+          <Col md={7}>
             <Row>
               <Col md={12} className="company-info">
                 <p><strong>🏢 Tên công ty:</strong> {company.name || "Chưa cập nhật"}</p>
@@ -182,6 +182,7 @@ const CompanyInfo = () => {
                 </Button>
               </Col>
             </Row>
+            
 
             {/* Popup form chỉnh sửa thông tin công ty */}
             {showEditForm && (
@@ -220,7 +221,19 @@ const CompanyInfo = () => {
                 </Form>
               </div>
             )}
+
+
           </Col>
+          <Col md={1}>
+                <Button
+                  variant="primary"
+                  className="follow-button-fixed"
+                  onClick={() => toast.success("Bạn đã follow công ty này!")}
+                >
+                  Follow
+                </Button>
+              </Col>
+
         </Row>
       </Card>
     </Container>

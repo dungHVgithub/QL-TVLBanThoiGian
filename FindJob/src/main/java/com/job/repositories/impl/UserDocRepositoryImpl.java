@@ -4,13 +4,6 @@
  */
 package com.job.repositories.impl;
 
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.Feature;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
-import com.google.protobuf.ByteString;
 import com.job.pojo.UserDocuments;
 import com.job.repositories.UserDocRepository;
 import org.hibernate.query.Query;

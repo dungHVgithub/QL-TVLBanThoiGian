@@ -80,7 +80,7 @@ const Home = () => {
     try {
       const companyIds = [...new Set(
         jobs.map(job => job.employerId?.company?.id)
-           .filter(id => id && (typeof id === 'number'))
+          .filter(id => id && (typeof id === 'number'))
       )];
       const images = { ...companyImages };
 
@@ -90,7 +90,7 @@ const Home = () => {
             const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
             const data = Array.isArray(res.data) ? res.data : [res.data];
             // Ưu tiên chọn ảnh có caption chứa "logo" (không phân biệt hoa thường)
-            const logo = data.find(image => 
+            const logo = data.find(image =>
               image.caption?.toLowerCase().includes("logo")
             ) || data.sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Nếu không có, chọn ảnh mới nhất
             images[companyId] = logo?.imagePath || ou;
@@ -232,7 +232,15 @@ const Home = () => {
                   🕒 Bắt đầu: {formatTime(job.timeStart)} - Kết thúc: {formatTime(job.timeEnd)}
                 </p>
                 <p className="company-info">
-                  🏢 Công ty: {companyInfo.name} - 📍 Địa chỉ: {companyInfo.address}
+                  🏢 Công ty:
+                  <Link
+                    to={`/company_info/${job.employerId?.company?.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="company-link"
+                  >
+                    {companyInfo.name}
+                  </Link>
+                  - 📍 Địa chỉ: {companyInfo.address}
                 </p>
               </div>
               <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
