@@ -25,7 +25,7 @@ public class ApiFollowNoticeController {
     private FollowNoticeService followService;
 
     // người dùng follow 1 nhà tuyển dụng
-    @PostMapping("/follow")
+    @PostMapping("/follows")
     public ResponseEntity<?> follow(@RequestParam("employee") int employeeId,
             @RequestParam("employer") int employerId) {
         try {
@@ -76,29 +76,19 @@ public class ApiFollowNoticeController {
         return ResponseEntity.ok(Collections.singletonMap("count", count));
     }
 
-    @DeleteMapping("/follow/{employeeId}/{employerId}")
+    @DeleteMapping("/follows/{employeeId}/{employerId}")
     public ResponseEntity<?> deleteFollow(@PathVariable("employeeId") int employeeId,
             @PathVariable("employerId") int employerId) {
         boolean deleted = followService.deleteFollow(employeeId, employerId);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @GetMapping("/follow-exists/{employeeId}/{employerId}")
+    @GetMapping("/follows/follow-exists/{employeeId}/{employerId}")
     public ResponseEntity<Map<String, Boolean>> existsFollow(@PathVariable("employeeId") int employeeId,
             @PathVariable("employerId") int employerId) {
         boolean exists = followService.existsFollow(employeeId, employerId);
         return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 
-    @GetMapping("/follow-detail/{employeeId}/{employerId}")
-    public ResponseEntity<?> getFollowDetail(@PathVariable("employeeId") int employeeId,
-            @PathVariable("employerId") int employerId) {
-        try {
-            FollowNotice follow = followService.getFollowDetail(employeeId, employerId);
-            return follow != null ? ResponseEntity.ok(follow) : ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
-        }
-    }
+  
 }

@@ -2,13 +2,14 @@ import { useContext, useState } from "react";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import Api, { authApis, endpoints } from "../configs/Api";
 import { MyDispatchContext } from "../configs/MyContexts";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MySpinner from "./layouts/MySpinner";
 import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfig";
 import { signInWithPopup } from "firebase/auth";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import cookie from "react-cookies";
 import RoleSelectionModal from "./RoleSelectionModal.js";
+import { toast } from "react-toastify";
 
 const Login = () => {
     const info = [
@@ -18,13 +19,20 @@ const Login = () => {
 
     const dispatch = useContext(MyDispatchContext);
     const nav = useNavigate();
-
+    const location = useLocation();
     const [user, setUser] = useState({ username: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [, setMsg] = useState("");
     const [showRoleModal, setShowRoleModal] = useState(false);
     const [googleUser, setGoogleUser] = useState(null);
     const [, setEmailExists] = useState(undefined);
+
+    // ✅ Quay lại trang trước (nếu có) sau khi login thành công
+    const handleLoginSuccess = () => {
+    toast.success("Đăng nhập thành công!");
+    const redirectPath = location.state?.from || "/";
+    nav(redirectPath);
+};
 
     const login = async (e) => {
         e.preventDefault();
@@ -34,8 +42,7 @@ const Login = () => {
             const token = res.data.token;
 
             cookie.save("token", token);
-
-            localStorage.setItem("token",token);
+            localStorage.setItem("token", token);
 
             const profileRes = await authApis().get(endpoints.profile);
             const userInfo = profileRes.data;
@@ -51,11 +58,7 @@ const Login = () => {
                 },
             });
 
-            if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
-                nav("/");
-            else if (userInfo.role === "ROLE_EMPLOYER")
-                nav("/employer");
-            else nav("/");
+            handleLoginSuccess();
         } catch (err) {
             console.error("❌ Lỗi đăng nhập:", err);
         } finally {
@@ -111,12 +114,7 @@ const Login = () => {
                     },
                 });
 
-                if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
-                    nav("/");
-                else if (userInfo.role === "ROLE_EMPLOYER")
-                    nav("/employer");
-                else
-                    nav("/");
+                handleLoginSuccess();
             }
         } catch (err) {
             console.error("❌ OAuth login error:", err);
@@ -151,13 +149,7 @@ const Login = () => {
             });
 
             setShowRoleModal(false);
-
-            if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
-                nav("/");
-            else if (userInfo.role === "ROLE_EMPLOYER")
-                nav("/employer");
-            else
-                nav("/");
+            handleLoginSuccess();
         } catch (err) {
             console.error("❌ Xử lý vai trò thất bại:", err);
         } finally {

@@ -6,13 +6,18 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../static/companyInfo.css";
 import { MyUserContext } from "../configs/MyContexts";
+import FollowButton from "./FollowButton";
 
 const CompanyInfo = () => {
   const { companyId } = useParams();
   const [companyData, setCompanyData] = useState(null);
+  const [employeeId, setEmployeeId] = useState(null);
+  const [followerCount, setFollowerCount] = useState(0);
   const [showEditForm, setShowEditForm] = useState(false);
   const [formData, setFormData] = useState({ name: "", address: "", taxCode: "" });
+
   const user = useContext(MyUserContext);
+  const isLogin = user && user.role === "ROLE_EMPLOYEE";
 
   const loadCompanyImages = async () => {
     try {
@@ -33,14 +38,45 @@ const CompanyInfo = () => {
     }
   };
 
+  const loadFollowerCount = async (employerId) => {
+    try {
+      const res = await Api.get(`${endpoints["followCount"]}/${employerId}`);
+      setFollowerCount(res.data.count);
+    } catch (err) {
+      console.error("Lỗi khi lấy số lượng follower:", err);
+    }
+  };
+
+  const loadEmployeeId = async (userId) => {
+    try {
+      const res = await Api.get(`${endpoints["employeeFromUser"]}/${userId}`);
+      setEmployeeId(res.data);
+    } catch (err) {
+      console.error("Không thể lấy employeeId từ userId:", err);
+    }
+  };
+
   useEffect(() => {
     loadCompanyImages();
   }, [companyId]);
 
+  useEffect(() => {
+    const company = companyData?.[0]?.companyId || {};
+    const employerId = company.employerId;
+
+    if (employerId) {
+      loadFollowerCount(employerId);
+    }
+
+    if (user?.role === "ROLE_EMPLOYEE" && user?.id) {
+      loadEmployeeId(user.id);
+    }
+  }, [companyData, user]);
+
   const handleToggleEditForm = async () => {
     if (showEditForm) {
       try {
-        const response = await authApis().put(`${endpoints["company_info"]}/${companyId}`, formData);
+        await authApis().put(`${endpoints["company_info"]}/${companyId}`, formData);
         toast.success("Cập nhật thông tin công ty thành công!");
         setShowEditForm(false);
         await loadCompanyImages();
@@ -64,7 +100,7 @@ const CompanyInfo = () => {
     formData.append("companyId", companyId);
 
     try {
-      const response = await authApis().post(endpoints["company_images"], formData, {
+      await authApis().post(endpoints["company_images"], formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Tải ảnh lên thành công!");
@@ -91,11 +127,6 @@ const CompanyInfo = () => {
   }
 
   const company = companyData[0].companyId || {};
-  console.log("📦 full company object:", company);
-  console.log("💡 company.userId?.id =", company.userId?.id);
-  console.log("💡 company.userId =", company.userId);
-  console.log("👤 user.id =", user?.id);
-
   const isOwner = user && user.role === "ROLE_EMPLOYER" && user.id === company.userId;
 
   return (
@@ -134,14 +165,12 @@ const CompanyInfo = () => {
                   <Form.Label>Chú thích</Form.Label>
                   <Form.Control type="text" name="caption" placeholder="Nhập chú thích" />
                 </Form.Group>
-                <Button variant="primary" type="submit">
-                  Tải ảnh lên
-                </Button>
+                <Button variant="primary" type="submit">Tải ảnh lên</Button>
               </Form>
             )}
           </Col>
 
-          <Col md={7}>
+          <Col md={6}>
             <Row>
               <Col md={12} className="company-info">
                 <p><strong>🏢 Tên công ty:</strong> {company.name || "Chưa cập nhật"}</p>
@@ -161,17 +190,10 @@ const CompanyInfo = () => {
             {isOwner && (
               <Row className="mt-3">
                 <Col md={12} className="button-container">
-                  <Button
-                    variant="primary"
-                    onClick={handleToggleEditForm}
-                    className="me-2"
-                  >
+                  <Button variant="primary" onClick={handleToggleEditForm} className="me-2">
                     {showEditForm ? "Lưu" : "Cập nhật thông tin công ty"}
                   </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => document.querySelector("form").scrollIntoView({ behavior: "smooth" })}
-                  >
+                  <Button variant="secondary" onClick={() => document.querySelector("form").scrollIntoView({ behavior: "smooth" })}>
                     Cập nhật ảnh
                   </Button>
                 </Col>
@@ -179,51 +201,38 @@ const CompanyInfo = () => {
             )}
 
             {showEditForm && (
-              <div className={`edit-form ${showEditForm ? "slide-down" : ""}`}>
+              <div className="edit-form slide-down">
                 <Form>
                   <Form.Group className="mb-3">
                     <Form.Label>Tên công ty</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Nhập tên công ty"
-                    />
+                    <Form.Control type="text" name="name" value={formData.name} onChange={handleInputChange} />
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Địa chỉ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      placeholder="Nhập địa chỉ"
-                    />
+                    <Form.Control type="text" name="address" value={formData.address} onChange={handleInputChange} />
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Mã thuế</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="taxCode"
-                      value={formData.taxCode}
-                      onChange={handleInputChange}
-                      placeholder="Nhập mã thuế"
-                    />
+                    <Form.Control type="text" name="taxCode" value={formData.taxCode} onChange={handleInputChange} />
                   </Form.Group>
                 </Form>
               </div>
             )}
           </Col>
 
-          <Col md={1}>
-            <Button
-              variant="primary"
-              className="follow-button-fixed"
-              onClick={() => toast.success("Bạn đã follow công ty này!")}
-            >
-              Follow
-            </Button>
+          <Col md={2} className="d-flex flex-column align-items-center">
+            {user?.role === "ROLE_EMPLOYEE" && employeeId && company?.employerId && (
+              <>
+                <FollowButton
+                  employeeId={employeeId}
+                  employerId={company.employerId}
+                  onChange={(status) => {
+                    setFollowerCount((prev) => status ? prev + 1 : Math.max(prev - 1, 0));
+                  }}
+                />
+                <p className="mt-2 small text-muted">{followerCount} người đã follow</p>
+              </>
+            )}
           </Col>
         </Row>
       </Card>

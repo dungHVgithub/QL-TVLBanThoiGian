@@ -73,7 +73,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/user/update").authenticated()
                         .requestMatchers( "/api/notifications").authenticated()
-                        .requestMatchers( "/api/notifications/**").authenticated()
+                        .requestMatchers( "/api/follows").authenticated()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form.loginPage("/login")

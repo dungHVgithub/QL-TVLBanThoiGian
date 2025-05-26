@@ -4,22 +4,29 @@ import cookie from "react-cookies"
 const BASE_URL = 'http://localhost:8080/FindJob/api/';
 
 export const endpoints = {
-    'categories' : '/categories',
-    'job_postings' : 'job_postings',
-    'company_info' : 'company_info',
-    'company_images' : 'company_images',
-    'job_details' : 'job_details',
-    'job_details_by_job_posting' : 'job_details/jobPosting',  
+    'categories': '/categories',
+    'job_postings': 'job_postings',
+    'company_info': 'company_info',
+    'company_images': 'company_images',
+    'job_details': 'job_details',
+    'job_details_by_job_posting': 'job_details/jobPosting',
     'employers': '/employers',
     'register': '/users',
     'login': '/login',
     'profile': '/secure/profile',
-    'oauth':'/oauth-login',
+    'oauth': '/oauth-login',
     'users': '/users',
     'updated': '/user/update',
     'documentsByUser': 'user_documents/by_user',
     'updateDocument': '/user_documents',
-    'checkEmailExists': '/users/check_email_exists'
+    'checkEmailExists': '/users/check_email_exists',
+    'followCount': '/follow-count',
+    'employeeFromUser': '/employee/from_user',
+    'follow': '/follows',
+    followExists: (employeeId, employerId) => `follows/follow-exists/${employeeId}/${employerId}`,
+    'unfollow': (employeeId, employerId) => `/follows/${employeeId}/${employerId}`
+
+
 
 }
 
@@ -34,5 +41,5 @@ export const authApis = () => {
     })
 }
 export default axios.create({
-    baseURL : BASE_URL
+    baseURL: BASE_URL
 });

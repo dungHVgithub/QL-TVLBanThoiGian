@@ -9,6 +9,8 @@ public class CompanyShortDTO {
     private String address;
     private String taxCode;
     private Integer userId;
+      private Integer employerId;
+    
 
     public CompanyShortDTO(CompanyInformation company) {
         this.id = company.getId();
@@ -20,6 +22,7 @@ public class CompanyShortDTO {
             Employer emp = company.getEmployerSet().iterator().next();
             if (emp.getUserId() != null)
                 this.userId = emp.getUserId().getId();
+             this.employerId = emp.getId();
         }
     }
 
@@ -91,6 +94,20 @@ public class CompanyShortDTO {
      */
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    /**
+     * @return the employerId
+     */
+    public Integer getEmployerId() {
+        return employerId;
+    }
+
+    /**
+     * @param employerId the employerId to set
+     */
+    public void setEmployerId(Integer employerId) {
+        this.employerId = employerId;
     }
 
     
