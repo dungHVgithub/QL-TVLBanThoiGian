@@ -121,11 +121,7 @@ const Home = () => {
     return time.split(":").slice(0, 2).join(":");
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return "Chưa xác định";
-    const date = new Date(timestamp);
-    return isNaN(date.getTime()) ? "Chưa xác định" : date.toLocaleDateString();
-  };
+  
 
   useEffect(() => {
     loadJob();

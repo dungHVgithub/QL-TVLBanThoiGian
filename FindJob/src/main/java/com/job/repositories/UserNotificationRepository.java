@@ -15,6 +15,6 @@ import java.util.List;
 public interface UserNotificationRepository {
     UserNotification addUserNotification(UserNotification un);
     List<UserNotification> getNotificationsByEmployeeId(int employeeId);
-    long countUnreadNotifications(int employeeId);
-    void markAsRead(int userNotificationId);
+    boolean updateIsRead(int notificationId, int employeeId, boolean isRead);
+    long countUnreadByEmployeeId(int employeeId);
 }

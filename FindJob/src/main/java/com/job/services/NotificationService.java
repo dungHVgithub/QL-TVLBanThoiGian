@@ -12,6 +12,6 @@ import com.job.pojo.Notification;
 import java.util.List;
 
 public interface NotificationService {
-     Notification createNotificationForFollowers(Notification n);
+     Notification addUserNotification(Notification n);
     List<Notification> getNotificationsByEmployee(int employeeId);
 }

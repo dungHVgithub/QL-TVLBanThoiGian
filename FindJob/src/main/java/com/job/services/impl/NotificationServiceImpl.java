@@ -25,7 +25,7 @@ public class NotificationServiceImpl implements NotificationService {
     private FollowNoticeRepository followNoticeRepo;
 
     @Override
-    public Notification createNotificationForFollowers(Notification n) {
+    public Notification addUserNotification(Notification n) {
         n.setCreatedAt(new Date());
         Notification saved = notificationRepo.addNotification(n);
 

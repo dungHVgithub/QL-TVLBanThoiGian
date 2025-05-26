@@ -38,6 +38,7 @@ public class Employee implements Serializable {
     @Column(name = "level")
     private String level;
     @OneToMany(mappedBy = "employeeId")
+    @JsonIgnore
     private Set<UserNotification> userNotificationSet;
 
     private static final long serialVersionUID = 1L;

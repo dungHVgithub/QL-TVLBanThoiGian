@@ -48,7 +48,9 @@ public class Employer implements Serializable {
     private Integer id;
     @JoinColumn(name = "company", referencedColumnName = "id")
     @OneToOne
+    
     private CompanyInformation company;
+    
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -56,6 +58,7 @@ public class Employer implements Serializable {
     @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
     @OneToOne
     private User userId;
     @OneToMany(mappedBy = "employerId")
