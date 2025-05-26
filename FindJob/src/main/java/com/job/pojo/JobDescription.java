@@ -36,12 +36,6 @@ import java.util.Date;
     @NamedQuery(name = "JobDescription.findBySubmitEnd", query = "SELECT j FROM JobDescription j WHERE j.submitEnd = :submitEnd")})
 public class JobDescription implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Lob
     @Size(max = 65535)
     @Column(name = "description")
@@ -52,13 +46,20 @@ public class JobDescription implements Serializable {
     @Size(max = 50)
     @Column(name = "experience")
     private String experience;
-    @Column(name = "submit_end")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date submitEnd;
     @Lob
     @Size(max = 65535)
     @Column(name = "benefit")
     private String benefit;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "submit_end")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date submitEnd;
     @JoinColumn(name = "job_posting", referencedColumnName = "id")
     @ManyToOne
     private JobPosting jobPosting;
@@ -78,29 +79,6 @@ public class JobDescription implements Serializable {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public String getExperience() {
-        return experience;
-    }
-
-    public void setExperience(String experience) {
-        this.experience = experience;
-    }
 
     public Date getSubmitEnd() {
         return submitEnd;
@@ -110,13 +88,6 @@ public class JobDescription implements Serializable {
         this.submitEnd = submitEnd;
     }
 
-    public String getBenefit() {
-        return benefit;
-    }
-
-    public void setBenefit(String benefit) {
-        this.benefit = benefit;
-    }
 
     public JobPosting getJobPosting() {
         return jobPosting;
@@ -149,6 +120,38 @@ public class JobDescription implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.JobDescription[ id=" + id + " ]";
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public String getBenefit() {
+        return benefit;
+    }
+
+    public void setBenefit(String benefit) {
+        this.benefit = benefit;
     }
     
 }

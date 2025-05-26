@@ -8,7 +8,7 @@ import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfi
 import { signInWithPopup } from "firebase/auth";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import cookie from "react-cookies";
-import RoleSelectionModal from "./RoleSelectionModal";
+import RoleSelectionModal from "./RoleSelectionModal.js";
 
 const Login = () => {
     const info = [

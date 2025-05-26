@@ -36,6 +36,10 @@ import java.util.Set;
     @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
     @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
 public class Employer implements Serializable {
+
+    @OneToMany(mappedBy = "employerId")
+    @JsonIgnore
+    private Set<Notification> notificationSet;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -138,5 +142,13 @@ public class Employer implements Serializable {
 
     public void setCompany(CompanyInformation company) {
         this.company = company;
+    }
+
+    public Set<Notification> getNotificationSet() {
+        return notificationSet;
+    }
+
+    public void setNotificationSet(Set<Notification> notificationSet) {
+        this.notificationSet = notificationSet;
     }
 }

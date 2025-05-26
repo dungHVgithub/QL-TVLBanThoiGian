@@ -37,6 +37,8 @@ public class Employee implements Serializable {
     @Size(max = 50)
     @Column(name = "level")
     private String level;
+    @OneToMany(mappedBy = "employeeId")
+    private Set<UserNotification> userNotificationSet;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -130,6 +132,15 @@ public class Employee implements Serializable {
         return "com.job.pojo.Employee[ id=" + id + " ]";
     }
 
+
+
+    public Set<UserNotification> getUserNotificationSet() {
+        return userNotificationSet;
+    }
+
+    public void setUserNotificationSet(Set<UserNotification> userNotificationSet) {
+        this.userNotificationSet = userNotificationSet;
+    }
 
     public String getLevel() {
         return level;

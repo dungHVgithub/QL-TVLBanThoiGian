@@ -76,28 +76,36 @@ const Profile = () => {
   }, [user]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const updated = {
-        ...profile,
-        birthday: profile.birthday ? new Date(profile.birthday).getTime() : null,
-      };
-
-      const res = await authApis().post("/user/update", updated);
-      setProfile({
-        ...res.data,
-        birthday: res.data.birthday
-          ? new Date(res.data.birthday).toISOString().split("T")[0]
-          : ""
-      });
-      alert("Cập nhật thành công!");
-      setShowEditForm(false);
-    } catch (err) {
-      console.error("Lỗi cập nhật:", err);
-      alert("Có lỗi xảy ra khi lưu thông tin.");
+  try {
+    if (!profile.id) {
+      alert("Không tìm thấy ID người dùng!");
+      return;
     }
-  };
+
+    const updated = {
+      ...profile,
+      birthday: profile.birthday ? new Date(profile.birthday).getTime() : null,
+    };
+
+    console.log("Cập nhật user:", updated);
+
+    const res = await authApis().post(endpoints.updated, updated);
+
+    setProfile({
+      ...res.data,
+      birthday: res.data.birthday
+        ? new Date(res.data.birthday).toISOString().split("T")[0]
+        : "",
+    });
+    alert("Cập nhật thành công!");
+    setShowEditForm(false);
+  } catch (err) {
+    console.error("Lỗi cập nhật:", err);
+    alert("Có lỗi xảy ra khi lưu thông tin.");
+  }
+};
 
   const handleDocSubmit = async (e, docId) => {
     e.preventDefault();

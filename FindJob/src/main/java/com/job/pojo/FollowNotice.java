@@ -1,83 +1,71 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.pojo;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.io.Serializable;
+import java.util.Date;
 
-/**
- *
- * @author AN515-57
- */
 @Entity
 @Table(name = "follow_notice")
 @NamedQueries({
     @NamedQuery(name = "FollowNotice.findAll", query = "SELECT f FROM FollowNotice f"),
-    @NamedQuery(name = "FollowNotice.findByEmployeeId", query = "SELECT f FROM FollowNotice f WHERE f.followNoticePK.employeeId = :employeeId"),
-    @NamedQuery(name = "FollowNotice.findByEmployerId", query = "SELECT f FROM FollowNotice f WHERE f.followNoticePK.employerId = :employerId"),
-    @NamedQuery(name = "FollowNotice.findByIsFollow", query = "SELECT f FROM FollowNotice f WHERE f.isFollow = :isFollow")})
+    @NamedQuery(name = "FollowNotice.findById", query = "SELECT f FROM FollowNotice f WHERE f.id = :id"),
+    @NamedQuery(name = "FollowNotice.findByFollowTime", query = "SELECT f FROM FollowNotice f WHERE f.followTime = :followTime")
+})
 public class FollowNotice implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected FollowNoticePK followNoticePK;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "notice")
-    private String notice;
-    @Column(name = "isFollow")
-    private Boolean isFollow;
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "follow_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date followTime;
+
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Employee employee;
-    @JoinColumn(name = "employer_id", referencedColumnName = "id", insertable = false, updatable = false)
+
+    @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Employer employer;
 
     public FollowNotice() {
     }
 
-    public FollowNotice(FollowNoticePK followNoticePK) {
-        this.followNoticePK = followNoticePK;
+    public FollowNotice(Integer id) {
+        this.id = id;
     }
 
-    public FollowNotice(int employeeId, int employerId) {
-        this.followNoticePK = new FollowNoticePK(employeeId, employerId);
+    public Integer getId() {
+        return id;
     }
 
-    public FollowNoticePK getFollowNoticePK() {
-        return followNoticePK;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setFollowNoticePK(FollowNoticePK followNoticePK) {
-        this.followNoticePK = followNoticePK;
+    public Date getFollowTime() {
+        return followTime;
     }
 
-    public String getNotice() {
-        return notice;
-    }
-
-    public void setNotice(String notice) {
-        this.notice = notice;
-    }
-
-    public Boolean getIsFollow() {
-        return isFollow;
-    }
-
-    public void setIsFollow(Boolean isFollow) {
-        this.isFollow = isFollow;
+    public void setFollowTime(Date followTime) {
+        this.followTime = followTime;
     }
 
     public Employee getEmployee() {
@@ -99,26 +87,21 @@ public class FollowNotice implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (followNoticePK != null ? followNoticePK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof FollowNotice)) {
             return false;
         }
         FollowNotice other = (FollowNotice) object;
-        if ((this.followNoticePK == null && other.followNoticePK != null) || (this.followNoticePK != null && !this.followNoticePK.equals(other.followNoticePK))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "com.job.pojo.FollowNotice[ followNoticePK=" + followNoticePK + " ]";
+        return "com.job.pojo.FollowNotice[ id=" + id + " ]";
     }
-    
 }

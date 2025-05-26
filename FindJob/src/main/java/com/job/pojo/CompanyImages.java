@@ -26,22 +26,23 @@ import java.util.Date;
     @NamedQuery(name = "CompanyImages.findByUploadTime", query = "SELECT c FROM CompanyImages c WHERE c.uploadTime = :uploadTime")})
 public class CompanyImages implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "image_path")
+    private String imagePath;
+    @Size(max = 255)
+    @Column(name = "caption")
+    private String caption;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "image_path")
-    private String imagePath;
     @Transient
     private MultipartFile file;
-    @Size(max = 255)
-    @Column(name = "caption")
-    private String caption;
     @Column(name = "upload_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date uploadTime;
@@ -77,13 +78,6 @@ public class CompanyImages implements Serializable {
         this.imagePath = imagePath;
     }
 
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
 
     public Date getUploadTime() {
         return uploadTime;
@@ -132,5 +126,15 @@ public class CompanyImages implements Serializable {
 
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+   
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 }

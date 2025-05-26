@@ -38,12 +38,6 @@ import org.hibernate.annotations.UpdateTimestamp;
     @NamedQuery(name = "UserDocuments.findByUpdatedDate", query = "SELECT u FROM UserDocuments u WHERE u.updatedDate = :updatedDate")})
 public class UserDocuments implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 45)
     @Column(name = "name")
     private String name;
@@ -53,6 +47,13 @@ public class UserDocuments implements Serializable {
     @Size(max = 255)
     @Column(name = "document_path")
     private String documentPath;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
@@ -79,13 +80,6 @@ public class UserDocuments implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getDocumentType() {
         return documentType;
@@ -151,5 +145,15 @@ public class UserDocuments implements Serializable {
     public String toString() {
         return "com.job.pojo.UserDocuments[ id=" + id + " ]";
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+  
     
 }

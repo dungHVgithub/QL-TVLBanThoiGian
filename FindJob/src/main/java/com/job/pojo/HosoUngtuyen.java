@@ -29,9 +29,6 @@ import java.io.Serializable;
     @NamedQuery(name = "HosoUngtuyen.findByState", query = "SELECT h FROM HosoUngtuyen h WHERE h.state = :state")})
 public class HosoUngtuyen implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected HosoUngtuyenPK hosoUngtuyenPK;
     @Size(max = 10)
     @Column(name = "state")
     private String state;
@@ -43,6 +40,10 @@ public class HosoUngtuyen implements Serializable {
     @Size(max = 65535)
     @Column(name = "rv_from_employer")
     private String rvFromEmployer;
+
+    private static final long serialVersionUID = 1L;
+    @EmbeddedId
+    protected HosoUngtuyenPK hosoUngtuyenPK;
     @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Employee employee;
@@ -69,13 +70,6 @@ public class HosoUngtuyen implements Serializable {
         this.hosoUngtuyenPK = hosoUngtuyenPK;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 
     public String getRvFromEmployee() {
         return rvFromEmployee;
@@ -133,5 +127,15 @@ public class HosoUngtuyen implements Serializable {
     public String toString() {
         return "com.job.pojo.HosoUngtuyen[ hosoUngtuyenPK=" + hosoUngtuyenPK + " ]";
     }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+   
     
 }
