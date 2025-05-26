@@ -25,4 +25,7 @@ public interface UserDocRepository {
 
     List<UserDocuments> getDocsByUserId(int userId);
 
+    List<UserDocuments> getDocsByEmployeeId(int employeeId);
+
+    UserDocuments addOrUpdateForEmployee(UserDocuments doc, int employeeId);
 }

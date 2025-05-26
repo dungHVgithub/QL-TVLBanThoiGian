@@ -56,73 +56,93 @@ const PostList = () => {
   };
 
   if (loading) {
-    return <div className="container mt-4">Đang tải...</div>;
+    return <div className="post-list-loading">Đang tải...</div>;
   }
 
   if (error) {
-    return <div className="container mt-4 text-danger">{error}</div>;
+    return <div className="post-list-error">{error}</div>;
   }
 
   return (
-    <div className="job-list-container">
-      <h1 className="mb-4">Danh sách bài đăng của bạn</h1>
+    <div className="post-list-container">
+      <h1>Danh sách bài đăng của bạn</h1>
       {jobs.length > 0 ? (
         jobs.map((job) => (
-          <Card key={job.id} className="job-card">
+          <Card key={job.id} className="job-posting-card">
             <Card.Body>
-              <Card.Title className="job-card-title">{job.name}</Card.Title>
-              <div className="card-content">
-                <div className="job-info">
-                  <div className="job-info-row">
-                    <div className="job-info-col">
-                      <FaDollarSign className="icon" />
-                      <span className="value">Lương: {job.salary} USD</span>
+              <Card.Title className="job-posting-title">{job.name}</Card.Title>
+              <div className="job-posting-content">
+                <div className="job-posting-info">
+                  <div className="job-info-section">
+                    <div className="job-info-item">
+                      <FaDollarSign className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Lương:</strong> {job.salary} USD
+                      </div>
                     </div>
-                    <div className="job-info-col">
-                      <FaTag className="icon" />
-                      <span className="value">Trạng thái: {job.state}</span>
-                    </div>
-                  </div>
-                  <div className="job-info-row">
-                    <div className="job-info-col">
-                      <FaClock className="icon" />
-                      <span className="value">Thời gian bắt đầu: {job.timeStart}</span>
-                    </div>
-                    <div className="job-info-col">
-                      <FaClock className="icon" />
-                      <span className="value">Thời gian kết thúc: {job.timeEnd}</span>
+                    <div className="job-info-item">
+                      <FaTag className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Trạng thái:</strong> {job.state}
+                      </div>
                     </div>
                   </div>
-                  <div className="job-info-row">
-                    <div className="job-info-col">
-                      <FaFolder className="icon" />
-                      <span className="value">Danh mục: {job.categoryId.name}</span>
+                  
+                  <div className="job-info-section">
+                    <div className="job-info-item">
+                      <FaClock className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Thời gian bắt đầu:</strong> {job.timeStart}
+                      </div>
                     </div>
-                    <div className="job-info-col">
-                      <FaBuilding className="icon" />
-                      <span className="value">Công ty: {job.employerId.company.name}</span>
+                    <div className="job-info-item">
+                      <FaClock className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Thời gian kết thúc:</strong> {job.timeEnd}
+                      </div>
                     </div>
                   </div>
-                  <div className="job-info-row">
-                    <div className="job-info-col">
-                      <FaCalendarAlt className="icon" />
-                      <span className="value">Ngày tạo: {new Date(job.createdAt).toLocaleDateString()}</span>
+                  
+                  <div className="job-info-section">
+                    <div className="job-info-item">
+                      <FaFolder className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Danh mục:</strong> {job.categoryId.name}
+                      </div>
                     </div>
-                    <div className="job-info-col">
-                      <FaCalendarAlt className="icon" />
-                      <span className="value">Ngày cập nhật: {new Date(job.updatedAt).toLocaleDateString()}</span>
+                    <div className="job-info-item">
+                      <FaBuilding className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Công ty:</strong> {job.employerId.company.name}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="job-info-section">
+                    <div className="job-info-item">
+                      <FaCalendarAlt className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Ngày tạo:</strong> {new Date(job.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="job-info-item">
+                      <FaCalendarAlt className="job-info-icon" />
+                      <div className="job-info-content">
+                        <strong>Ngày cập nhật:</strong> {new Date(job.updatedAt).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="action-buttons">
+                
+                <div className="job-action-buttons">
                   <Button
-                    className="btn-update"
+                    className="job-btn-update"
                     onClick={() => handleUpdate(job.id)}
                   >
                     <FaEdit /> Cập nhật
                   </Button>
                   <Button
-                    className="btn-delete"
+                    className="job-btn-delete"
                     onClick={() => handleDelete(job.id)}
                   >
                     <FaTrash /> Xóa
@@ -133,7 +153,10 @@ const PostList = () => {
           </Card>
         ))
       ) : (
-        <p className="no-jobs">Không có bài đăng nào.</p>
+        <div className="post-list-no-jobs">
+          <h2>Chưa có bài đăng nào</h2>
+          <p>Bạn chưa tạo bài đăng việc làm nào. Hãy tạo bài đăng đầu tiên của bạn!</p>
+        </div>
       )}
     </div>
   );

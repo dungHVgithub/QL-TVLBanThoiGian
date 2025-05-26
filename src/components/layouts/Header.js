@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import cookie from "react-cookies"
+import cookie from "react-cookies";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -30,12 +30,11 @@ const Header = () => {
     if (user && user.role === "ROLE_EMPLOYER" && user.id) {
       try {
         const employerRes = await authApis().get(endpoints["employers"]);
-        // Tìm employer có userId.id khớp với user.id
         const matchedEmployer = employerRes.data.find(
           (employer) => employer.userId.id === user.id
         );
         if (matchedEmployer) {
-          return matchedEmployer.id; // Trả về employerId
+          return matchedEmployer.id;
         } else {
           console.error("Không tìm thấy employer khớp với user.id:", user.id);
           alert("Không thể tìm thấy thông tin nhà tuyển dụng. Vui lòng thử lại sau.");
@@ -48,6 +47,33 @@ const Header = () => {
       }
     } else {
       alert("Bạn cần đăng nhập với vai trò nhà tuyển dụng để xem bài đăng.");
+      return null;
+    }
+  };
+
+  const loadEmployeeId = async () => {
+    if (user && user.role === "ROLE_EMPLOYEE" && user.id) {
+      try {
+        const employeeRes = await authApis().get(endpoints["employees"]);
+        console.info(employeeRes.data);
+        // Tìm employee có userId.id khớp với user.id
+        const matchedEmployee = employeeRes.data.find(
+          (employee) => employee.userId.id === user.id
+        );
+        if (matchedEmployee) {
+          return matchedEmployee.id; // Trả về employeeId
+        } else {
+          console.error("Không tìm thấy employee khớp với user.id:", user.id);
+          alert("Không thể tìm thấy thông tin nhân viên. Vui lòng thử lại sau.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Không thể tải thông tin nhân viên:", error);
+        alert("Có lỗi xảy ra khi lấy thông tin nhân viên.");
+        return null;
+      }
+    } else {
+      alert("Bạn cần đăng nhập với vai trò nhân viên để xem công việc ứng tuyển.");
       return null;
     }
   };
@@ -89,6 +115,21 @@ const Header = () => {
                 Bài đăng của bạn
               </Link>
             )}
+            {user && user.role === "ROLE_EMPLOYEE" && (
+              <Link
+                to="/employee"
+                className="nav-link"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const employeeId = await loadEmployeeId();
+                  if (employeeId) {
+                    navigate(`/employee/${employeeId}`);
+                  }
+                }}
+              >
+                Công việc ứng tuyển
+              </Link>
+            )}
           </Nav>
           {/* Bên phải */}
           <Nav className="ms-auto d-flex align-items-center">
@@ -99,22 +140,16 @@ const Header = () => {
               </>
             ) : (
               <>
-                {/* Icon chuông + Thông báo */}
                 <div className="d-flex align-items-center position-relative">
                   <FaBell size={20} />
                   <span className="ms-1">Thông Báo Việc Làm</span>
                   <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style={{ width: '8px', height: '8px' }}></span>
                 </div>
-
-                {/* Divider */}
                 <div className="vr mx-2" />
-
-                {/* Icon người dùng */}
                 <div className="d-flex align-items-center">
                   <FaUserCircle size={20} />
                   <Link to="/profile" className="nav-link text-primary fw-bold mb-0 ms-1">Chào {user.name}</Link>
                 </div>
-
                 <Link to="/" className="nav-link text-success">
                   <Button variant="outline-danger" size="sm" onClick={() => {
                     dispatch({ type: "logout" });

@@ -14,5 +14,6 @@
     <class>com.job.pojo.JobDescription</class>
     <class>com.job.pojo.User</class>
     <class>com.job.pojo.UserDocuments</class>
+    <class>com.job.pojo.EmployeeJob</class>
   </persistence-unit>
 </persistence>

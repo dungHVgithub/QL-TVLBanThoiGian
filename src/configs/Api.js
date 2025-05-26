@@ -11,7 +11,8 @@ export const endpoints = {
     'job_details' : 'job_details',
     'job_details_by_job_posting' : 'job_details/jobPosting',  
     'employers': '/employers',
-    'register': '/users',
+    'employees': '/employees',
+    'employeeJob/employee': 'employeeJob/employee/',
     'login': '/login',
     'profile': '/secure/profile',
     'oauth':'/oauth-login',
@@ -19,11 +20,10 @@ export const endpoints = {
     'updated': '/user/update',
     'documentsByUser': 'user_documents/by_user',
     'updateDocument': '/user_documents',
-
+    'addDocumentForEmployee': 'user_documents/employee/{employeeId}'
 }
 
 export const authApis = () => {
-    console.info(cookie.load('token'));
     return axios.create({
         baseURL: BASE_URL,
         headers: {

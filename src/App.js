@@ -19,6 +19,8 @@ import PostList from "./components/postList";
 import UpdateJob from "./components/updateJob";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Apply from "./components/Apply";
+import Employee from "./components/employee";
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
@@ -67,6 +69,8 @@ const App = () => {
               <Route path = "company_info/:companyId" element = {<CompanyInfo/>}/>
               <Route path= "postList/:employerId" element = {<PostList/>}/>
               <Route path= "updateJob/:jobId" element = {<UpdateJob/>}/>
+              <Route path = "Apply/:employeeId/:jobId" element = {<Apply/>} />
+              <Route path = "employee/:employeeId" element = {<Employee/>} />
             </Routes>
           </Container>
           <Footer />

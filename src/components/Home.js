@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import Api, { endpoints } from "../configs/Api";
+import Api, { endpoints, authApis } from "../configs/Api";
 import ou from "../img/ou.png";
 import iconCate from "../img/iconCate.png";
 import "../static/home.css";
+import { MyUserContext, MyDispatchContext } from "../configs/MyContexts";
+import cookie from "react-cookies";
 
 const Home = () => {
   const [jobPostings, setJobPostings] = useState([]);
@@ -12,6 +14,8 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [q] = useSearchParams();
   const nav = useNavigate();
+  const user = useContext(MyUserContext); // Lấy thông tin người dùng từ context
+  const dispatch = useContext(MyDispatchContext);
 
   const [filters, setFilters] = useState({
     kw: "",
@@ -82,7 +86,7 @@ const Home = () => {
         jobs.map(job => job.employerId?.company?.id)
            .filter(id => id && (typeof id === 'number'))
       )];
-      const images = { ...companyImages };
+      const images = { ...companyImages};
 
       for (const companyId of companyIds) {
         if (!images[companyId]) {
@@ -163,6 +167,29 @@ const Home = () => {
     nav("/", { replace: true });
   };
 
+  const handleApply = async (jobId) => {
+    if (!user || !user.id) {
+      nav("/login");
+      return;
+    }
+
+    try {
+      const res = await authApis().get(endpoints.employees); // Sử dụng endpoint /employees
+      const employees = res.data;
+      console.log("Employees data:", employees); // Debug dữ liệu từ API
+      const matchingEmployee = employees.find(emp => emp.userId && emp.userId.id === user.id); // So sánh emp.userId.id với user.id
+      if (matchingEmployee) {
+        const employeeId = matchingEmployee.id;
+        nav(`/Apply/${employeeId}/${jobId}`); // Điều hướng với employeeId và jobId
+      } else {
+        alert("❌ Không tìm thấy thông tin Employee cho người dùng này!");
+      }
+    } catch (error) {
+      console.error("Error loading employeeId:", error);
+      alert("❌ Không thể tải thông tin Employee. Vui lòng thử lại!");
+    }
+  };
+
   const approvedJobs = Array.isArray(jobPostings)
     ? jobPostings.filter((job) => job.state === "approved")
     : [];
@@ -235,10 +262,12 @@ const Home = () => {
                   🏢 Công ty: {companyInfo.name} - 📍 Địa chỉ: {companyInfo.address}
                 </p>
               </div>
-              <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
-                <button className="apply-btn">Ứng tuyển</button>
-                <span className="heart-icon">♡</span>
-              </div>
+              {user && user.role === "ROLE_EMPLOYEE" && (
+                <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                  <button className="apply-btn" onClick={() => handleApply(job.id)}>Ứng tuyển</button>
+                  <span className="heart-icon">♡</span>
+                </div>
+              )}
             </div>
           );
         })

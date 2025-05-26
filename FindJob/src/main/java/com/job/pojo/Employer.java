@@ -31,11 +31,13 @@ import java.util.Set;
 @Entity
 @Table(name = "employer")
 @NamedQueries({
-    @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
-    @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
-    @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
-    @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
+        @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
+        @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
+        @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
+        @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
 public class Employer implements Serializable {
+
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -126,7 +128,6 @@ public class Employer implements Serializable {
         }
         return true;
     }
-
     @Override
     public String toString() {
         return "com.job.pojo.Employer[ id=" + id + " ]";
@@ -135,8 +136,9 @@ public class Employer implements Serializable {
     public CompanyInformation getCompany() {
         return company;
     }
-
     public void setCompany(CompanyInformation company) {
         this.company = company;
     }
+
+
 }

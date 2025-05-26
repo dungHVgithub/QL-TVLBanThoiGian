@@ -40,7 +40,7 @@ const Login = () => {
                     username: userInfo.username,
                     name: userInfo.name,
                     role: userInfo.role,
-                    id: userInfo.id // Sửa user_id thành id
+                    id: userInfo.id, // Sửa user_id thành id
                 },
             });
 

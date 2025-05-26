@@ -19,37 +19,41 @@ const UpdateJob = () => {
   const [employerId, setEmployerId] = useState(null);
 
   const info = [
-    { label: "Tên công việc", type: "text", field: "name", required: true },
-    { label: "Mô tả công việc", type: "text", field: "description", required: true },
-    { label: "Cấp độ", type: "text", field: "level", required: true },
-    { label: "Kinh nghiệm (năm)", type: "text", field: "experience", required: true },
-    { label: "Ngày hết hạn ứng tuyển", type: "date", field: "submitEnd", required: true },
-    { label: "Phúc lợi", type: "text", field: "benefit", required: true },
-    { label: "Lương ($)", type: "number", field: "salary", required: true },
-    { label: "Giờ bắt đầu", type: "time", field: "timeStart", required: true },
-    { label: "Giờ kết thúc", type: "time", field: "timeEnd", required: true },
+    { label: "Tên công việc", type: "text", field: "name", required: true, target: "job" },
+    { label: "Mô tả công việc", type: "text", field: "description", required: true, target: "jobDetail" },
+    { label: "Cấp độ", type: "text", field: "level", required: true, target: "jobDetail" },
+    { label: "Kinh nghiệm (năm)", type: "text", field: "experience", required: true, target: "jobDetail" },
+    { label: "Ngày hết hạn ứng tuyển", type: "date", field: "submitEnd", required: true, target: "jobDetail" },
+    { label: "Phúc lợi", type: "text", field: "benefit", required: true, target: "jobDetail" },
+    { label: "Lương ($)", type: "number", field: "salary", required: true, target: "job" },
+    { label: "Giờ bắt đầu", type: "time", field: "timeStart", required: true, target: "job" },
+    { label: "Giờ kết thúc", type: "time", field: "timeEnd", required: true, target: "job" },
   ];
 
   const setState = (value, field) => {
     console.log(`Setting ${field} to:`, value);
+    const fieldInfo = info.find(f => f.field === field);
+    
     if (field === "categoryId") {
       setJob(prev => {
         const newJob = { ...prev, [field]: value };
         console.log("Updated job state:", newJob);
         return newJob;
       });
-    } else if (info.some(f => f.field === field)) {
-      setJob(prev => {
-        const newJob = { ...prev, [field]: value === "" ? "" : value };
-        console.log("Updated job state:", newJob);
-        return newJob;
-      });
-    } else {
-      setJobDetail(prev => {
-        const newJobDetail = { ...prev, [field]: value === "" ? "" : value };
-        console.log("Updated jobDetail state:", newJobDetail);
-        return newJobDetail;
-      });
+    } else if (fieldInfo) {
+      if (fieldInfo.target === "job") {
+        setJob(prev => {
+          const newJob = { ...prev, [field]: value === "" ? "" : value };
+          console.log("Updated job state:", newJob);
+          return newJob;
+        });
+      } else if (fieldInfo.target === "jobDetail") {
+        setJobDetail(prev => {
+          const newJobDetail = { ...prev, [field]: value === "" ? "" : value };
+          console.log("Updated jobDetail state:", newJobDetail);
+          return newJobDetail;
+        });
+      }
     }
   };
 
@@ -104,8 +108,8 @@ const UpdateJob = () => {
         id: jobData.id,
         name: jobData.name || "",
         salary: jobData.salary || "",
-        timeStart: formatTimeForInput(jobData.timeStart),
-        timeEnd: formatTimeForInput(jobData.timeEnd),
+        timeStart:jobData.timeStart,
+        timeEnd:jobData.timeEnd,
         categoryId: "",
         state: jobData.state || "pending",
       });
@@ -186,7 +190,7 @@ const UpdateJob = () => {
         description: jobDetail.description,
         level: jobDetail.level,
         experience: jobDetail.experience,
-        submitEnd: new Date(jobDetail.submitEnd).getTime(),
+        submitEnd: jobDetail.submitEnd,
         benefit: jobDetail.benefit,
         jobPosting: { id: parseInt(jobId) },
       };
@@ -195,7 +199,8 @@ const UpdateJob = () => {
       console.log("Sending jobDetails:", jobDetails);
 
       await authApis().put(`${endpoints['job_postings']}/${jobId}`, jobPosting);
-      await authApis().put(`${endpoints.job_details}/${jobDetail.id}`, jobDetails);
+      const response = await authApis().put(`${endpoints.job_details}/jobPosting/${jobId}`, jobDetails);
+      console.log("PUT jobDetails response:", response.data);
 
       toast.success("Cập nhật bài đăng thành công!");
       setTimeout(() => nav(`/postList/${employerId}`), 2000);
@@ -224,7 +229,7 @@ const UpdateJob = () => {
                   <Form.Control
                     type={f.type}
                     placeholder={f.label}
-                    value={job[f.field] ?? jobDetail[f.field] ?? ""}
+                    value={job[f.field] ?? (jobDetail[f.field] || "")}
                     onChange={(e) => setState(e.target.value, f.field)}
                   />
                 </FloatingLabel>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MyUserContext } from "../configs/MyContexts";
 import { authApis, endpoints } from "../configs/Api";
-import { Container, Card, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
+import { Container, Card, Row, Col, Form, Button, InputGroup, Modal, ListGroup } from "react-bootstrap";
 import { FaPhone, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -12,9 +12,10 @@ const Profile = () => {
   const [documents, setDocuments] = useState([]);
   const [documentsBeingEdited, setDocumentsBeingEdited] = useState({});
   const [companyId, setCompanyId] = useState(null);
+  const [showApplicationsModal, setShowApplicationsModal] = useState(false);
+  const [applications, setApplications] = useState([]);
   const navigate = useNavigate();
 
-  // Hàm ánh xạ vai trò sang tên hiển thị thân thiện
   const getRoleDisplayName = (role) => {
     switch (role) {
       case "ROLE_EMPLOYER":
@@ -31,22 +32,20 @@ const Profile = () => {
       if (user?.id) {
         try {
           const res = await authApis().get(`${endpoints["users"]}/${user.id}`);
-          const data = res.data;  
+          const data = res.data;
           if (data.birthday)
             data.birthday = new Date(data.birthday).toISOString().split("T")[0];
 
           setProfile(data);
 
-          // Nếu là nhà tuyển dụng, lấy companyId từ endpoint /employers
           if (data.role === "ROLE_EMPLOYER") {
             try {
               const employerRes = await authApis().get(`${endpoints["employers"]}`);
-              // Tìm employer có userId.id khớp với user.id
               const matchedEmployer = employerRes.data.find(
                 (employer) => employer.userId.id === user.id
               );
               if (matchedEmployer) {
-                setCompanyId(matchedEmployer.company.id); // Lấy company.id từ employer khớp
+                setCompanyId(matchedEmployer.company.id);
               } else {
                 console.error("Không tìm thấy employer khớp với user.id:", user.id);
               }
@@ -126,6 +125,77 @@ const Profile = () => {
     }
   };
 
+  const loadApplications = async (employeeId) => {
+    try {
+      const res = await authApis().get(`${endpoints["employeeJob/employee"]}${employeeId}`);
+      const filteredApplications = res.data.filter(
+        (app) => app.jobState !== 0 && app.jobState !== 1 && app.jobId?.name
+      );
+      setApplications(filteredApplications);
+      setShowApplicationsModal(true);
+    } catch (err) {
+      console.error("Lỗi khi tải danh sách ứng tuyển:", err);
+      alert("Không thể tải danh sách ứng tuyển.");
+    }
+  };
+
+  const handleViewApplications = async () => {
+    if (profile.role === "ROLE_EMPLOYER") {
+      try {
+        const employeeRes = await authApis().get(`${endpoints["employees"]}`);
+        const allEmployees = employeeRes.data;
+
+        const promises = allEmployees.map(employee =>
+          authApis().get(`${endpoints["employeeJob/employee"]}${employee.id}`)
+            .then(res => res.data)
+            .catch(err => {
+              console.error(`Lỗi khi tải employeeJob cho employee ${employee.id}:`, err);
+              return [];
+            })
+        );
+
+        const allApplications = await Promise.all(promises);
+        const filteredApplications = allApplications
+          .flat()
+          .filter(app => app.jobState !== 0 && app.jobState !== 1 && app.jobId?.name);
+
+        setApplications(filteredApplications);
+        setShowApplicationsModal(true);
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách ứng tuyển:", err);
+        alert("Không thể tải danh sách ứng tuyển.");
+      }
+    }
+  };
+
+  const updateJobState = async (employeeId, employeeJobId, jobState) => {
+  if (!employeeId) {
+    alert("Không thể xác định ID ứng viên. Vui lòng thử lại!");
+    return;
+  }
+
+  try {
+    const url = `${endpoints["employeeJob/employee"]}${employeeId}/${employeeJobId}`;
+    const res = await authApis().put(url, { jobState: jobState });
+    
+    // Cập nhật danh sách applications: loại bỏ bản ghi có jobState là 0 hoặc 1
+    const updatedApplications = applications
+      .map(app => (app.id === employeeJobId ? res.data : app)) // Cập nhật bản ghi
+      .filter(app => app.jobState !== 0 && app.jobState !== 1); // Lọc lại để loại bỏ bản ghi đã duyệt/từ chối
+    
+    setApplications(updatedApplications);
+    alert(`Cập nhật trạng thái thành công!`);
+    
+    // Nếu không còn applications nào, có thể đóng Modal
+    if (updatedApplications.length === 0) {
+      setShowApplicationsModal(false);
+    }
+  } catch (err) {
+    console.error("Lỗi khi cập nhật trạng thái:", err);
+    alert("Có lỗi xảy ra khi cập nhật trạng thái. Vui lòng kiểm tra log.");
+  }
+};
+
   if (!profile) return <p className="text-center mt-5">Đang tải thông tin...</p>;
 
   return (
@@ -177,13 +247,19 @@ const Profile = () => {
             <Button variant="primary" onClick={() => setShowEditForm(true)} className="me-2">
               ✏️ Chỉnh sửa
             </Button>
-            {profile.role === "ROLE_EMPLOYER" && companyId && (
+            {profile.role === "ROLE_EMPLOYER" && (
               <>
-                <Button
-                  variant="success"
-                  onClick={() => navigate(`/company_info/${companyId}`)}
-                >
-                  ℹ️ Thông tin công ty
+                {companyId && (
+                  <Button
+                    variant="success"
+                    onClick={() => navigate(`/company_info/${companyId}`)}
+                    className="me-2"
+                  >
+                    ℹ️ Thông tin công ty
+                  </Button>
+                )}
+                <Button variant="info" onClick={handleViewApplications}>
+                  📋 Xem danh sách ứng tuyển
                 </Button>
               </>
             )}
@@ -315,8 +391,7 @@ const Profile = () => {
                             }
                           >
                             <option value="CV">CV</option>
-                            <option value="ID">ID</option>
-                            <option value="Certificate">Certificate</option>
+                            <option value="Diploma">Diploma</option>
                           </Form.Select>
                         </Form.Group>
 
@@ -367,6 +442,74 @@ const Profile = () => {
           })
         )}
       </Card>
+
+      <Modal
+        show={showApplicationsModal}
+        onHide={() => setShowApplicationsModal(false)}
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Danh Sách Ứng Tuyển</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {applications.length === 0 ? (
+            <p className="text-center">Không có ứng tuyển nào đang chờ xử lý.</p>
+          ) : (
+            applications.map((app) => (
+              <Card key={app.id} className="mb-3">
+                <Card.Body>
+                  <Card.Title>{app.jobId?.name}</Card.Title>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>
+                      <strong>Ứng viên:</strong>{" "}
+                      {app.employeeId?.userId?.name || "Chưa xác định"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Lương:</strong>{" "}
+                      {app.jobId?.salary ? `${app.jobId.salary} $` : "Thỏa thuận"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Thời gian làm việc:</strong>{" "}
+                      {app.jobId?.timeStart && app.jobId?.timeEnd
+                        ? `${app.jobId.timeStart} - ${app.jobId.timeEnd}`
+                        : "Chưa xác định"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Địa chỉ:</strong>{" "}
+                      {app.jobId?.employerId?.company?.address || "Chưa xác định"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Mã số thuế:</strong>{" "}
+                      {app.jobId?.employerId?.company?.taxCode || "Chưa xác định"}
+                    </ListGroup.Item>
+                  </ListGroup>
+                  <div className="d-flex justify-content-end mt-2">
+                    <Button
+                      variant="success"
+                      className="me-2"
+                      onClick={() => updateJobState(app.employeeId?.id, app.id, 1)}
+                    >
+                      ✅ Duyệt
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => updateJobState(app.employeeId?.id, app.id, 0)}
+                    >
+                      ❌ Từ chối
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowApplicationsModal(false)}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

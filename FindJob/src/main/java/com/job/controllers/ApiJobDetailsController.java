@@ -87,4 +87,32 @@ public class ApiJobDetailsController {
         JobDescription jobDetail = jobDetailService.getJobDetailByJobPostingId(jobPostingId);
         return ResponseEntity.ok(jobDetail);
     }
+    @PutMapping("/jobPosting/{jobPostingId}")
+    public ResponseEntity<JobDescription> updateJobDetailByJobPostingId(@PathVariable("jobPostingId") int jobPostingId, @RequestBody JobDescription jobDetail) {
+        try {
+            // Tìm JobDescription hiện có dựa trên jobPostingId
+            JobDescription existingJobDetail = jobDetailService.getJobDetailByJobPostingId(jobPostingId);
+            if (existingJobDetail == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Cập nhật các trường
+            existingJobDetail.setDescription(jobDetail.getDescription());
+            existingJobDetail.setLevel(jobDetail.getLevel());
+            existingJobDetail.setExperience(jobDetail.getExperience());
+            existingJobDetail.setSubmitEnd(jobDetail.getSubmitEnd()); // Đảm bảo submitEnd là Date
+            existingJobDetail.setBenefit(jobDetail.getBenefit());
+            if (jobDetail.getJobPosting() != null && jobDetail.getJobPosting().getId() != null) {
+                existingJobDetail.setJobPosting(jobDetail.getJobPosting());
+            }
+
+            // Lưu và trả về
+            JobDescription updatedJobDetail = jobDetailService.saveJobDetail(existingJobDetail);
+            System.out.println("Updated JobDetail: " + updatedJobDetail); // Log để kiểm tra
+            return ResponseEntity.ok(updatedJobDetail);
+        } catch (Exception e) {
+            System.err.println("Error updating jobDetail: " + e.getMessage()); // Log lỗi
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

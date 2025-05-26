@@ -1,14 +1,9 @@
-/*
- * Click nfs://SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.services.impl;
 
 import com.job.pojo.JobPosting;
 import com.job.repositories.JobPostingRepository;
 import com.job.services.JobPostingService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -22,7 +17,7 @@ import org.springframework.stereotype.Service;
  * @author DUNG
  */
 @Service
-public class JobPostingServiceImpl implements JobPostingService{
+public class JobPostingServiceImpl implements JobPostingService {
     @Autowired
     private JobPostingRepository jobRepo;
 
@@ -52,11 +47,11 @@ public class JobPostingServiceImpl implements JobPostingService{
             if (existingJob != null) {
                 // Giữ nguyên createdAt từ đối tượng hiện có
                 j.setCreatedAt(existingJob.getCreatedAt());
-                // Giữ nguyên timeStart và timeEnd nếu chúng tồn tại
-                if (existingJob.getTimeStart() != null) {
+                // Bảo vệ timeStart và timeEnd: chỉ cập nhật nếu chúng không null trong đối tượng đầu vào
+                if (j.getTimeStart() == null) {
                     j.setTimeStart(existingJob.getTimeStart());
                 }
-                if (existingJob.getTimeEnd() != null) {
+                if (j.getTimeEnd() == null) {
                     j.setTimeEnd(existingJob.getTimeEnd());
                 }
             }
