@@ -1,19 +1,19 @@
 import { useContext, useState } from "react";
-import { Button, FloatingLabel, Form } from "react-bootstrap";
+import { Button, FloatingLabel, Form, Alert } from "react-bootstrap";
 import Api, { authApis, endpoints } from "../configs/Api";
 import { MyDispatchContext } from "../configs/MyContexts";
 import { useNavigate } from "react-router-dom";
 import MySpinner from "./layouts/MySpinner";
 import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfig";
 import { signInWithPopup } from "firebase/auth";
-import { FaFacebook, FaGoogle } from "react-icons/fa";
+import { FaFacebook, FaGoogle, FaSignInAlt } from "react-icons/fa";
 import cookie from "react-cookies";
-import { toast } from "react-toastify";
+import "../static/login.css"; // Import CSS tùy chỉnh
 
 const Login = () => {
     const info = [
-        { label: "Tên đăng nhập", type: "text", field: "username" },
-        { label: "Mật khẩu", type: "password", field: "password" }
+        { label: "👤 Tên đăng nhập", type: "text", field: "username" },
+        { label: "🔒 Mật khẩu", type: "password", field: "password" }
     ];
 
     const dispatch = useContext(MyDispatchContext);
@@ -21,7 +21,7 @@ const Login = () => {
 
     const [user, setUser] = useState({ username: "", password: "" });
     const [loading, setLoading] = useState(false);
-    const [, setMsg] = useState("");
+    const [msg, setMsg] = useState("");
 
     const validateUsername = (username) => {
         const usernameRegex = /^[a-zA-Z0-9_]+$/;
@@ -32,31 +32,23 @@ const Login = () => {
         e.preventDefault();
 
         if (!user.username || user.username.trim() === "") {
-            toast.error("Tên đăng nhập không được để trống!", {
-                position: "top-right",
-                autoClose: 5000,
-            });
+            setMsg("❌ Tên đăng nhập không được để trống!");
             return;
         }
 
         if (!validateUsername(user.username)) {
-            toast.error("Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới!", {
-                position: "top-right",
-                autoClose: 5000,
-            });
+            setMsg("❌ Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới!");
             return;
         }
 
         if (!user.password || user.password.trim() === "") {
-            toast.error("Mật khẩu không được để trống!", {
-                position: "top-right",
-                autoClose: 5000,
-            });
+            setMsg("❌ Mật khẩu không được để trống!");
             return;
         }
 
         try {
             setLoading(true);
+            setMsg(""); // Xóa thông báo cũ
             const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
             cookie.save("token", token);
@@ -75,25 +67,18 @@ const Login = () => {
                 },
             });
 
-            toast.success("Đăng nhập thành công!", {
-                position: "top-right",
-                autoClose: 5000,
-            });
-
-            // Thêm độ trễ nhỏ trước khi điều hướng
+            setMsg("✅ Đăng nhập thành công!");
             setTimeout(() => {
                 if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
                     nav("/");
                 else if (userInfo.role === "ROLE_EMPLOYER")
                     nav("/employer");
                 else nav("/");
-            }, 100); // Độ trễ 100ms
+            }, 2000); // Đợi 2 giây trước khi điều hướng
+
         } catch (err) {
             console.error("Lỗi đăng nhập:", err);
-            toast.error("Đăng nhập thất bại! Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu.", {
-                position: "top-right",
-                autoClose: 5000,
-            });
+            setMsg("❌ Đăng nhập thất bại! Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu.");
         } finally {
             setLoading(false);
         }
@@ -105,8 +90,8 @@ const Login = () => {
 
     const loginWithProvider = async (provider) => {
         try {
-            alert("Vui lòng không đóng cửa sổ popup cho đến khi hoàn tất đăng nhập!");
             setLoading(true);
+            setMsg("🔄 Vui lòng không đóng cửa sổ popup cho đến khi hoàn tất đăng nhập!");
 
             const result = await signInWithPopup(auth, provider);
             const firebaseUser = result.user;
@@ -115,10 +100,7 @@ const Login = () => {
             if (!email && provider === facebookProvider) {
                 email = prompt("Facebook không cung cấp email. Nhập email để tiếp tục:");
                 if (!email) {
-                    toast.error("Email bắt buộc để tiếp tục đăng nhập!", {
-                        position: "top-right",
-                        autoClose: 5000,
-                    });
+                    setMsg("❌ Email bắt buộc để tiếp tục đăng nhập!");
                     throw new Error("Email bắt buộc!");
                 }
             }
@@ -146,32 +128,19 @@ const Login = () => {
                 },
             });
 
-            toast.success("Đăng nhập bằng mạng xã hội thành công!", {
-                position: "top-right",
-                autoClose: 5000,
-            });
-
-            // Thêm độ trễ nhỏ trước khi điều hướng
+            setMsg("✅ Đăng nhập bằng mạng xã hội thành công!");
             setTimeout(() => {
                 nav("/");
-            }, 100); // Độ trễ 100ms
+            }, 2000); // Đợi 2 giây trước khi điều hướng
+
         } catch (err) {
             console.error("OAuth login error:", err);
             if (err.code === "auth/account-exists-with-different-credential") {
-                toast.error("Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.", {
-                    position: "top-right",
-                    autoClose: 5000,
-                });
+                setMsg("⚠️ Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
             } else if (err.code === "auth/popup-closed-by-user") {
-                toast.error("Bạn đã đóng cửa sổ đăng nhập quá sớm.", {
-                    position: "top-right",
-                    autoClose: 5000,
-                });
+                setMsg("⚠️ Bạn đã đóng cửa sổ đăng nhập quá sớm.");
             } else {
-                toast.error("Đăng nhập mạng xã hội thất bại!", {
-                    position: "top-right",
-                    autoClose: 5000,
-                });
+                setMsg("❌ Đăng nhập mạng xã hội thất bại!");
             }
         } finally {
             setLoading(false);
@@ -179,45 +148,78 @@ const Login = () => {
     };
 
     return (
-        <>
-            <h1 className="text-center text-success mt-1">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
+        <div className="login-container">
+            <div className="login-card">
+                <div className="login-header">
+                    <h1 className="login-title">🚀 Chào Mừng Trở Lại</h1>
+                    <p className="login-subtitle">Đăng nhập để tiếp tục hành trình của bạn</p>
+                </div>
 
-            <div className="text-center mb-3">
-                <Button variant="primary" className="me-2" onClick={() => loginWithProvider(facebookProvider)}>
-                    <FaFacebook className="me-2" /> Facebook
-                </Button>
-                <Button variant="danger" onClick={() => loginWithProvider(googleProvider)}>
-                    <FaGoogle className="me-2" /> Google
-                </Button>
+                <Form onSubmit={login} className="login-form">
+                    {msg && (
+                        <Alert variant={msg.startsWith("✅") ? "success" : "danger"} className="mb-3">
+                            {msg}
+                        </Alert>
+                    )}
+
+                    {info.map((f) => (
+                        <div key={f.field} className="login-form-group">
+                            <FloatingLabel
+                                controlId={`floating-${f.field}`}
+                                label={f.label}
+                            >
+                                <Form.Control
+                                    type={f.type}
+                                    placeholder={f.label}
+                                    value={user[f.field] || ""}
+                                    onChange={(e) => setState(e.target.value, f.field)}
+                                    required
+                                />
+                            </FloatingLabel>
+                        </div>
+                    ))}
+
+                    <div className="login-divider">
+                        <span>Chọn phương thức đăng nhập</span>
+                    </div>
+
+                    {loading ? (
+                        <div className="login-spinner-container">
+                            <MySpinner />
+                        </div>
+                    ) : (
+                        <div className="login-buttons-container">
+                            <Button 
+                                type="submit" 
+                                className="login-btn login-btn-primary"
+                                disabled={loading}
+                            >
+                                <FaSignInAlt />
+                                Đăng nhập
+                            </Button>
+                            
+                            <Button 
+                                className="login-btn login-btn-facebook"
+                                onClick={() => loginWithProvider(facebookProvider)}
+                                disabled={loading}
+                            >
+                                <FaFacebook />
+                                Facebook
+                            </Button>
+                            
+                            <Button 
+                                className="login-btn login-btn-google"
+                                onClick={() => loginWithProvider(googleProvider)}
+                                disabled={loading}
+                            >
+                                <FaGoogle />
+                                Google
+                            </Button>
+                        </div>
+                    )}
+                </Form>
             </div>
-
-            <Form onSubmit={login}>
-                {info.map((f) => (
-                    <FloatingLabel
-                        key={f.field}
-                        controlId={`floating-${f.field}`}
-                        label={f.label}
-                        className="mb-3"
-                    >
-                        <Form.Control
-                            type={f.type}
-                            placeholder={f.label}
-                            value={user[f.field] || ""}
-                            onChange={(e) => setState(e.target.value, f.field)}
-                            required
-                        />
-                    </FloatingLabel>
-                ))}
-
-                {loading ? (
-                    <MySpinner />
-                ) : (
-                    <Button type="submit" variant="success" className="mt-1 mb-1">
-                        Đăng nhập
-                    </Button>
-                )}
-            </Form>
-        </>
+        </div>
     );
 };
 

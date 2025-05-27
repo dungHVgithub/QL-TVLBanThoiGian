@@ -9,4 +9,8 @@ import com.job.pojo.Employer;
 public interface EmployerRepository {
     List<Employer> getEmployers();
     Employer getEmployerById(int id);
+
+    Employer findByUserId(int userId);
+
+    Employer save(Employer employer);
 }

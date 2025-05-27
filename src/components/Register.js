@@ -86,7 +86,7 @@ const Register = () => {
             if (avatar.current.files.length > 0)
                 form.append("avatar", avatar.current.files[0]);
 
-            const res = await Api.post(endpoints.register, form, {
+            const res = await Api.post(endpoints.users, form, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
