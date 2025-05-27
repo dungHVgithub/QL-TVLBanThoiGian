@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,18 +15,16 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 /**
  *
- * @author User
+ * @author DUNG
  */
 @Entity
 @Table(name = "notification")
@@ -37,26 +34,19 @@ import java.util.Set;
     @NamedQuery(name = "Notification.findByCreatedAt", query = "SELECT n FROM Notification n WHERE n.createdAt = :createdAt")})
 public class Notification implements Serializable {
 
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "content")
-    private String content;
-    @JoinColumn(name = "job", referencedColumnName = "id")
-    @ManyToOne
-    private JobPosting job;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "content")
+    private String content;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-    @OneToMany(mappedBy = "notificationId")
-    @JsonIgnore
-    private Set<UserNotification> userNotificationSet;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
     private Employer employerId;
@@ -76,6 +66,13 @@ public class Notification implements Serializable {
         this.id = id;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -83,14 +80,6 @@ public class Notification implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Set<UserNotification> getUserNotificationSet() {
-        return userNotificationSet;
-    }
-
-    public void setUserNotificationSet(Set<UserNotification> userNotificationSet) {
-        this.userNotificationSet = userNotificationSet;
     }
 
     public Employer getEmployerId() {
@@ -124,23 +113,6 @@ public class Notification implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.Notification[ id=" + id + " ]";
-    }
-
-
-    public JobPosting getJob() {
-        return job;
-    }
-
-    public void setJob(JobPosting job) {
-        this.job = job;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
     
 }

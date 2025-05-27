@@ -4,16 +4,27 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "job_posting")
@@ -28,22 +39,16 @@ import java.util.Set;
     @NamedQuery(name = "JobPosting.findByUpdatedAt", query = "SELECT j FROM JobPosting j WHERE j.updatedAt = :updatedAt")})
 public class JobPosting implements Serializable {
 
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "name")
-    private String name;
-    @Size(max = 8)
-    @Column(name = "state")
-    private String state;
-    @OneToMany(mappedBy = "job")
-    private Set<Notification> notificationSet;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "name")
+    private String name;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "salary")
     private Double salary;
@@ -53,23 +58,18 @@ public class JobPosting implements Serializable {
     @Column(name = "time_end")
     @Temporal(TemporalType.TIME)
     private Date timeEnd;
+    @Size(max = 8)
+    @Column(name = "state")
+    private String state;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
-    @JsonIgnore
-    private Set<HosoUngtuyen> hosoUngtuyenSet;
-    @OneToMany(mappedBy = "jobPosting")
-    @JsonIgnore
-    private Set<JobDescription> jobDescriptionSet;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
-    @JsonIgnore
     @ManyToOne
     private Admin approvedByAdminId;
-
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
     private Category categoryId;
@@ -92,6 +92,13 @@ public class JobPosting implements Serializable {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Double getSalary() {
         return salary;
@@ -117,6 +124,13 @@ public class JobPosting implements Serializable {
         this.timeEnd = timeEnd;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -132,22 +146,6 @@ public class JobPosting implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Set<HosoUngtuyen> getHosoUngtuyenSet() {
-        return hosoUngtuyenSet;
-    }
-
-    public void setHosoUngtuyenSet(Set<HosoUngtuyen> hosoUngtuyenSet) {
-        this.hosoUngtuyenSet = hosoUngtuyenSet;
-    }
-
-    public Set<JobDescription> getJobDescriptionSet() {
-        return jobDescriptionSet;
-    }
-
-    public void setJobDescriptionSet(Set<JobDescription> jobDescriptionSet) {
-        this.jobDescriptionSet = jobDescriptionSet;
     }
 
     public Admin getApprovedByAdminId() {
@@ -198,31 +196,5 @@ public class JobPosting implements Serializable {
     public String toString() {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
-
-
-
-
-    public Set<Notification> getNotificationSet() {
-        return notificationSet;
-    }
-
-    public void setNotificationSet(Set<Notification> notificationSet) {
-        this.notificationSet = notificationSet;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
+    
 }
