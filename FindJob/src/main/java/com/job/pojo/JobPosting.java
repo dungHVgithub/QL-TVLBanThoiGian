@@ -4,6 +4,8 @@
  */
 package com.job.pojo;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,11 +17,13 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -38,6 +42,19 @@ import java.util.Date;
     @NamedQuery(name = "JobPosting.findByCreatedAt", query = "SELECT j FROM JobPosting j WHERE j.createdAt = :createdAt"),
     @NamedQuery(name = "JobPosting.findByUpdatedAt", query = "SELECT j FROM JobPosting j WHERE j.updatedAt = :updatedAt")})
 public class JobPosting implements Serializable {
+
+
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "name")
+    private String name;
+    @Size(max = 8)
+    @Column(name = "state")
+    private String state;
+    @OneToMany(mappedBy = "jobId")
+    @JsonIgnore
+    private Collection<EmployeeJob> employeeJobCollection;
+
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -73,6 +90,10 @@ public class JobPosting implements Serializable {
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
     private Category categoryId;
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @ManyToOne
+    @JsonIgnore
+    private Employee employeeId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
     private Employer employerId;
@@ -124,13 +145,6 @@ public class JobPosting implements Serializable {
         this.timeEnd = timeEnd;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -162,6 +176,14 @@ public class JobPosting implements Serializable {
 
     public void setCategoryId(Category categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Employee getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Employee employeeId) {
+        this.employeeId = employeeId;
     }
 
     public Employer getEmployerId() {
@@ -196,5 +218,27 @@ public class JobPosting implements Serializable {
     public String toString() {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
+
+
+    public Collection<EmployeeJob> getEmployeeJobCollection() {
+        return employeeJobCollection;
+    }
+
+    public void setEmployeeJobCollection(Collection<EmployeeJob> employeeJobCollection) {
+        this.employeeJobCollection = employeeJobCollection;
+    }
+
+
+
+
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     
 }

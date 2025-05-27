@@ -19,6 +19,7 @@ import CompanyInfo from "./components/CompanyInfo";
 import NotificationList from "./components/NotificationList";
 
 
+
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
   const [unreadCount, setUnreadCount] = useState(0); // ✅
@@ -51,6 +52,7 @@ const App = () => {
   }, []);
 
   return (
+
     <NotificationContext.Provider value={{ unreadCount, setUnreadCount }}>
       <MyUserContext.Provider value={user}>
         <MyDispatchContext.Provider value={dispatch}>
@@ -73,6 +75,7 @@ const App = () => {
         </MyDispatchContext.Provider>
       </MyUserContext.Provider>
     </NotificationContext.Provider>
+
   );
 };
 

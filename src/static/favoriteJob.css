@@ -1,0 +1,318 @@
+/* Favorite Job Component Styles */
+.favorite-job-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 1.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.favorite-job-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.03)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.03)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  pointer-events: none;
+}
+
+.favorite-job-title {
+  color: white;
+  font-weight: 800;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.favorite-job-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b6b, #feca57);
+  border-radius: 2px;
+}
+
+.favorite-job-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  margin-bottom: 1.2rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.favorite-job-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s;
+}
+
+.favorite-job-card:hover::before {
+  left: 100%;
+}
+
+.favorite-job-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.favorite-job-card-body {
+  padding: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.favorite-job-card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.favorite-job-card-title::before {
+  content: '💼';
+  font-size: 1.5rem;
+}
+
+.favorite-job-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.favorite-job-list-item {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  margin-bottom: 0.6rem;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: none;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.favorite-job-list-item:hover {
+  background: linear-gradient(135deg, #fff, #f8f9fa);
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.favorite-job-list-item::before {
+  content: '';
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #667eea, #764ba2);
+  border-radius: 2px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.favorite-job-list-item strong {
+  color: #4a5568;
+  font-weight: 600;
+  min-width: 120px;
+  font-size: 0.9rem;
+}
+
+.favorite-job-list-item .value {
+  color: #2d3748;
+  font-weight: 500;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.favorite-job-salary {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+}
+
+.favorite-job-company {
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+}
+
+.favorite-job-category {
+  background: linear-gradient(135deg, #ed8936, #dd6b20);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3);
+}
+
+.favorite-job-back-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.favorite-job-back-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s;
+}
+
+.favorite-job-back-btn:hover::before {
+  left: 100%;
+}
+
+.favorite-job-back-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+  background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+.favorite-job-loading, .favorite-job-error {
+  text-align: center;
+  margin-top: 5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.favorite-job-loading::before {
+  content: '⏳';
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.favorite-job-error {
+  color: #fed7d7;
+}
+
+.favorite-job-error::before {
+  content: '⚠️';
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.favorite-job-empty {
+  text-align: center;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 3rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.favorite-job-empty::before {
+  content: '💔';
+  display: block;
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.favorite-job-icon-salary::before { content: '💰'; margin-right: 0.5rem; }
+.favorite-job-icon-time::before { content: '⏰'; margin-right: 0.5rem; }
+.favorite-job-icon-date::before { content: '📅'; margin-right: 0.5rem; }
+.favorite-job-icon-category::before { content: '🏷️'; margin-right: 0.5rem; }
+.favorite-job-icon-company::before { content: '🏢'; margin-right: 0.5rem; }
+.favorite-job-icon-address::before { content: '📍'; margin-right: 0.5rem; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .favorite-job-title {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .favorite-job-card-body {
+    padding: 1rem;
+  }
+  
+  .favorite-job-card-title {
+    font-size: 1.2rem;
+  }
+  
+  .favorite-job-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .favorite-job-list-item strong {
+    min-width: auto;
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+  }
+  
+  .favorite-job-list-item .value {
+    font-size: 0.85rem;
+  }
+}
+
+/* Animation for cards appearing */
+@keyframes favoriteJobFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.favorite-job-card {
+  animation: favoriteJobFadeInUp 0.6s ease-out;
+}
+
+.favorite-job-card:nth-child(even) {
+  animation-delay: 0.1s;
+}
+
+.favorite-job-card:nth-child(odd) {
+  animation-delay: 0.2s;
+}

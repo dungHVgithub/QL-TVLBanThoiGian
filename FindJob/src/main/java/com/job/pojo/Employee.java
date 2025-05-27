@@ -6,7 +6,6 @@ package com.job.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,9 +17,8 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  *
@@ -30,8 +28,7 @@ import java.util.Set;
 @Table(name = "employee")
 @NamedQueries({
     @NamedQuery(name = "Employee.findAll", query = "SELECT e FROM Employee e"),
-    @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id"),
-    @NamedQuery(name = "Employee.findByLevel", query = "SELECT e FROM Employee e WHERE e.level = :level")})
+    @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id")})
 public class Employee implements Serializable {
 
     @Size(max = 50)
@@ -40,25 +37,20 @@ public class Employee implements Serializable {
     @OneToMany(mappedBy = "employeeId")
     @JsonIgnore
     private Set<UserNotification> userNotificationSet;
-
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
-    @JsonIgnore
-    private Set<HosoUngtuyen> hosoUngtuyenSet;
     @OneToMany(mappedBy = "employeeId")
     @JsonIgnore
-    private Set<UserDocuments> userDocumentsSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
-    @JsonIgnore
-    private Set<FollowNotice> followNoticeSet;
+    private Collection<JobPosting> jobPostingCollection;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
     private User userId;
+    @OneToMany(mappedBy = "employeeId")
+    @JsonIgnore
+    private Collection<EmployeeJob> employeeJobCollection;
 
     public Employee() {
     }
@@ -75,29 +67,12 @@ public class Employee implements Serializable {
         this.id = id;
     }
 
-
-    public Set<HosoUngtuyen> getHosoUngtuyenSet() {
-        return hosoUngtuyenSet;
+    public Collection<JobPosting> getJobPostingCollection() {
+        return jobPostingCollection;
     }
 
-    public void setHosoUngtuyenSet(Set<HosoUngtuyen> hosoUngtuyenSet) {
-        this.hosoUngtuyenSet = hosoUngtuyenSet;
-    }
-
-    public Set<UserDocuments> getUserDocumentsSet() {
-        return userDocumentsSet;
-    }
-
-    public void setUserDocumentsSet(Set<UserDocuments> userDocumentsSet) {
-        this.userDocumentsSet = userDocumentsSet;
-    }
-
-    public Set<FollowNotice> getFollowNoticeSet() {
-        return followNoticeSet;
-    }
-
-    public void setFollowNoticeSet(Set<FollowNotice> followNoticeSet) {
-        this.followNoticeSet = followNoticeSet;
+    public void setJobPostingCollection(Collection<JobPosting> jobPostingCollection) {
+        this.jobPostingCollection = jobPostingCollection;
     }
 
     public User getUserId() {
@@ -106,6 +81,14 @@ public class Employee implements Serializable {
 
     public void setUserId(User userId) {
         this.userId = userId;
+    }
+
+    public Collection<EmployeeJob> getEmployeeJobCollection() {
+        return employeeJobCollection;
+    }
+
+    public void setEmployeeJobCollection(Collection<EmployeeJob> employeeJobCollection) {
+        this.employeeJobCollection = employeeJobCollection;
     }
 
     @Override
@@ -132,9 +115,6 @@ public class Employee implements Serializable {
     public String toString() {
         return "com.job.pojo.Employee[ id=" + id + " ]";
     }
-
-
-
     public Set<UserNotification> getUserNotificationSet() {
         return userNotificationSet;
     }
@@ -150,5 +130,6 @@ public class Employee implements Serializable {
     public void setLevel(String level) {
         this.level = level;
     }
+
     
 }

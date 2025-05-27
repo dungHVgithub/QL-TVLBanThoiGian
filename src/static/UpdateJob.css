@@ -1,0 +1,318 @@
+/* UpdateJob Component Styles */
+.update-job-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.update-job-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0)"/></radialGradient></defs><circle cx="10" cy="10" r="10" fill="url(%23a)"/><circle cx="30" cy="5" r="8" fill="url(%23a)"/><circle cx="50" cy="15" r="12" fill="url(%23a)"/><circle cx="70" cy="8" r="6" fill="url(%23a)"/><circle cx="90" cy="12" r="9" fill="url(%23a)"/></svg>') repeat;
+  opacity: 0.3;
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(120deg); }
+  66% { transform: translateY(10px) rotate(240deg); }
+}
+
+.update-job-main-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  border: none;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.update-job-main-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+  background-size: 300% 100%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.update-job-header {
+  text-align: center;
+  padding: 3rem 2rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: 0 -2rem 2rem -2rem;
+  position: relative;
+}
+
+.update-job-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #764ba2;
+}
+
+.update-job-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.5px;
+}
+
+.update-job-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+  font-weight: 300;
+}
+
+.update-job-form {
+  padding: 2rem;
+}
+
+.update-job-form-group {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.update-job-form-group .form-floating {
+  position: relative;
+}
+
+.update-job-form-group .form-floating > .form-control,
+.update-job-form-group .form-floating > .form-select {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  font-size: 1rem;
+  padding: 1.25rem 1rem 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.update-job-form-group .form-floating > .form-control:focus,
+.update-job-form-group .form-floating > .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 
+    0 0 0 0.25rem rgba(102, 126, 234, 0.15),
+    0 8px 25px rgba(102, 126, 234, 0.1);
+  background: white;
+  transform: translateY(-2px);
+}
+
+.update-job-form-group .form-floating > label {
+  color: #6c757d;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.update-job-form-group .form-floating > .form-control:focus ~ label,
+.update-job-form-group .form-floating > .form-control:not(:placeholder-shown) ~ label,
+.update-job-form-group .form-floating > .form-select:focus ~ label,
+.update-job-form-group .form-floating > .form-select:not([value=""]) ~ label {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.update-job-section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 2.5rem 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+  position: relative;
+}
+
+.update-job-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background: #667eea;
+}
+
+.update-job-submit-container {
+  text-align: center;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.update-job-submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 
+    0 8px 25px rgba(102, 126, 234, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.update-job-submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.update-job-submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 35px rgba(102, 126, 234, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.update-job-submit-btn:hover::before {
+  left: 100%;
+}
+
+.update-job-submit-btn:active {
+  transform: translateY(-1px);
+}
+
+.update-job-alert {
+  border-radius: 12px;  
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.update-job-alert.alert-success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+}
+
+.update-job-alert.alert-danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+}
+
+.update-job-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  flex-direction: column;
+}
+
+.update-job-spinner-text {
+  margin-top: 1rem;
+  color: #667eea;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .update-job-container {
+    padding: 1rem;
+  }
+  
+  .update-job-main-card {
+    margin: 0 0.5rem;
+    border-radius: 16px;
+  }
+  
+  .update-job-header {
+    padding: 2rem 1rem 1.5rem;
+    margin: 0 -1rem 1.5rem -1rem;
+  }
+  
+  .update-job-title {
+    font-size: 1.8rem;
+  }
+  
+  .update-job-form {
+    padding: 1rem;
+  }
+  
+  .update-job-submit-btn {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .update-job-title {
+    font-size: 1.5rem;
+  }
+  
+  .update-job-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Animation for form elements */
+.update-job-form-group {
+  animation: slideInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.update-job-form-group:nth-child(1) { animation-delay: 0.1s; }
+.update-job-form-group:nth-child(2) { animation-delay: 0.2s; }
+.update-job-form-group:nth-child(3) { animation-delay: 0.3s; }
+.update-job-form-group:nth-child(4) { animation-delay: 0.4s; }
+.update-job-form-group:nth-child(5) { animation-delay: 0.5s; }
+.update-job-form-group:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states and accessibility */
+.update-job-form-group .form-control:focus,
+.update-job-form-group .form-select:focus {
+  outline: none;
+}
+
+.update-job-submit-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

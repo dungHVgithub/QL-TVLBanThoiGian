@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -44,9 +45,9 @@ public class CompanyInformation implements Serializable {
     @Size(max = 50)
     @Column(name = "tax_code")
     private String taxCode;
-    @OneToMany(mappedBy = "company",fetch = FetchType.EAGER)
-    @JsonIgnore 
-    private Set<Employer> employerSet;
+    @OneToMany(mappedBy = "company")
+    @JsonIgnore
+    private Collection<Employer> employerCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -74,21 +75,6 @@ public class CompanyInformation implements Serializable {
     }
 
 
-    public String getTaxCode() {
-        return taxCode;
-    }
-
-    public void setTaxCode(String taxCode) {
-        this.taxCode = taxCode;
-    }
-
-    public Set<CompanyImages> getCompanyImagesSet() {
-        return companyImagesSet;
-    }
-
-    public void setCompanyImagesSet(Set<CompanyImages> companyImagesSet) {
-        this.companyImagesSet = companyImagesSet;
-    }
 
     @Override
     public int hashCode() {
@@ -115,17 +101,6 @@ public class CompanyInformation implements Serializable {
         return "com.job.pojo.CompanyInformation[ id=" + id + " ]";
     }
 
-
-   
-
-    public Set<Employer> getEmployerSet() {
-        return employerSet;
-    }
-
-    public void setEmployerSet(Set<Employer> employerSet) {
-        this.employerSet = employerSet;
-    }
-
     public String getName() {
         return name;
     }
@@ -142,7 +117,4 @@ public class CompanyInformation implements Serializable {
         this.address = address;
     }
 
-  
-
-    
 }

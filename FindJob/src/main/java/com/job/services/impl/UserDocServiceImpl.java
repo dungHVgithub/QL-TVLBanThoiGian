@@ -1,6 +1,6 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://.netbeans/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://.netbeans/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.job.services.impl;
 
@@ -20,32 +20,40 @@ import org.springframework.stereotype.Service;
 public class UserDocServiceImpl implements UserDocService {
 
     @Autowired
-    private UserDocRepository UserDocRepo;
+    private UserDocRepository userDocRepo;
 
     @Override
     public List<UserDocuments> getUserDocs(Map<String, String> params) {
-        return this.UserDocRepo.getUserDocs(params);
+        return this.userDocRepo.getUserDocs(params);
     }
 
     @Override
     public UserDocuments getUserDocsById(int id) {
-        return this.UserDocRepo.getUserDocsById(id);
+        return this.userDocRepo.getUserDocsById(id);
     }
 
     @Override
     public UserDocuments addOrUpdate(UserDocuments j) {
-        return this.UserDocRepo.addOrUpdate(j);
-
+        return this.userDocRepo.addOrUpdate(j);
     }
 
     @Override
     public void deleteUserDocs(int id) {
-        this.UserDocRepo.deleteUserDocs(id);
+        this.userDocRepo.deleteUserDocs(id);
     }
 
     @Override
     public List<UserDocuments> getDocsByUserId(int userId) {
-        return this.UserDocRepo.getDocsByUserId(userId);
+        return this.userDocRepo.getDocsByUserId(userId);
     }
 
+    // Thêm phương thức để lấy danh sách tài liệu theo employeeId
+    public List<UserDocuments> getDocsByEmployeeId(int employeeId) {
+        return this.userDocRepo.getDocsByEmployeeId(employeeId);
+    }
+
+    // Thêm hoặc cập nhật tài liệu cho employeeId cụ thể
+    public UserDocuments addOrUpdateForEmployee(UserDocuments doc, int employeeId) {
+        return this.userDocRepo.addOrUpdateForEmployee(doc, employeeId);
+    }
 }

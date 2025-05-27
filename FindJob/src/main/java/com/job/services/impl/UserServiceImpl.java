@@ -96,12 +96,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUpdateUser(User u) {
-        
-        if (u.getPassword() != null && !u.getPassword().isEmpty()) {
-            u.setPassword(this.passwordEncoder.encode(u.getPassword()));
+        // Lấy đối tượng hiện có nếu là cập nhật
+        User existingUser = null;
+        if (u.getId() != null) {
+            existingUser = this.userRepo.getUserById(u.getId());
         }
 
-       
+        // Xử lý mật khẩu
+        if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+            u.setPassword(this.passwordEncoder.encode(u.getPassword()));
+        } else if (existingUser != null) {
+            // Giữ nguyên mật khẩu hiện có nếu không nhập mới
+            u.setPassword(existingUser.getPassword());
+        }
+
+        // Xử lý avatar
         if (u.getFile() != null && !u.getFile().isEmpty()) {
             try {
                 Map res = cloudinary.uploader().upload(u.getFile().getBytes(),
@@ -110,11 +119,13 @@ public class UserServiceImpl implements UserService {
             } catch (IOException ex) {
                 Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else if (existingUser != null) {
+            // Giữ nguyên avatar hiện có nếu không tải lên file mới
+            u.setAvatar(existingUser.getAvatar());
         }
 
         // Xử lý createdAt và updatedAt
         LocalDateTime now = LocalDateTime.now();
-        // Chuyển đổi LocalDateTime sang Date, sử dụng múi giờ Asia/Ho_Chi_Minh (+07:00)
         Date currentDate = Date.from(now.atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant());
 
         if (u.getId() == null) {
@@ -122,9 +133,12 @@ public class UserServiceImpl implements UserService {
             u.setCreatedAt(currentDate);
             u.setUpdatedAt(currentDate);
         } else {
-            // Khi update: chỉ cập nhật updatedAt
+            // Khi update: chỉ cập nhật updatedAt, giữ nguyên createdAt và birthday
             u.setUpdatedAt(currentDate);
-            // createdAt giữ nguyên, không cần set lại
+            if (existingUser != null) {
+                u.setCreatedAt(existingUser.getCreatedAt());
+                u.setBirthday(existingUser.getBirthday());
+            }
         }
 
         return this.userRepo.addUpdateUser(u);
@@ -142,7 +156,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long countEmployees() {
-       return this.userRepo.countByRole("ROLE_EMPLOYEE");
+        return this.userRepo.countByRole("ROLE_EMPLOYEE");
     }
 
     @Override
@@ -154,6 +168,4 @@ public class UserServiceImpl implements UserService {
     public List<User> getUsersByRole(String role) {
         return this.userRepo.getUsersByRole(role);
     }
-
-
 }

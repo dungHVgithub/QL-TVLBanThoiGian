@@ -29,13 +29,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Table(name = "user_documents")
 @NamedQueries({
-    @NamedQuery(name = "UserDocuments.findAll", query = "SELECT u FROM UserDocuments u"),
-    @NamedQuery(name = "UserDocuments.findById", query = "SELECT u FROM UserDocuments u WHERE u.id = :id"),
-    @NamedQuery(name = "UserDocuments.findByName", query = "SELECT u FROM UserDocuments u WHERE u.name = :name"),
-    @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
-    @NamedQuery(name = "UserDocuments.findByDocumentPath", query = "SELECT u FROM UserDocuments u WHERE u.documentPath = :documentPath"),
-    @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate"),
-    @NamedQuery(name = "UserDocuments.findByUpdatedDate", query = "SELECT u FROM UserDocuments u WHERE u.updatedDate = :updatedDate")})
+        @NamedQuery(name = "UserDocuments.findAll", query = "SELECT u FROM UserDocuments u"),
+        @NamedQuery(name = "UserDocuments.findById", query = "SELECT u FROM UserDocuments u WHERE u.id = :id"),
+        @NamedQuery(name = "UserDocuments.findByName", query = "SELECT u FROM UserDocuments u WHERE u.name = :name"),
+        @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
+        @NamedQuery(name = "UserDocuments.findByDocumentPath", query = "SELECT u FROM UserDocuments u WHERE u.documentPath = :documentPath"),
+        @NamedQuery(name = "UserDocuments.findByCreatedDate", query = "SELECT u FROM UserDocuments u WHERE u.createdDate = :createdDate"),
+        @NamedQuery(name = "UserDocuments.findByUpdatedDate", query = "SELECT u FROM UserDocuments u WHERE u.updatedDate = :updatedDate")})
 public class UserDocuments implements Serializable {
 
     @Size(max = 45)
@@ -154,6 +154,5 @@ public class UserDocuments implements Serializable {
         this.name = name;
     }
 
-  
-    
+
 }

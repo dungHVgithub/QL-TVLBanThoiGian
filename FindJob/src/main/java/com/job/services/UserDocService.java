@@ -25,4 +25,7 @@ public interface UserDocService {
 
     List<UserDocuments> getDocsByUserId(int userId);
 
+    List<UserDocuments> getDocsByEmployeeId(int employeeId);
+
+    UserDocuments addOrUpdateForEmployee(UserDocuments existing, int employeeId);
 }

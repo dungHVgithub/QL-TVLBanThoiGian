@@ -1,17 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.controllers;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.job.pojo.Employee;
+import com.job.pojo.EmployeeJob;
+import com.job.pojo.JobPosting;
 import com.job.pojo.UserDocuments;
+import com.job.services.EmployeeJobService;
+import com.job.services.EmployeeService;
+import com.job.services.JobPostingService;
 import com.job.services.UserDocService;
 import com.job.services.UserService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,22 +29,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-/**
- *
- * @author DUNG
- */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
 public class ApiUserDocController {
 
     @Autowired
+    private JobPostingService jobPostingService;
+    @Autowired
     private UserDocService userDocService;
-
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private EmployeeJobService employeeJobService; // Thêm EmployeeJobService
     @Autowired
     private Cloudinary cloudinary;
 
@@ -80,16 +84,12 @@ public class ApiUserDocController {
             @RequestBody UserDocuments updatedDoc) {
         try {
             UserDocuments existing = this.userDocService.getUserDocsById(id);
-            
+
             if (existing == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-
-            // Cập nhật các trường cần thiết
-            existing.setName(updatedDoc.getName());
             existing.setDocumentType(updatedDoc.getDocumentType());
-            existing.setUpdatedDate(new java.util.Date());
-
+            existing.setDocumentPath(updatedDoc.getDocumentPath());
             UserDocuments saved = this.userDocService.addOrUpdate(existing);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception ex) {
@@ -98,5 +98,71 @@ public class ApiUserDocController {
         }
     }
 
-    
+    @PostMapping("/user_documents/employee/{employeeId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<UserDocuments> addDocumentForEmployee(
+            @PathVariable("employeeId") int employeeId,
+            @RequestParam("documentType") String documentType,
+            @RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("jobId") int jobId) {
+        try {
+            // Tạo và lưu UserDocuments
+            UserDocuments userDocument = new UserDocuments();
+            userDocument.setDocumentType(documentType);
+            userDocument.setName(name);
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            String documentPath = uploadResult.get("url").toString();
+            userDocument.setDocumentPath(documentPath);
+            userDocument.setCreatedDate(new Date());
+            UserDocuments savedDocument = this.userDocService.addOrUpdateForEmployee(userDocument, employeeId);
+
+            // Tạo bản ghi EmployeeJob
+            EmployeeJob employeeJob = new EmployeeJob();
+            Employee employee = employeeService.getEmployeeById(employeeId);
+            JobPosting jobPosting = jobPostingService.getJobById(jobId);
+            if (employee == null || jobPosting == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            employeeJob.setEmployeeId(employee);
+            employeeJob.setJobId(jobPosting);
+            employeeJob.setJobState((short) 3); // Đặt jobState = 3
+            employeeJobService.addOrUpdate(employeeJob);
+
+            // Cập nhật jobPosting với employeeId (nếu cần, nhưng đoạn này có vẻ không cần thiết vì đã có EmployeeJob)
+            if (jobPosting.getEmployeeId() == null) {
+                jobPosting.setEmployeeId(employee);
+                jobPostingService.addOrUpdate(jobPosting);
+            }
+            return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/user_documents/employee/{employeeId}")
+    public ResponseEntity<UserDocuments> updateDocumentForEmployee(
+            @PathVariable("employeeId") int employeeId,
+            @RequestBody UserDocuments updatedDoc) {
+        try {
+            List<UserDocuments> existingDocs = this.userDocService.getDocsByEmployeeId(employeeId);
+            if (existingDocs.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            UserDocuments existing = existingDocs.get(0);
+            existing.setDocumentType(updatedDoc.getDocumentType());
+            existing.setDocumentPath(updatedDoc.getDocumentPath());
+            UserDocuments saved = this.userDocService.addOrUpdateForEmployee(existing, employeeId);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -51,7 +51,11 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
             if (cateId != null && !cateId.isEmpty()) {
                 predicates.add(b.equal(root.get("categoryId").as(Integer.class), Integer.parseInt(cateId)));
             }
-            
+
+            String employerId = params.get("employerId");
+            if (employerId != null && !employerId.isEmpty()) {
+                predicates.add(b.equal(root.get("employerId").get("id").as(Integer.class), Integer.parseInt(employerId)));
+            }
 
             q.where(predicates.toArray(Predicate[]::new));
             String orderBy = params.get("orderBy");

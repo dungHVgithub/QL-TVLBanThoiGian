@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Api, { authApis, endpoints } from '../../configs/Api';
 import '../../static/header.css';
 import { Button } from 'react-bootstrap';
@@ -17,6 +17,8 @@ const Header = () => {
   const user = useContext(MyUserContext);
   const dispatch = useContext(MyDispatchContext);
   const [unreadCount, setUnreadCount] = useState(0);
+  const navigate = useNavigate();
+
 
   const loadCates = async () => {
     try {
@@ -24,6 +26,58 @@ const Header = () => {
       setCategories(res.data);
     } catch (error) {
       console.error("Error loading categories:", error);
+    }
+  };
+
+  const loadEmployerId = async () => {
+    if (user && user.role === "ROLE_EMPLOYER" && user.id) {
+      try {
+        const employerRes = await authApis().get(endpoints["employers"]);
+        const matchedEmployer = employerRes.data.find(
+          (employer) => employer.userId.id === user.id
+        );
+        if (matchedEmployer) {
+          return matchedEmployer.id;
+        } else {
+          console.error("Không tìm thấy employer khớp với user.id:", user.id);
+          alert("Không thể tìm thấy thông tin nhà tuyển dụng. Vui lòng thử lại sau.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Không thể tải thông tin nhà tuyển dụng:", error);
+        alert("Có lỗi xảy ra khi lấy thông tin nhà tuyển dụng.");
+        return null;
+      }
+    } else {
+      alert("Bạn cần đăng nhập với vai trò nhà tuyển dụng để xem bài đăng.");
+      return null;
+    }
+  };
+
+  const loadEmployeeId = async () => {
+    if (user && user.role === "ROLE_EMPLOYEE" && user.id) {
+      try {
+        const employeeRes = await authApis().get(endpoints["employees"]);
+        console.info(employeeRes.data);
+        // Tìm employee có userId.id khớp với user.id
+        const matchedEmployee = employeeRes.data.find(
+          (employee) => employee.userId.id === user.id
+        );
+        if (matchedEmployee) {
+          return matchedEmployee.id; // Trả về employeeId
+        } else {
+          console.error("Không tìm thấy employee khớp với user.id:", user.id);
+          alert("Không thể tìm thấy thông tin nhân viên. Vui lòng thử lại sau.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Không thể tải thông tin nhân viên:", error);
+        alert("Có lỗi xảy ra khi lấy thông tin nhân viên.");
+        return null;
+      }
+    } else {
+      alert("Bạn cần đăng nhập với vai trò nhân viên để xem công việc ứng tuyển.");
+      return null;
     }
   };
 
@@ -67,6 +121,51 @@ const Header = () => {
             {user && user.role === "ROLE_EMPLOYER" && (
               <Link to="/employer" className="nav-link">Đăng tin tuyển dụng</Link>
             )}
+            {user && user.role === "ROLE_EMPLOYER" && (
+              <Link
+                to="/postList"
+                className="nav-link"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const employerId = await loadEmployerId();
+                  if (employerId) {
+                    navigate(`/postList/${employerId}`);
+                  }
+                }}
+              >
+                Bài đăng của bạn
+              </Link>
+            )}
+            {user && user.role === "ROLE_EMPLOYEE" && (
+              <Link
+                to="/employee"
+                className="nav-link"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const employeeId = await loadEmployeeId();
+                  if (employeeId) {
+                    navigate(`/employee/${employeeId}`);
+                  }
+                }}
+              >
+                Công việc ứng tuyển
+              </Link>
+            )}
+             {user && user.role === "ROLE_EMPLOYEE" && (
+              <Link
+                to="/employee"
+                className="nav-link"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const employeeId = await loadEmployeeId();
+                  if (employeeId) {
+                    navigate(`/favoriteJob/${employeeId}`);
+                  }
+                }}
+              >
+                Công việc yêu thích 
+              </Link>
+            )}
           </Nav>
 
           {/* Bên phải */}
@@ -78,6 +177,7 @@ const Header = () => {
               </>
             ) : (
               <>
+
 
                 {user && user.role === "ROLE_EMPLOYEE" && (
                   <>
@@ -107,14 +207,12 @@ const Header = () => {
                   </>
                 )}
 
-                <div className="vr mx-2" />
 
-                {/* Icon người dùng */}
+                <div className="vr mx-2" />
                 <div className="d-flex align-items-center">
                   <FaUserCircle size={20} />
                   <Link to="/profile" className="nav-link text-primary fw-bold mb-0 ms-1">Chào {user.name}</Link>
                 </div>
-
                 <Link to="/" className="nav-link text-success">
                   <Button variant="outline-danger" size="sm" onClick={() => {
                     dispatch({ type: "logout" });
