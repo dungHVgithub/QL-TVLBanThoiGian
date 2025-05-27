@@ -23,6 +23,7 @@ import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -131,14 +132,6 @@ public class Employer implements Serializable {
         return "com.job.pojo.Employer[ id=" + id + " ]";
     }
 
-
-    public CompanyInformation getCompany() {
-        return company;
-    }
-
-    public void setCompany(CompanyInformation company) {
-        this.company = company;
-    }
 
     public Set<Notification> getNotificationSet() {
         return notificationSet;

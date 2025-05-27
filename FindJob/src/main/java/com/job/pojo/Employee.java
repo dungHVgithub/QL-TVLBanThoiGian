@@ -31,12 +31,7 @@ import java.util.Collection;
     @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id")})
 public class Employee implements Serializable {
 
-    @Size(max = 50)
-    @Column(name = "level")
-    private String level;
-    @OneToMany(mappedBy = "employeeId")
-    @JsonIgnore
-    private Set<UserNotification> userNotificationSet;
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -115,21 +110,5 @@ public class Employee implements Serializable {
     public String toString() {
         return "com.job.pojo.Employee[ id=" + id + " ]";
     }
-    public Set<UserNotification> getUserNotificationSet() {
-        return userNotificationSet;
-    }
-
-    public void setUserNotificationSet(Set<UserNotification> userNotificationSet) {
-        this.userNotificationSet = userNotificationSet;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
     
 }

@@ -164,13 +164,13 @@ public class ApiJobPostingController {
         long count = jobService.countJobsByState(normalizedState);
         return ResponseEntity.ok(Collections.singletonMap("totalJobsByState", count));
     }
-
-}
-
     @GetMapping("/job_postings/employer/{employerId}")
     public ResponseEntity<List<JobPosting>> getJobsByEmployer(@PathVariable("employerId") int employerId) {
         List<JobPosting> jobs = jobService.getJobPostingsByEmployerId(employerId);
         return new ResponseEntity<>(jobs, HttpStatus.OK);
     }
+
 }
+
+    
 

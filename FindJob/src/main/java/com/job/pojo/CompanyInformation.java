@@ -49,7 +49,7 @@ public class CompanyInformation implements Serializable {
     @JsonIgnore
     private Collection<Employer> employerCollection;
 
-    private static final long serialVersionUID = 1L;
+    private static long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -115,6 +115,62 @@ public class CompanyInformation implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    /**
+     * @return the taxCode
+     */
+    public String getTaxCode() {
+        return taxCode;
+    }
+
+    /**
+     * @param taxCode the taxCode to set
+     */
+    public void setTaxCode(String taxCode) {
+        this.taxCode = taxCode;
+    }
+
+    /**
+     * @return the employerCollection
+     */
+    public Collection<Employer> getEmployerCollection() {
+        return employerCollection;
+    }
+
+    /**
+     * @param employerCollection the employerCollection to set
+     */
+    public void setEmployerCollection(Collection<Employer> employerCollection) {
+        this.employerCollection = employerCollection;
+    }
+
+    /**
+     * @return the serialVersionUID
+     */
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    /**
+     * @param aSerialVersionUID the serialVersionUID to set
+     */
+    public static void setSerialVersionUID(long aSerialVersionUID) {
+        serialVersionUID = aSerialVersionUID;
+    }
+
+    /**
+     * @return the companyImagesSet
+     */
+    public Set<CompanyImages> getCompanyImagesSet() {
+        return companyImagesSet;
+    }
+
+    /**
+     * @param companyImagesSet the companyImagesSet to set
+     */
+    public void setCompanyImagesSet(Set<CompanyImages> companyImagesSet) {
+        this.companyImagesSet = companyImagesSet;
     }
 
 }

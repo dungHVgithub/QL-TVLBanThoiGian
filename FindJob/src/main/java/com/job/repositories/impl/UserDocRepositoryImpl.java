@@ -5,6 +5,7 @@
 package com.job.repositories.impl;
 
 
+import com.job.pojo.Employee;
 import com.job.pojo.UserDocuments;
 import com.job.repositories.UserDocRepository;
 import org.hibernate.query.Query;

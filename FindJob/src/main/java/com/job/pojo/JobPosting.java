@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -28,7 +27,7 @@ import java.util.Date;
 
 /**
  *
- * @author DUNG
+ * @author AN515-57
  */
 @Entity
 @Table(name = "job_posting")
@@ -43,7 +42,6 @@ import java.util.Date;
     @NamedQuery(name = "JobPosting.findByUpdatedAt", query = "SELECT j FROM JobPosting j WHERE j.updatedAt = :updatedAt")})
 public class JobPosting implements Serializable {
 
-
     @Lob
     @Size(max = 65535)
     @Column(name = "name")
@@ -55,17 +53,12 @@ public class JobPosting implements Serializable {
     @JsonIgnore
     private Collection<EmployeeJob> employeeJobCollection;
 
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "name")
-    private String name;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "salary")
     private Double salary;
@@ -75,9 +68,6 @@ public class JobPosting implements Serializable {
     @Column(name = "time_end")
     @Temporal(TemporalType.TIME)
     private Date timeEnd;
-    @Size(max = 8)
-    @Column(name = "state")
-    private String state;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -113,13 +103,6 @@ public class JobPosting implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Double getSalary() {
         return salary;
@@ -219,7 +202,6 @@ public class JobPosting implements Serializable {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
 
-
     public Collection<EmployeeJob> getEmployeeJobCollection() {
         return employeeJobCollection;
     }
@@ -228,9 +210,13 @@ public class JobPosting implements Serializable {
         this.employeeJobCollection = employeeJobCollection;
     }
 
+    public String getName() {
+        return name;
+    }
 
-
-
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getState() {
         return state;
@@ -239,6 +225,5 @@ public class JobPosting implements Serializable {
     public void setState(String state) {
         this.state = state;
     }
-
     
 }

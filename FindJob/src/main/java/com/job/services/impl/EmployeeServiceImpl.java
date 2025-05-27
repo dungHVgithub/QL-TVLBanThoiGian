@@ -5,9 +5,6 @@
  */
 package com.job.services.impl;
 
-
-package com.job.services.impl;
-
 import com.job.pojo.Employee;
 
 import com.job.repositories.EmployeeRepository;
@@ -15,10 +12,6 @@ import com.job.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
-
-
-
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -31,8 +24,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Integer getEmployeeIdByUserId(int userId) {
         return this.employeeRepository.getEmployeeIdByUserId(userId);
     }
-}
 
+    @Override
     public List<Employee> getEmployees() {
         return employeeRepository.getEmployees();
     }
@@ -52,4 +45,3 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.getEmployeesByJobId(jobId);
     }
 }
-

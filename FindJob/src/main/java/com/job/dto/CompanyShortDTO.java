@@ -18,8 +18,8 @@ public class CompanyShortDTO {
         this.address = company.getAddress();
         this.taxCode = company.getTaxCode();
 
-        if (company.getEmployerSet() != null && !company.getEmployerSet().isEmpty()) {
-            Employer emp = company.getEmployerSet().iterator().next();
+        if (company.getEmployerCollection()!= null && !company.getEmployerCollection().isEmpty()) {
+            Employer emp = company.getEmployerCollection().iterator().next();
             if (emp.getUserId() != null)
                 this.userId = emp.getUserId().getId();
              this.employerId = emp.getId();
