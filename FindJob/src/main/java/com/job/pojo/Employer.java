@@ -4,7 +4,9 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
@@ -26,39 +29,36 @@ import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "employer")
 @NamedQueries({
     @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
     @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
-    @NamedQuery(name = "Employer.findByCompany", query = "SELECT e FROM Employer e WHERE e.company = :company"),
     @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
 public class Employer implements Serializable {
 
-    @OneToMany(mappedBy = "employerId")
-    @JsonIgnore
-    private Set<Notification> notificationSet;
-    private static final long serialVersionUID = 1L;
+   private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "company", referencedColumnName = "id")
-    @OneToOne
-    
-    private CompanyInformation company;
-    
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
     @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
+    @OneToMany(mappedBy = "employerId")
+    @JsonIgnore
+    private Set<Notification> notificationSet;
+    @JoinColumn(name = "company", referencedColumnName = "id")
+    @ManyToOne
+    @JsonManagedReference
+    private CompanyInformation company;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    
     @OneToOne
     private User userId;
     @OneToMany(mappedBy = "employerId")
@@ -80,8 +80,6 @@ public class Employer implements Serializable {
         this.id = id;
     }
 
-
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -96,6 +94,22 @@ public class Employer implements Serializable {
 
     public void setFollowNoticeSet(Set<FollowNotice> followNoticeSet) {
         this.followNoticeSet = followNoticeSet;
+    }
+
+    public Set<Notification> getNotificationSet() {
+        return notificationSet;
+    }
+
+    public void setNotificationSet(Set<Notification> notificationSet) {
+        this.notificationSet = notificationSet;
+    }
+
+    public CompanyInformation getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyInformation company) {
+        this.company = company;
     }
 
     public User getUserId() {
@@ -138,20 +152,5 @@ public class Employer implements Serializable {
     public String toString() {
         return "com.job.pojo.Employer[ id=" + id + " ]";
     }
-
-    public CompanyInformation getCompany() {
-        return company;
-    }
-
-    public void setCompany(CompanyInformation company) {
-        this.company = company;
-    }
-
-    public Set<Notification> getNotificationSet() {
-        return notificationSet;
-    }
-
-    public void setNotificationSet(Set<Notification> notificationSet) {
-        this.notificationSet = notificationSet;
-    }
+    
 }

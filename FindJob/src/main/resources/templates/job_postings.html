@@ -28,10 +28,6 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="name" class="form-label">Nhập vào mức lương:</label>
-            <input type="text" class="form-control" id="name" th:field="*{salary}" required>
-        </div>
-        <div class="mb-3">
             <label for="categoryId" class="form-label">Loại công việc:</label>
             <select class="form-select" id="categoryId" th:field="*{categoryId}" required>
                 <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.name}"></option>

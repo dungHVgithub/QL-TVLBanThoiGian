@@ -1,6 +1,6 @@
 /*
- * Click nbfs://SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nfs://SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.job.controllers;
 
@@ -36,9 +36,10 @@ public class ApiJobPostingController {
     private NotificationService notificationService;
 
     @PostMapping("/job_postings")
-    public ResponseEntity<JobPosting> createJobPosting(@RequestBody JobPostingDTO dto) {
+    public ResponseEntity<JobPostingDTO> createJobPosting(@RequestBody JobPostingDTO dto) {
         try {
             JobPosting jobPosting = new JobPosting();
+            jobPosting.setId(dto.getId());
             jobPosting.setName(dto.getName());
             jobPosting.setSalary(dto.getSalary());
             jobPosting.setState(dto.getState() != null ? dto.getState() : "pending");
@@ -58,13 +59,18 @@ public class ApiJobPostingController {
             }
 
             Employer employer = new Employer();
-            employer.setId(dto.getEmployerId());
+            if (dto.getEmployer() != null && dto.getEmployer().getId() != null) {
+                employer.setId(dto.getEmployer().getId());
+            }
             jobPosting.setEmployerId(employer);
 
-            //  Save  tạm job 
+            // Save tạm job
             JobPosting savedJob = jobService.addOrUpdate(jobPosting);
 
-            //  đợi admin duyệt mới gửi
+            // Chuyển đổi sang DTO để trả về
+            JobPostingDTO responseDTO = jobService.getJobByIdAsDTO(savedJob.getId());
+
+            // Đợi admin duyệt mới gửi
             if ("approved".equalsIgnoreCase(savedJob.getState())) {
                 Notification notification = new Notification();
                 notification.setContent("Nhà tuyển dụng vừa đăng tin tuyển dụng mới: " + savedJob.getName());
@@ -73,7 +79,7 @@ public class ApiJobPostingController {
                 notificationService.addUserNotification(notification);
             }
 
-            return new ResponseEntity<>(savedJob, HttpStatus.CREATED);
+            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -87,15 +93,15 @@ public class ApiJobPostingController {
     }
 
     @GetMapping("/job_postings")
-    public ResponseEntity<List<JobPosting>> list(@RequestParam Map<String, String> params) {
-        return new ResponseEntity<>(this.jobService.getJobPostings(params), HttpStatus.OK);
+    public ResponseEntity<List<JobPostingDTO>> list(@RequestParam Map<String, String> params) {
+        return new ResponseEntity<>(this.jobService.getJobPostingsAsDTO(params), HttpStatus.OK);
     }
 
     @GetMapping("/job_postings/{jobPostingId}")
-    public ResponseEntity<JobPosting> retrieve(@PathVariable(value = "jobPostingId") int id) {
-        JobPosting job = this.jobService.getJobById(id);
-        if (job != null) {
-            return new ResponseEntity<>(job, HttpStatus.OK);
+    public ResponseEntity<JobPostingDTO> retrieve(@PathVariable(value = "jobPostingId") int id) {
+        JobPostingDTO dto = this.jobService.getJobByIdAsDTO(id);
+        if (dto != null) {
+            return new ResponseEntity<>(dto, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

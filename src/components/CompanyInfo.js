@@ -22,6 +22,7 @@ const CompanyInfo = () => {
   const loadCompanyImages = async () => {
     try {
       const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
+      console.log("Dữ liệu ảnh công ty từ API:", res.data);
       setCompanyData(res.data);
 
       if (res.data.length > 0) {

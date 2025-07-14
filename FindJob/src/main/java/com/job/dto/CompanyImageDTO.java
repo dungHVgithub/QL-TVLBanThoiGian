@@ -20,12 +20,16 @@ public class CompanyImageDTO {
     private CompanyShortDTO companyId;
 
     public CompanyImageDTO(CompanyImages img) {
-        this.id = img.getId();
-        this.imagePath = img.getImagePath();
-        this.caption = img.getCaption();
-        this.uploadTime = img.getUploadTime() != null ? img.getUploadTime().getTime() : null;
+    this.id = img.getId();
+    this.imagePath = img.getImagePath();
+    this.caption = img.getCaption();
+    this.uploadTime = img.getUploadTime() != null ? img.getUploadTime().getTime() : null;
+    if (img.getCompanyId() != null) {
         this.companyId = new CompanyShortDTO(img.getCompanyId());
+    } else {
+        this.companyId = null; // Xử lý trường hợp companyId null
     }
+}
 
     /**
      * @return the id

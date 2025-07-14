@@ -34,7 +34,7 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
             List<Predicate> predicates = new ArrayList<>();
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                predicates.add(b.like(root.get("description"), String.format("%%%s%%", kw)));
+                predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
             }
 
             String fromPrice = params.get("fromSalary");
@@ -140,6 +140,73 @@ public class JobPostingRepositoriesImpl implements JobPostingRepository {
         q.where(
                 b.like(b.function("DATE_FORMAT", String.class, root.get("createdAt"), b.literal("%Y-%m-%d")), date)
         );
+        return s.createQuery(q).getSingleResult();
+    }
+
+    @Override
+    public List<JobPosting> getJobPostingsWithEmployerAndCompany(Map<String, String> params) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<JobPosting> q = b.createQuery(JobPosting.class);
+        Root<JobPosting> root = q.from(JobPosting.class);
+        q.select(root);
+
+        // Thêm JOIN FETCH để tải Employer và CompanyInformation
+        root.fetch("employerId").fetch("company");
+
+        if (params != null) {
+            List<Predicate> predicates = new ArrayList<>();
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
+            }
+
+            String fromPrice = params.get("fromSalary");
+            if (fromPrice != null && !fromPrice.isEmpty()) {
+                predicates.add(b.greaterThanOrEqualTo(root.get("salary"), Double.parseDouble(fromPrice)));
+            }
+
+            String toPrice = params.get("toSalary");
+            if (toPrice != null && !toPrice.isEmpty()) {
+                predicates.add(b.lessThanOrEqualTo(root.get("salary"), Double.parseDouble(toPrice)));
+            }
+
+            String cateId = params.get("categoryId");
+            if (cateId != null && !cateId.isEmpty()) {
+                predicates.add(b.equal(root.get("categoryId").as(Integer.class), Integer.parseInt(cateId)));
+            }
+
+            q.where(predicates.toArray(Predicate[]::new));
+            String orderBy = params.get("orderBy");
+            if (orderBy != null && !orderBy.isEmpty()) {
+                q.orderBy(b.asc(root.get(orderBy)));
+            }
+        }
+
+        Query query = s.createQuery(q);
+
+        if (params != null && params.containsKey("page")) {
+            int page = Integer.parseInt(params.get("page"));
+            int start = (page - 1) * PAGE_SIZE;
+            query.setMaxResults(PAGE_SIZE);
+            query.setFirstResult(start);
+        }
+
+        return query.getResultList();
+    }
+
+    @Override
+    public JobPosting getJobByIdWithEmployerAndCompany(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<JobPosting> q = b.createQuery(JobPosting.class);
+        Root<JobPosting> root = q.from(JobPosting.class);
+        q.select(root);
+
+        // Thêm JOIN FETCH để tải Employer và CompanyInformation
+        root.fetch("employerId").fetch("company");
+        q.where(b.equal(root.get("id"), id));
+
         return s.createQuery(q).getSingleResult();
     }
 }

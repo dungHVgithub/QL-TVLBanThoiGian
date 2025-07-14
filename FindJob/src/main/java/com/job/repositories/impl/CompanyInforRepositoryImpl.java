@@ -26,13 +26,15 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class CompanyInforRepositoryImpl implements CompanyInfoRepository{
+public class CompanyInforRepositoryImpl implements CompanyInfoRepository {
+
     private static final int PAGE_SIZE = 6;
     @Autowired
     private LocalSessionFactoryBean factory;
+
     @Override
     public List<CompanyInformation> companyInformations(Map<String, String> params) {
-         Session s = this.factory.getObject().getCurrentSession();
+        Session s = this.factory.getObject().getCurrentSession();
         CriteriaBuilder b = s.getCriteriaBuilder();
         CriteriaQuery<CompanyInformation> q = b.createQuery(CompanyInformation.class);
         Root root = q.from(CompanyInformation.class);
@@ -45,7 +47,6 @@ public class CompanyInforRepositoryImpl implements CompanyInfoRepository{
             if (kw != null && !kw.isEmpty()) {
                 predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
             }
-           
 
             q.where(predicates.toArray(Predicate[]::new));
 
@@ -65,27 +66,28 @@ public class CompanyInforRepositoryImpl implements CompanyInfoRepository{
             query.setFirstResult(start);
         }
 
-        return query.getResultList();   
+        return query.getResultList();
     }
 
     @Override
     public CompanyInformation companyInformationById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        return s.get(CompanyInformation.class, id);
+
+        String hql = "SELECT c FROM CompanyInformation c LEFT JOIN FETCH c.employerSet WHERE c.id = :id";
+        return s.createQuery(hql, CompanyInformation.class)
+                .setParameter("id", id)
+                .uniqueResult();
     }
 
     @Override
     public CompanyInformation addOrUpdate(CompanyInformation ci) {
-         Session s = this.factory.getObject().getCurrentSession();
-        if(ci.getId() == null)
-        {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (ci.getId() == null) {
             s.persist(ci);
-        }
-        else
-        {
+        } else {
             s.merge(ci);
         }
-     
+
         return ci;
     }
 
@@ -95,7 +97,5 @@ public class CompanyInforRepositoryImpl implements CompanyInfoRepository{
         CompanyInformation ci = this.companyInformationById(id);
         s.remove(ci);
     }
-
-    
 
 }

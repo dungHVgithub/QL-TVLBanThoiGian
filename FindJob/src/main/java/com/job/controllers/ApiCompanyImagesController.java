@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -34,14 +35,16 @@ public class ApiCompanyImagesController {
         return new ResponseEntity<>(companyImages, HttpStatus.OK);
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/company_images/{companyId}")
     public ResponseEntity<List<CompanyImageDTO>> listByCompanyId(@PathVariable("companyId") int companyId) {
         List<CompanyImages> images = companyImagesService.getCompanyImagesByCompanyId(companyId);
-
+        if (images == null || images.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Trả về 404 nếu không có dữ liệu
+        }
         List<CompanyImageDTO> result = images.stream()
                 .map(CompanyImageDTO::new)
                 .toList();
-
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

@@ -23,7 +23,7 @@ export const endpoints = {
     'followCount': '/follow-count',
     'employeeFromUser': '/employee/from_user',
     'follow': '/follows',
-    followExists: (employeeId, employerId) => `follows/follow-exists/${employeeId}/${employerId}`,
+    'followExists': (employeeId, employerId) => `follows/follow-exists/${employeeId}/${employerId}`,
     'unfollow': (employeeId, employerId) => `/follows/${employeeId}/${employerId}`,
     'unreadNotificationCount': "/notifications/unread_count",
     'notificationsByEmployee': "/notifications/by_employee",

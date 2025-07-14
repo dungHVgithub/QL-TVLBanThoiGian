@@ -15,23 +15,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  *
  * @author DUNG
  */
 @Entity
-@Table(name = "user_notification")
+@Table(name = "employee_job")
 @NamedQueries({
-    @NamedQuery(name = "UserNotification.findAll", query = "SELECT u FROM UserNotification u"),
-    @NamedQuery(name = "UserNotification.findById", query = "SELECT u FROM UserNotification u WHERE u.id = :id"),
-    @NamedQuery(name = "UserNotification.findByIsRead", query = "SELECT u FROM UserNotification u WHERE u.isRead = :isRead"),
-    @NamedQuery(name = "UserNotification.findByReadTime", query = "SELECT u FROM UserNotification u WHERE u.readTime = :readTime")})
-public class UserNotification implements Serializable {
+    @NamedQuery(name = "EmployeeJob.findAll", query = "SELECT e FROM EmployeeJob e"),
+    @NamedQuery(name = "EmployeeJob.findById", query = "SELECT e FROM EmployeeJob e WHERE e.id = :id"),
+    @NamedQuery(name = "EmployeeJob.findByJobState", query = "SELECT e FROM EmployeeJob e WHERE e.jobState = :jobState"),
+    @NamedQuery(name = "EmployeeJob.findByFavoriteJob", query = "SELECT e FROM EmployeeJob e WHERE e.favoriteJob = :favoriteJob")})
+public class EmployeeJob implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -39,22 +36,21 @@ public class UserNotification implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "is_read")
-    private Boolean isRead;
-    @Column(name = "read_time")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date readTime;
+    @Column(name = "jobState")
+    private Short jobState;
+    @Column(name = "favoriteJob")
+    private Short favoriteJob;
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
     private Employee employeeId;
-    @JoinColumn(name = "notification_id", referencedColumnName = "id")
+    @JoinColumn(name = "job_id", referencedColumnName = "id")
     @ManyToOne
-    private Notification notificationId;
+    private JobPosting jobId;
 
-    public UserNotification() {
+    public EmployeeJob() {
     }
 
-    public UserNotification(Integer id) {
+    public EmployeeJob(Integer id) {
         this.id = id;
     }
 
@@ -66,20 +62,20 @@ public class UserNotification implements Serializable {
         this.id = id;
     }
 
-    public Boolean getIsRead() {
-        return isRead;
+    public Short getJobState() {
+        return jobState;
     }
 
-    public void setIsRead(Boolean isRead) {
-        this.isRead = isRead;
+    public void setJobState(Short jobState) {
+        this.jobState = jobState;
     }
 
-    public Date getReadTime() {
-        return readTime;
+    public Short getFavoriteJob() {
+        return favoriteJob;
     }
 
-    public void setReadTime(Date readTime) {
-        this.readTime = readTime;
+    public void setFavoriteJob(Short favoriteJob) {
+        this.favoriteJob = favoriteJob;
     }
 
     public Employee getEmployeeId() {
@@ -90,12 +86,12 @@ public class UserNotification implements Serializable {
         this.employeeId = employeeId;
     }
 
-    public Notification getNotificationId() {
-        return notificationId;
+    public JobPosting getJobId() {
+        return jobId;
     }
 
-    public void setNotificationId(Notification notificationId) {
-        this.notificationId = notificationId;
+    public void setJobId(JobPosting jobId) {
+        this.jobId = jobId;
     }
 
     @Override
@@ -108,10 +104,10 @@ public class UserNotification implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof UserNotification)) {
+        if (!(object instanceof EmployeeJob)) {
             return false;
         }
-        UserNotification other = (UserNotification) object;
+        EmployeeJob other = (EmployeeJob) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -120,7 +116,7 @@ public class UserNotification implements Serializable {
 
     @Override
     public String toString() {
-        return "com.job.pojo.UserNotification[ id=" + id + " ]";
+        return "com.job.pojo.EmployeeJob[ id=" + id + " ]";
     }
     
 }

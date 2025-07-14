@@ -4,9 +4,15 @@
  */
 package com.job.services.impl;
 
+import com.job.dto.CompanyInformationDTO;
+import com.job.dto.EmployerDTO;
+import com.job.dto.JobPostingDTO;
+import com.job.pojo.CompanyInformation;
+import com.job.pojo.Employer;
 import com.job.pojo.JobPosting;
 import com.job.repositories.JobPostingRepository;
 import com.job.services.JobPostingService;
+import java.text.SimpleDateFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +20,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +74,46 @@ public class JobPostingServiceImpl implements JobPostingService{
     @Override
     public long countJobsByState(String state) {
         return this.jobRepo.countByState(state);
+    }
+
+    @Override
+    public List<JobPostingDTO> getJobPostingsAsDTO(Map<String, String> params) {
+        List<JobPosting> jobs = getJobPostings(params);
+        return jobs.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public JobPostingDTO getJobByIdAsDTO(int id) {
+        JobPosting job = getJobById(id);
+        return job != null ? convertToDTO(job) : null;
+    }
+
+    private JobPostingDTO convertToDTO(JobPosting job) {
+        Employer employer = job.getEmployerId();
+        EmployerDTO employerDTO = null;
+        if (employer != null) {
+            CompanyInformation company = employer.getCompany();
+            CompanyInformationDTO companyDTO = company != null
+                ? new CompanyInformationDTO(company.getId(), company.getName(), company.getAddress(), company.getTaxCode())
+                : null;
+            employerDTO = new EmployerDTO(employer.getId(), companyDTO);
+        }
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String timeStartStr = job.getTimeStart() != null ? timeFormat.format(job.getTimeStart()) : null;
+        String timeEndStr = job.getTimeEnd() != null ? timeFormat.format(job.getTimeEnd()) : null;
+
+        return new JobPostingDTO(
+                
+            job.getId(),
+            job.getName(),
+            job.getSalary(),
+            timeStartStr,
+            timeEndStr,
+            job.getCategoryId() != null ? job.getCategoryId().getId() : null,
+            employerDTO,
+            job.getState()
+        );
     }
 
 

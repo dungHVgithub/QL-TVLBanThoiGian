@@ -4,12 +4,12 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "company_information")
@@ -44,9 +44,6 @@ public class CompanyInformation implements Serializable {
     @Size(max = 50)
     @Column(name = "tax_code")
     private String taxCode;
-    @OneToMany(mappedBy = "company",fetch = FetchType.EAGER)
-    @JsonIgnore 
-    private Set<Employer> employerSet;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,9 +51,14 @@ public class CompanyInformation implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
     @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
+    
+    @OneToMany(mappedBy = "company")
+    @JsonIgnore
+    private Set<Employer> employerSet;
 
     public CompanyInformation() {
     }
@@ -90,6 +92,14 @@ public class CompanyInformation implements Serializable {
         this.companyImagesSet = companyImagesSet;
     }
 
+    public Set<Employer> getEmployerSet() {
+        return employerSet;
+    }
+
+    public void setEmployerSet(Set<Employer> employerSet) {
+        this.employerSet = employerSet;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -115,17 +125,6 @@ public class CompanyInformation implements Serializable {
         return "com.job.pojo.CompanyInformation[ id=" + id + " ]";
     }
 
-
-   
-
-    public Set<Employer> getEmployerSet() {
-        return employerSet;
-    }
-
-    public void setEmployerSet(Set<Employer> employerSet) {
-        this.employerSet = employerSet;
-    }
-
     public String getName() {
         return name;
     }
@@ -142,12 +141,7 @@ public class CompanyInformation implements Serializable {
         this.address = address;
     }
 
-
-
   
-
-  
-
  
     
 }

@@ -4,17 +4,29 @@
  */
 package com.job.pojo;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.Serializable;
 import java.util.Date;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "company_images")
@@ -41,14 +53,14 @@ public class CompanyImages implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Transient
-    private MultipartFile file;
     @Column(name = "upload_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date uploadTime;
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private CompanyInformation companyId;
+     @Transient
+    private MultipartFile file;
 
     public CompanyImages() {
     }
@@ -120,15 +132,19 @@ public class CompanyImages implements Serializable {
         return "com.job.pojo.CompanyImages[ id=" + id + " ]";
     }
 
+    /**
+     * @return the file
+     */
     public MultipartFile getFile() {
         return file;
     }
 
+    /**
+     * @param file the file to set
+     */
     public void setFile(MultipartFile file) {
         this.file = file;
     }
-
-   
 
     public String getCaption() {
         return caption;
@@ -137,4 +153,5 @@ public class CompanyImages implements Serializable {
     public void setCaption(String caption) {
         this.caption = caption;
     }
+    
 }

@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "category")
@@ -44,8 +44,8 @@ public class Category implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @OneToMany(mappedBy = "categoryId")
     @JsonIgnore
+    @OneToMany(mappedBy = "categoryId")
     private Set<JobPosting> jobPostingSet;
 
     public Category() {

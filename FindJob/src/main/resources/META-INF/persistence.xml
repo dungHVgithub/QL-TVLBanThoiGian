@@ -16,5 +16,6 @@
     <class>com.job.pojo.Notification</class>
     <class>com.job.pojo.UserNotification</class>
     <class>com.job.pojo.FollowNotice</class>
+    <class>com.job.pojo.EmployeeJob</class>
   </persistence-unit>
 </persistence>

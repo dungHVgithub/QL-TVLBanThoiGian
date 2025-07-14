@@ -18,28 +18,19 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "employee")
 @NamedQueries({
     @NamedQuery(name = "Employee.findAll", query = "SELECT e FROM Employee e"),
-    @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id"),
-    @NamedQuery(name = "Employee.findByLevel", query = "SELECT e FROM Employee e WHERE e.level = :level")})
+    @NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.id = :id")})
 public class Employee implements Serializable {
-
-    @Size(max = 50)
-    @Column(name = "level")
-    private String level;
-    @OneToMany(mappedBy = "employeeId")
-    @JsonIgnore
-    private Set<UserNotification> userNotificationSet;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,9 +47,19 @@ public class Employee implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
+    @JsonIgnore
+    @OneToMany(mappedBy = "employeeId")
+    private Set<UserNotification> userNotificationSet;
+    @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
     private User userId;
+    @OneToMany(mappedBy = "employeeId")
+    @JsonIgnore
+    private Set<EmployeeJob> employeeJobSet;
+    @OneToMany(mappedBy = "employeeId")
+    @JsonIgnore
+    private Set<JobPosting> jobPostingSet;
 
     public Employee() {
     }
@@ -74,7 +75,6 @@ public class Employee implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
 
     public Set<HosoUngtuyen> getHosoUngtuyenSet() {
         return hosoUngtuyenSet;
@@ -100,12 +100,36 @@ public class Employee implements Serializable {
         this.followNoticeSet = followNoticeSet;
     }
 
+    public Set<UserNotification> getUserNotificationSet() {
+        return userNotificationSet;
+    }
+
+    public void setUserNotificationSet(Set<UserNotification> userNotificationSet) {
+        this.userNotificationSet = userNotificationSet;
+    }
+
     public User getUserId() {
         return userId;
     }
 
     public void setUserId(User userId) {
         this.userId = userId;
+    }
+
+    public Set<EmployeeJob> getEmployeeJobSet() {
+        return employeeJobSet;
+    }
+
+    public void setEmployeeJobSet(Set<EmployeeJob> employeeJobSet) {
+        this.employeeJobSet = employeeJobSet;
+    }
+
+    public Set<JobPosting> getJobPostingSet() {
+        return jobPostingSet;
+    }
+
+    public void setJobPostingSet(Set<JobPosting> jobPostingSet) {
+        this.jobPostingSet = jobPostingSet;
     }
 
     @Override
@@ -131,24 +155,6 @@ public class Employee implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.Employee[ id=" + id + " ]";
-    }
-
-
-
-    public Set<UserNotification> getUserNotificationSet() {
-        return userNotificationSet;
-    }
-
-    public void setUserNotificationSet(Set<UserNotification> userNotificationSet) {
-        this.userNotificationSet = userNotificationSet;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
     }
     
 }

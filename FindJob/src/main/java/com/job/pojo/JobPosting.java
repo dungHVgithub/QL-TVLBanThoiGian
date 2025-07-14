@@ -5,7 +5,23 @@
 package com.job.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +29,7 @@ import java.util.Set;
 
 /**
  *
- * @author AN515-57
+ * @author DUNG
  */
 @Entity
 @Table(name = "job_posting")
@@ -35,8 +51,6 @@ public class JobPosting implements Serializable {
     @Size(max = 8)
     @Column(name = "state")
     private String state;
-    @OneToMany(mappedBy = "job")
-    private Set<Notification> notificationSet;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -62,19 +76,26 @@ public class JobPosting implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
     @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
-    @OneToMany(mappedBy = "jobPosting")
+    @OneToMany(mappedBy = "jobId")
     @JsonIgnore
+    private Set<EmployeeJob> employeeJobSet;
+    @JsonIgnore
+    @OneToMany(mappedBy = "jobPosting")
     private Set<JobDescription> jobDescriptionSet;
     @JoinColumn(name = "approved_by_admin_id", referencedColumnName = "id")
-    @JsonIgnore
     @ManyToOne
     private Admin approvedByAdminId;
-
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Category categoryId;
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @ManyToOne
+    @JsonIgnore
+    private Employee employeeId;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
+    @JsonIgnore
     private Employer employerId;
 
     public JobPosting() {
@@ -142,6 +163,14 @@ public class JobPosting implements Serializable {
         this.hosoUngtuyenSet = hosoUngtuyenSet;
     }
 
+    public Set<EmployeeJob> getEmployeeJobSet() {
+        return employeeJobSet;
+    }
+
+    public void setEmployeeJobSet(Set<EmployeeJob> employeeJobSet) {
+        this.employeeJobSet = employeeJobSet;
+    }
+
     public Set<JobDescription> getJobDescriptionSet() {
         return jobDescriptionSet;
     }
@@ -164,6 +193,14 @@ public class JobPosting implements Serializable {
 
     public void setCategoryId(Category categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Employee getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Employee employeeId) {
+        this.employeeId = employeeId;
     }
 
     public Employer getEmployerId() {
@@ -199,17 +236,6 @@ public class JobPosting implements Serializable {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
 
-
-
-
-    public Set<Notification> getNotificationSet() {
-        return notificationSet;
-    }
-
-    public void setNotificationSet(Set<Notification> notificationSet) {
-        this.notificationSet = notificationSet;
-    }
-
     public String getName() {
         return name;
     }
@@ -225,4 +251,5 @@ public class JobPosting implements Serializable {
     public void setState(String state) {
         this.state = state;
     }
+    
 }

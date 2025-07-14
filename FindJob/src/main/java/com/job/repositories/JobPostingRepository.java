@@ -23,4 +23,6 @@ public interface JobPostingRepository {
     long countByState(String state); // Đếm theo trạng thái
     long countByMonth(String month);
     long countByDate(String date); // Thêm phương thức mới
+    List<JobPosting> getJobPostingsWithEmployerAndCompany(Map<String, String> params);
+    JobPosting getJobByIdWithEmployerAndCompany(int id);
 }

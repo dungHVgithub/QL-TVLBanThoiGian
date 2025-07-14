@@ -58,23 +58,28 @@ public class jobPostingController {
     }
 
     @PostMapping("/add")
-public String add(@ModelAttribute(value = "jobPosting") JobPosting j) {
-    JobPosting old = this.jobService.getJobById(j.getId());
+    public String add(@ModelAttribute(value = "jobPosting") JobPosting j) {
+        boolean isNew = (j.getId() == null);
+        JobPosting old = null;
 
-    // Gọi update bài viết
-    this.jobService.addOrUpdate(j);
+        if (!isNew) {
+            old = this.jobService.getJobById(j.getId());
+        }
 
-    // Nếu trước đó là pending và giờ là approved → Gửi thông báo
-    if (old != null && "pending".equalsIgnoreCase(old.getState()) && "approved".equalsIgnoreCase(j.getState())) {
-        Notification noti = new Notification();
-        noti.setContent("Nhà tuyển dụng vừa được duyệt một bài viết: " + j.getName());
-        noti.setEmployerId(j.getEmployerId());
-        noti.setCreatedAt(new Date());
+        this.jobService.addOrUpdate(j);
 
-       
-        this.notifiService.addUserNotification(noti);
+        if (!isNew && old != null
+                && "pending".equalsIgnoreCase(old.getState())
+                && "approved".equalsIgnoreCase(j.getState())) {
+
+            Notification noti = new Notification();
+            noti.setContent("Nhà tuyển dụng vừa được duyệt một bài viết: " + j.getName());
+            noti.setEmployerId(j.getEmployerId());
+            noti.setCreatedAt(new Date());
+
+            this.notifiService.addUserNotification(noti);
+        }
+
+        return "redirect:/";
     }
-
-    return "redirect:/";
-}
 }

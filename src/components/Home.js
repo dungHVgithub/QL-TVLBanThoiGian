@@ -17,7 +17,7 @@ const Home = () => {
     kw: "",
     location: "",
     salary: "",
-    companyName: ""
+    companyName: "",
   });
 
   const loadJob = async () => {
@@ -33,11 +33,12 @@ const Home = () => {
 
       const res = await Api.get(url);
       let filteredJobs = Array.isArray(res.data) ? res.data : [];
-      let location = q.get("location");
+
+      const location = q.get("location");
       if (location) {
         const lowerLocation = location.toLowerCase();
         filteredJobs = filteredJobs.filter(job => {
-          const address = job.employerId?.company?.address;
+          const address = job.employer?.company?.address;
           return address?.toLowerCase().includes(lowerLocation) || false;
         });
       }
@@ -53,7 +54,7 @@ const Home = () => {
       if (companyName) {
         const lowerCompany = companyName.toLowerCase();
         filteredJobs = filteredJobs.filter(job => {
-          const name = job.employerId?.company?.name;
+          const name = job.employer?.company?.name;
           return name?.toLowerCase().includes(lowerCompany) || false;
         });
       }
@@ -77,42 +78,42 @@ const Home = () => {
 
   const loadCompanyImage = async (jobs) => {
     if (!jobs || jobs.length === 0) return;
-    try {
-      const companyIds = [...new Set(
-        jobs.map(job => job.employerId?.company?.id)
-          .filter(id => id && (typeof id === 'number'))
-      )];
-      const images = { ...companyImages };
+    let images = { ...companyImages };
 
-      for (const companyId of companyIds) {
-        if (!images[companyId]) {
-          try {
-            const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
-            const data = Array.isArray(res.data) ? res.data : [res.data];
-            // Ưu tiên chọn ảnh có caption chứa "logo" (không phân biệt hoa thường)
-            const logo = data.find(image =>
-              image.caption?.toLowerCase().includes("logo")
-            ) || data.sort((a, b) => b.uploadTime - a.uploadTime)[0]; // Nếu không có, chọn ảnh mới nhất
-            images[companyId] = logo?.imagePath || ou;
-          } catch (error) {
-            console.error(`Lỗi khi lấy ảnh công ty ${companyId}:`, error.message, error.response?.data);
-            images[companyId] = ou;
-          }
-        }
+    const companyIdsToFetch = [...new Set(
+      jobs.map(job => job.employer?.company?.id)
+        .filter(id => id && typeof id === 'number' && !images[id])
+    )];
+
+    if (companyIdsToFetch.length === 0) return;
+
+    try {
+      for (const companyId of companyIdsToFetch) {
+        const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
+        const data = Array.isArray(res.data) ? res.data : [res.data];
+        const logo = data.find(image =>
+          image.caption?.toLowerCase().includes("logo")
+        ) || data.sort((a, b) => new Date(b.uploadTime) - new Date(a.uploadTime))[0];
+        images[companyId] = logo?.imagePath || ou;
       }
 
       setCompanyImages(images);
     } catch (error) {
-      console.error("Lỗi khi lấy hình ảnh công ty:", error);
+      console.error(`Error fetching company images:`, error.message, error.response?.data);
+      companyIdsToFetch.forEach(id => {
+        if (!images[id]) images[id] = ou;
+      });
+      setCompanyImages(images);
     }
   };
 
   const getCompanyInfo = (employer) => {
-    const company = employer?.company;
+    const company = employer?.company || {};
     return {
       name: company?.name || "Chưa xác định",
       address: company?.address || "Chưa xác định",
       imagePath: companyImages[company?.id] || ou,
+      id: company?.id
     };
   };
 
@@ -120,8 +121,6 @@ const Home = () => {
     if (!time) return "Chưa xác định";
     return time.split(":").slice(0, 2).join(":");
   };
-
-  
 
   useEffect(() => {
     loadJob();
@@ -167,19 +166,14 @@ const Home = () => {
     <div className="home-container">
       <div className="filter-section">
         <form onSubmit={search} className="filter-form">
-          {[
-            { label: "Tìm công việc", placeholder: "Nhập tên công việc", name: "kw", type: "search" },
-            { label: "Địa điểm", placeholder: "Nhập địa điểm", name: "location", type: "search" },
-            { label: "Lương tối thiểu ($)", placeholder: "VD: 1000", name: "salary", type: "number" },
-            { label: "Tên công ty", placeholder: "VD: FPT", name: "companyName", type: "search" }
-          ].map(({ label, placeholder, name, type }) => (
-            <div className="filter-group" key={name}>
-              <label>{label}</label>
+          {["kw", "location", "salary", "companyName"].map((key) => (
+            <div className="filter-group" key={key}>
+              <label>{key}</label>
               <input
-                type={type}
-                placeholder={placeholder}
-                value={filters[name]}
-                onChange={e => setFilters({ ...filters, [name]: e.target.value })}
+                type="text"
+                placeholder={`Nhập ${key}`}
+                value={filters[key]}
+                onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}
               />
             </div>
           ))}
@@ -190,7 +184,8 @@ const Home = () => {
 
       {approvedJobs.length > 0 ? (
         approvedJobs.map((job) => {
-          const companyInfo = getCompanyInfo(job.employerId);
+          const companyInfo = getCompanyInfo(job.employer);
+
           return (
             <div
               key={job.id}
@@ -203,18 +198,11 @@ const Home = () => {
                 alt={companyInfo.name}
                 className="job-logo"
                 onError={(e) => {
-                  console.error("Lỗi tải hình ảnh:", e.target.src);
                   e.target.src = ou;
                 }}
               />
               <div className="job-content">
-                <Link
-                  to={`/job-detail/${job.id}`}
-                  className="job-title-link"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h3 className="job-title">{job.name || "Tên công việc"}</h3>
-                </Link>
+                <h3 className="job-title job-title-link">{job.name || "Tên công việc"}</h3>
                 <p className="job-details">
                   💰 {job.salary ? `Lương: ${job.salary} $` : "Lương: Thỏa thuận"} -
                   <img
@@ -230,7 +218,7 @@ const Home = () => {
                 <p className="company-info">
                   🏢 Công ty:
                   <Link
-                    to={`/company_info/${job.employerId?.company?.id}`}
+                    to={`/company_info/${companyInfo.id}`}
                     onClick={(e) => e.stopPropagation()}
                     className="company-link"
                   >
@@ -247,7 +235,7 @@ const Home = () => {
           );
         })
       ) : (
-        <p>Không có công việc nào được phê duyệt.</p>
+        <p>Đang tải dữ liệu công việc...</p>
       )}
 
       {page > 0 && (

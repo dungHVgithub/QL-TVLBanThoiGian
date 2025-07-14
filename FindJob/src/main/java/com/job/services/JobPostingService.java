@@ -4,6 +4,7 @@
  */
 package com.job.services;
 
+import com.job.dto.JobPostingDTO;
 import com.job.pojo.JobPosting;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface JobPostingService {
     void deleteJob ( int id);
     long countJobs(); // Đếm tổng số JobPosting
     long countJobsByState(String state); // Đếm theo trạng thái
+    List<JobPostingDTO> getJobPostingsAsDTO(Map<String, String> params);
+    JobPostingDTO getJobByIdAsDTO(int id);
 }

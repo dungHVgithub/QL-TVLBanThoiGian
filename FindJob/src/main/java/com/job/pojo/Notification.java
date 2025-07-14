@@ -4,7 +4,6 @@
  */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +26,7 @@ import java.util.Set;
 
 /**
  *
- * @author User
+ * @author DUNG
  */
 @Entity
 @Table(name = "notification")
@@ -41,9 +40,6 @@ public class Notification implements Serializable {
     @Size(max = 65535)
     @Column(name = "content")
     private String content;
-    @JoinColumn(name = "job", referencedColumnName = "id")
-    @ManyToOne
-    private JobPosting job;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,7 +51,6 @@ public class Notification implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @OneToMany(mappedBy = "notificationId")
-    @JsonIgnore
     private Set<UserNotification> userNotificationSet;
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     @ManyToOne
@@ -124,15 +119,6 @@ public class Notification implements Serializable {
     @Override
     public String toString() {
         return "com.job.pojo.Notification[ id=" + id + " ]";
-    }
-
-
-    public JobPosting getJob() {
-        return job;
-    }
-
-    public void setJob(JobPosting job) {
-        this.job = job;
     }
 
     public String getContent() {

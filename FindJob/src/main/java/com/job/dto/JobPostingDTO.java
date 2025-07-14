@@ -3,15 +3,40 @@ package com.job.dto;
 import java.util.Date;
 
 public class JobPostingDTO {
+
+    private Integer id;
     private String name;
     private Double salary;
     private String timeStart; // Nhận chuỗi "HH:mm"
     private String timeEnd; // Nhận chuỗi "HH:mm"
     private Integer categoryId; // Số nguyên
-    private Integer employerId; // Số nguyên
+    private EmployerDTO employer; // Thêm trường EmployerDTO
     private String state;
 
+    // Constructor
+    public JobPostingDTO() {
+    }
+
+    public JobPostingDTO(Integer id,  String name, Double salary, String timeStart, String timeEnd,
+            Integer categoryId, EmployerDTO employer, String state) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.categoryId = categoryId;
+        this.employer = employer;
+        this.state = state;
+    }
+
     // Getters và Setters
+     public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }
@@ -52,12 +77,12 @@ public class JobPostingDTO {
         this.categoryId = categoryId;
     }
 
-    public Integer getEmployerId() {
-        return employerId;
+    public EmployerDTO getEmployer() {
+        return employer;
     }
 
-    public void setEmployerId(Integer employerId) {
-        this.employerId = employerId;
+    public void setEmployer(EmployerDTO employer) {
+        this.employer = employer;
     }
 
     public String getState() {

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Api, { endpoints } from "../configs/Api";
-import ou from "../img/ou.png"; // Hình ảnh mặc định
+import ou from "../img/ou.png";
 import '../static/job_detail.css';
-import { FaMapMarkerAlt, FaCalendarAlt, FaDollarSign, FaUser, FaClock, FaCheckCircle, FaFileAlt } from "react-icons/fa";
+import {
+  FaMapMarkerAlt, FaCalendarAlt, FaDollarSign, FaUser,
+  FaClock, FaCheckCircle, FaFileAlt
+} from "react-icons/fa";
 
 const JobDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Đây là jobPostingId
   const [jobDetail, setJobDetail] = useState(null);
   const [companyImages, setCompanyImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +18,7 @@ const JobDetail = () => {
   const loadJobDetail = async () => {
     try {
       setLoading(true);
+      console.log(`Gọi API: ${endpoints['job_details_by_job_posting']}/${id}`);
       const res = await Api.get(`${endpoints['job_details_by_job_posting']}/${id}`);
       setJobDetail(res.data);
     } catch (err) {
@@ -41,22 +45,21 @@ const JobDetail = () => {
     if (!timestamp) return "Chưa xác định";
     const date = new Date(timestamp);
     if (isNaN(date.getTime())) return "Chưa xác định";
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // Định dạng DD/MM/YYYY
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  // Hàm xử lý khi nhấn nút Ứng tuyển
   const handleApply = () => {
     console.log("Người dùng đã nhấn nút Ứng tuyển cho công việc ID:", id);
-    // Thêm logic ứng tuyển tại đây (gọi API, mở modal, v.v.)
+    // TODO: logic ứng tuyển
   };
 
-  // Hàm xử lý khi nhấn nút Thêm yêu thích
   const handleFavorite = () => {
     console.log("Người dùng đã thêm công việc ID:", id, "vào danh sách yêu thích");
-    // Thêm logic thêm vào danh sách yêu thích tại đây (gọi API, cập nhật trạng thái, v.v.)
+    // TODO: logic thêm yêu thích
   };
 
   useEffect(() => {
+    if (!id || id === "undefined") return;
     loadJobDetail();
   }, [id]);
 
@@ -74,15 +77,14 @@ const JobDetail = () => {
     <div className="job-detail-container">
       <h2 className="job-detail-title">Chi tiết công việc</h2>
       <div className="job-detail-wrapper">
-        {/* Phần thông tin công việc (70%) */}
         <div className="job-detail-info">
           <div className="job-section">
             <h3 className="job-section-title">Thông tin công việc</h3>
             <div className="job-info-row">
               <p><FaMapMarkerAlt className="icon" /> Địa điểm: {jobDetail.jobPosting?.employerId?.company?.address || "Chưa xác định"}</p>
               <p>
-                <FaCalendarAlt className="icon" /> 
-                Ngày đăng: {formatDate(jobDetail.jobPosting?.createdAt)} - 
+                <FaCalendarAlt className="icon" />
+                Ngày đăng: {formatDate(jobDetail.jobPosting?.createdAt)} -
                 Ngày cập nhật: {formatDate(jobDetail.jobPosting?.updatedAt)}
               </p>
             </div>
@@ -101,7 +103,6 @@ const JobDetail = () => {
           </div>
         </div>
 
-        {/* Phần hình ảnh công ty (30%) */}
         <div className="job-company-section">
           <div className="company-images">
             <h3 className="company-images-title">Hình ảnh công ty</h3>
@@ -125,6 +126,7 @@ const JobDetail = () => {
           </div>
         </div>
       </div>
+
       <div className="job-actions">
         <button className="apply-button" onClick={handleApply}>Ứng tuyển</button>
         <button className="favorite-button" onClick={handleFavorite}>Thêm yêu thích</button>

@@ -1,20 +1,6 @@
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,8 +8,8 @@ import java.util.Date;
 @Table(name = "follow_notice")
 @NamedQueries({
     @NamedQuery(name = "FollowNotice.findAll", query = "SELECT f FROM FollowNotice f"),
-    @NamedQuery(name = "FollowNotice.findById", query = "SELECT f FROM FollowNotice f WHERE f.id = :id"),
-    @NamedQuery(name = "FollowNotice.findByFollowTime", query = "SELECT f FROM FollowNotice f WHERE f.followTime = :followTime")
+    @NamedQuery(name = "FollowNotice.findByEmployeeId", query = "SELECT f FROM FollowNotice f WHERE f.employeeId = :employeeId"),
+    @NamedQuery(name = "FollowNotice.findByEmployerId", query = "SELECT f FROM FollowNotice f WHERE f.employerId = :employerId")
 })
 public class FollowNotice implements Serializable {
 
@@ -31,33 +17,36 @@ public class FollowNotice implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "employee_id", nullable = false)
+    private Integer employeeId;
+
+    @Column(name = "employer_id", nullable = false)
+    private Integer employerId;
+
     @Column(name = "follow_time")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date followTime;
+    private Date followTime = new Date();
 
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"followNoticeSet", "userNotificationSet", "jobApplySet", "cvSet"})
-
+    @ManyToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Employee employee;
 
-    @JoinColumn(name = "employer_id", referencedColumnName = "id")
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"followNoticeSet", "userNotificationSet", "jobApplySet", "cvSet"})
-
+    @ManyToOne
+    @JoinColumn(name = "employer_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Employer employer;
 
-    public FollowNotice() {
+    public FollowNotice() {}
+
+    public FollowNotice(Integer employeeId, Integer employerId) {
+        this.employeeId = employeeId;
+        this.employerId = employerId;
+        this.followTime = new Date();
     }
 
-    public FollowNotice(Integer id) {
-        this.id = id;
-    }
+    // Getters and Setters
 
     public Integer getId() {
         return id;
@@ -65,6 +54,22 @@ public class FollowNotice implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public Integer getEmployerId() {
+        return employerId;
+    }
+
+    public void setEmployerId(Integer employerId) {
+        this.employerId = employerId;
     }
 
     public Date getFollowTime() {
@@ -92,23 +97,12 @@ public class FollowNotice implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof FollowNotice)) {
-            return false;
-        }
-        FollowNotice other = (FollowNotice) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
-    }
-
-    @Override
     public String toString() {
-        return "com.job.pojo.FollowNotice[ id=" + id + " ]";
+        return "FollowNotice{" +
+                "id=" + id +
+                ", employeeId=" + employeeId +
+                ", employerId=" + employerId +
+                ", followTime=" + followTime +
+                '}';
     }
 }

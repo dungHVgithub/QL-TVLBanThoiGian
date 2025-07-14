@@ -48,7 +48,7 @@ public class ApiCompanyInfoController {
     }
 
     @GetMapping("/company_info/{company_id}")
-public ResponseEntity<CompanyShortDTO> retrieve(@PathVariable("company_id") int id) {
+    public ResponseEntity<CompanyShortDTO> retrieve(@PathVariable("company_id") int id) {
     CompanyInformation company = companyInfoService.companyInformationById(id);
     if (company == null)
         return ResponseEntity.notFound().build();
