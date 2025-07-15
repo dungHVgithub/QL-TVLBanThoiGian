@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -86,8 +87,10 @@ public class User implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @OneToOne(mappedBy = "userId")
+    @JsonIgnore
     private Employee employee;
     @OneToOne(mappedBy = "userId")
+    @JsonIgnore
     private Employer employer;
      @Transient
     private MultipartFile file;

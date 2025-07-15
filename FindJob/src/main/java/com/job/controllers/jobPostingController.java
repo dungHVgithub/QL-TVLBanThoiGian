@@ -4,6 +4,7 @@
  */
 package com.job.controllers;
 
+import com.job.dto.JobPostingUpdateStateDTO;
 import com.job.pojo.JobPosting;
 import com.job.pojo.Notification;
 import com.job.pojo.User;
@@ -57,29 +58,14 @@ public class jobPostingController {
         return "job_postings";
     }
 
-    @PostMapping("/add")
-    public String add(@ModelAttribute(value = "jobPosting") JobPosting j) {
-        boolean isNew = (j.getId() == null);
-        JobPosting old = null;
-
-        if (!isNew) {
-            old = this.jobService.getJobById(j.getId());
+    @PostMapping("/job_postings/update-state")
+    public String updateJobPostingState(@ModelAttribute JobPostingUpdateStateDTO dto) {
+        JobPosting job = jobService.getJobById(dto.getId());
+        if (job != null) {
+            job.setState(dto.getState());
+            job.setUpdatedAt(new Date());
+            jobService.addOrUpdate(job);
         }
-
-        this.jobService.addOrUpdate(j);
-
-        if (!isNew && old != null
-                && "pending".equalsIgnoreCase(old.getState())
-                && "approved".equalsIgnoreCase(j.getState())) {
-
-            Notification noti = new Notification();
-            noti.setContent("Nhà tuyển dụng vừa được duyệt một bài viết: " + j.getName());
-            noti.setEmployerId(j.getEmployerId());
-            noti.setCreatedAt(new Date());
-
-            this.notifiService.addUserNotification(noti);
-        }
-
-        return "redirect:/";
+        return "redirect:/job_postings";
     }
 }

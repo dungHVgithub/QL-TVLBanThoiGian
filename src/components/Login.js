@@ -29,16 +29,23 @@ const Login = () => {
 
     // ✅ Quay lại trang trước (nếu có) sau khi login thành công
     const handleLoginSuccess = () => {
-    toast.success("Đăng nhập thành công!");
-    const redirectPath = location.state?.from || "/";
-    nav(redirectPath);
-};
+        toast.success("Đăng nhập thành công!");
+        const params = new URLSearchParams(location.search);
+        const next = params.get("next") || "/";
+        nav(next); // điều hướng về trang trước đó
+    };
 
     const login = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await Api.post(endpoints.login, user);
+            const res = await Api.post(endpoints.login, JSON.stringify(user), {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+
             const token = res.data.token;
 
             cookie.save("token", token);
@@ -201,6 +208,7 @@ const Login = () => {
                 show={showRoleModal}
                 onSelect={handleRoleSelect}
                 onClose={() => setShowRoleModal(false)}
+                user={user}
             />
         </>
     );

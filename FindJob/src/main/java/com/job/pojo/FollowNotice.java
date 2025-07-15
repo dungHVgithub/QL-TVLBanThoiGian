@@ -1,5 +1,6 @@
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -28,6 +29,9 @@ public class FollowNotice implements Serializable {
 
     @Column(name = "follow_time")
     @Temporal(TemporalType.TIMESTAMP)
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+
     private Date followTime = new Date();
 
     @ManyToOne
@@ -38,7 +42,8 @@ public class FollowNotice implements Serializable {
     @JoinColumn(name = "employer_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Employer employer;
 
-    public FollowNotice() {}
+    public FollowNotice() {
+    }
 
     public FollowNotice(Integer employeeId, Integer employerId) {
         this.employeeId = employeeId;
@@ -47,7 +52,6 @@ public class FollowNotice implements Serializable {
     }
 
     // Getters and Setters
-
     public Integer getId() {
         return id;
     }
@@ -98,11 +102,11 @@ public class FollowNotice implements Serializable {
 
     @Override
     public String toString() {
-        return "FollowNotice{" +
-                "id=" + id +
-                ", employeeId=" + employeeId +
-                ", employerId=" + employerId +
-                ", followTime=" + followTime +
-                '}';
+        return "FollowNotice{"
+                + "id=" + id
+                + ", employeeId=" + employeeId
+                + ", employerId=" + employerId
+                + ", followTime=" + followTime
+                + '}';
     }
 }

@@ -41,6 +41,7 @@ const Header = () => {
           const notiRes = await authApis().get(`${endpoints["unreadNotificationCount"]}/${employeeId}`);
           setUnreadCount(notiRes.data);
         }
+        console.log(">>> user context:", user);
       } catch (err) {
         console.error("❌ Lỗi khi lấy số thông báo chưa đọc:", err);
       }
@@ -113,6 +114,7 @@ const Header = () => {
                 <div className="d-flex align-items-center">
                   <FaUserCircle size={20} />
                   <Link to="/profile" className="nav-link text-primary fw-bold mb-0 ms-1">Chào {user.name}</Link>
+
                 </div>
 
                 <Link to="/" className="nav-link text-success">

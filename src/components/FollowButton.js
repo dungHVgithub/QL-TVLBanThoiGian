@@ -2,16 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import Api, { authApis, endpoints } from "../configs/Api";
 import { toast } from "react-toastify";
+import { useNavigate, useLocation } from "react-router-dom"; 
 
 const FollowButton = ({ employeeId, employerId, onChange }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const checkFollow = async () => {
       try {
-        const res = await authApis.get(endpoints["followExists"](employeeId, employerId));
+        const res = await authApis().get(endpoints["followExists"](employeeId, employerId));
         setIsFollowing(res.data.exists);
       } catch (err) {
         console.error("Lỗi khi kiểm tra follow:", err);
@@ -38,7 +41,7 @@ const FollowButton = ({ employeeId, employerId, onChange }) => {
 
       toast.success("✅ Bạn đã theo dõi công ty.");
       setIsFollowing(true);
-      onChange && onChange(true); // notify parent
+      onChange && onChange(true);
     } catch (err) {
       console.error("❌ Lỗi khi follow:", err);
       toast.error("Theo dõi thất bại!");
@@ -63,6 +66,13 @@ const FollowButton = ({ employeeId, employerId, onChange }) => {
   };
 
   const handleClick = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      const next = encodeURIComponent(location.pathname);
+      navigate(`/login?next=${next}`);
+      return;
+    }
+
     if (isFollowing) handleUnfollow();
     else handleFollow();
   };

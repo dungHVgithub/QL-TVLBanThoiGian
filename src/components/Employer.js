@@ -48,7 +48,7 @@ const Employer = () => {
     try {
       const res = await authApis().get(endpoints.employers);
       const employers = res.data;
-      
+
       const matchingEmployer = employers.find(emp => emp.userId.id === user.id);
       if (matchingEmployer) {
         setEmployerId(matchingEmployer.id);
@@ -68,7 +68,7 @@ const Employer = () => {
   };
 
   useEffect(() => {
-   
+
     if (isLoadingUser) {
       const token = cookie.load("token") || localStorage.getItem("token");
       if (token && !user) {
@@ -136,7 +136,9 @@ const Employer = () => {
         timeStart: job.timeStart, // Chuỗi "HH:mm"
         timeEnd: job.timeEnd, // Chuỗi "HH:mm"
         categoryId: parseInt(job.categoryId),
-        employerId: employerId,
+        employer: {
+          id: employerId
+        },
         state: "pending"
       };
 

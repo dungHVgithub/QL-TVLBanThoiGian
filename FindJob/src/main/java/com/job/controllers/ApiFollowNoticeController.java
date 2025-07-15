@@ -29,15 +29,9 @@ public class ApiFollowNoticeController {
     public ResponseEntity<?> follow(@RequestParam("employee") int employeeId,
             @RequestParam("employer") int employerId) {
         try {
-            Employee employee = new Employee();
-            employee.setId(employeeId);
-
-            Employer employer = new Employer();
-            employer.setId(employerId);
-
             FollowNotice follow = new FollowNotice();
-            follow.setEmployee(employee);
-            follow.setEmployer(employer);
+            follow.setEmployeeId(employeeId); // Dùng ID thay vì object
+            follow.setEmployerId(employerId);
             follow.setFollowTime(new Date());
 
             FollowNotice result = followService.addOrUpdateFollow(follow);
@@ -45,7 +39,7 @@ public class ApiFollowNoticeController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonMap("error", "Không thể tạo follow"));
+                    .body(Collections.singletonMap("error", "Không thể tạo follow: " + e.getMessage()));
         }
     }
 
@@ -59,7 +53,8 @@ public class ApiFollowNoticeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
         }
     }
-     @GetMapping("/follows/employer/{employerId}")// lấy các follower để gửi thông báo
+
+    @GetMapping("/follows/employer/{employerId}")// lấy các follower để gửi thông báo
     public ResponseEntity<?> getFollowers(@PathVariable("employerId") int employerId) {
         try {
             List<FollowNoticeDTOEmployer> follows = followService.getFollowerDTOsByEmployer(employerId);
@@ -90,5 +85,4 @@ public class ApiFollowNoticeController {
         return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 
-  
 }
