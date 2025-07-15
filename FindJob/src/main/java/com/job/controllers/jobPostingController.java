@@ -4,7 +4,7 @@
  */
 package com.job.controllers;
 
-import com.job.dto.JobPostingUpdateStateDTO;
+import com.job.dto.JobPostingDTO;
 import com.job.pojo.JobPosting;
 import com.job.pojo.Notification;
 import com.job.pojo.User;
@@ -58,14 +58,10 @@ public class jobPostingController {
         return "job_postings";
     }
 
-    @PostMapping("/job_postings/update-state")
-    public String updateJobPostingState(@ModelAttribute JobPostingUpdateStateDTO dto) {
-        JobPosting job = jobService.getJobById(dto.getId());
-        if (job != null) {
-            job.setState(dto.getState());
-            job.setUpdatedAt(new Date());
-            jobService.addOrUpdate(job);
-        }
-        return "redirect:/job_postings";
+    @PostMapping("/add")
+    public String add(@ModelAttribute("job_posting") JobPosting j) {
+        this.jobService.addOrUpdate(j);
+        return "redirect:/";
     }
+
 }

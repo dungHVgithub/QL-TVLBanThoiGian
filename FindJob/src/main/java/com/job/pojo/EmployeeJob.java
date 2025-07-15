@@ -4,6 +4,7 @@
  */
 package com.job.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,7 @@ public class EmployeeJob implements Serializable {
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
     private Employee employeeId;
+    @JsonIgnore
     @JoinColumn(name = "job_id", referencedColumnName = "id")
     @ManyToOne
     private JobPosting jobId;

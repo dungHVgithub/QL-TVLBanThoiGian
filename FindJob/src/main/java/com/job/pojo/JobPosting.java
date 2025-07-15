@@ -10,6 +10,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -73,10 +74,10 @@ public class JobPosting implements Serializable {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
+    @OneToMany(mappedBy = "jobPosting", cascade = {}, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<HosoUngtuyen> hosoUngtuyenSet;
-    @OneToMany(mappedBy = "jobId")
+    @OneToMany(mappedBy = "jobId", cascade = {}, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<EmployeeJob> employeeJobSet;
     @JsonIgnore
@@ -113,7 +114,6 @@ public class JobPosting implements Serializable {
         this.id = id;
     }
 
-
     public Double getSalary() {
         return salary;
     }
@@ -137,7 +137,6 @@ public class JobPosting implements Serializable {
     public void setTimeEnd(Date timeEnd) {
         this.timeEnd = timeEnd;
     }
-
 
     public Date getCreatedAt() {
         return createdAt;
@@ -251,5 +250,5 @@ public class JobPosting implements Serializable {
     public void setState(String state) {
         this.state = state;
     }
-    
+
 }
