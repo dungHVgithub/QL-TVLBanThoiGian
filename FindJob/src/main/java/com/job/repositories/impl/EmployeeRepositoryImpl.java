@@ -19,13 +19,13 @@ import java.util.List;
  *
  * @author DUNG
  */
+
+
 @Repository
 @Transactional
-public class EmployeeRepositoryImpl implements EmployeeRepository{
+public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Autowired
     private LocalSessionFactoryBean factory;
-
-    
     @Override
     public Integer getEmployeeIdByUserId(int userId) {
         Session s = this.factory.getObject().getCurrentSession();
@@ -34,14 +34,6 @@ public class EmployeeRepositoryImpl implements EmployeeRepository{
         q.setParameter("uid", userId);
         return q.uniqueResult();
     }
-    
-}
-
-@Repository
-@Transactional
-public class EmployeeRepositoryImpl implements EmployeeRepository {
-    @Autowired
-    private LocalSessionFactoryBean factory;
 
     @Override
     public List<Employee> getEmployees() {

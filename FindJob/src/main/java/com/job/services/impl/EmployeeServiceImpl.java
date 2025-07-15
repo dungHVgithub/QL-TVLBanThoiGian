@@ -24,7 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Integer getEmployeeIdByUserId(int userId) {
         return this.employeeRepository.getEmployeeIdByUserId(userId);
     }
-}
+
     public List<Employee> getEmployees() {
         return employeeRepository.getEmployees();
     }

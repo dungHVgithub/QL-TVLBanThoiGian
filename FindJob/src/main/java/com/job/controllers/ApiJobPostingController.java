@@ -118,11 +118,7 @@ public class ApiJobPostingController {
                 category.setId(dto.getCategoryId());
                 existingJob.setCategoryId(category);
             }
-            if (dto.getEmployerId() != null) {
-                Employer employer = new Employer();
-                employer.setId(dto.getEmployerId());
-                existingJob.setEmployerId(employer);
-            }
+            
 
             JobPosting updatedJob = jobService.addOrUpdate(existingJob);
             System.out.println("Updated JobPosting: " + updatedJob);

@@ -23,5 +23,7 @@ public interface EmployeeRepository {
     Employee getEmployeeById(int id);
     Employee addOrUpdate(Employee employee);
     List<Employee> getEmployeesByJobId(int jobId);
+    Integer getEmployeeIdByUserId(int userId);
+    
 }
 

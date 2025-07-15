@@ -25,8 +25,8 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -52,9 +52,6 @@ public class JobPosting implements Serializable {
     @Size(max = 8)
     @Column(name = "state")
     private String state;
-    @OneToMany(mappedBy = "jobId")
-    @JsonIgnore
-    private Collection<EmployeeJob> employeeJobCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -181,7 +178,6 @@ public class JobPosting implements Serializable {
         this.jobDescriptionSet = jobDescriptionSet;
     }
 
-
     public Admin getApprovedByAdminId() {
         return approvedByAdminId;
     }
@@ -239,7 +235,6 @@ public class JobPosting implements Serializable {
         return "com.job.pojo.JobPosting[ id=" + id + " ]";
     }
 
-
     public String getName() {
         return name;
     }
@@ -250,16 +245,10 @@ public class JobPosting implements Serializable {
 
     public String getState() {
         return state;
-
-    public Collection<EmployeeJob> getEmployeeJobCollection() {
-        return employeeJobCollection;
-
     }
 
-    public void setEmployeeJobCollection(Collection<EmployeeJob> employeeJobCollection) {
-        this.employeeJobCollection = employeeJobCollection;
+    public void setState(String state) {
+        this.state = state;
     }
-
-
 
 }

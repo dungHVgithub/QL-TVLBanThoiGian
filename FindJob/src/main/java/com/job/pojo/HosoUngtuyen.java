@@ -47,7 +47,7 @@ public class HosoUngtuyen implements Serializable {
     protected HosoUngtuyenPK hosoUngtuyenPK;
     @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private Employee employee;
+    private Employee employeeId;
     @JsonIgnore
     @JoinColumn(name = "job_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
@@ -90,11 +90,11 @@ public class HosoUngtuyen implements Serializable {
     }
 
     public Employee getEmployee() {
-        return employee;
+        return employeeId;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmployee(Employee employeeId) {
+        this.employeeId = employeeId;
     }
 
     public JobPosting getJobPosting() {
