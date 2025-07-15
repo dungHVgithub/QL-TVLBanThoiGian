@@ -1,17 +1,19 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://.netbeans.org/templates/Classes/Class.java to edit this template
+ * Click nfs://.netbeans.org/templates/Classes/Class.java to edit this template
  */
 package com.job.controllers;
 
 import com.job.dto.CompanyShortDTO;
 import com.job.pojo.CompanyInformation;
+import com.job.pojo.Employer;
 import com.job.services.CompanyInfoService;
+import com.job.services.EmployerService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Date;
 
 /**
  *
@@ -34,6 +37,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiCompanyInfoController {
     @Autowired
     private CompanyInfoService companyInfoService;
+
+    @Autowired
+    private EmployerService employerService;
 
     @DeleteMapping("/company_info/{company_id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -53,13 +59,35 @@ public class ApiCompanyInfoController {
     if (company == null)
         return ResponseEntity.notFound().build();
 
+
     CompanyShortDTO dto = new CompanyShortDTO(company);
     return ResponseEntity.ok(dto);
 }
+
     @PostMapping("/company_info")
-    public ResponseEntity<CompanyInformation> create(@RequestBody CompanyInformation companyInfo) {
+    public ResponseEntity<CompanyInformation> create(@RequestBody Map<String, Object> requestBody) {
         try {
+            // Lấy dữ liệu từ request
+            String name = (String) requestBody.get("name");
+            String address = (String) requestBody.get("address");
+            String taxCode = (String) requestBody.get("taxCode");
+            Integer userId = (Integer) requestBody.get("userId");
+
+            // Tạo mới CompanyInformation
+            CompanyInformation companyInfo = new CompanyInformation();
+            companyInfo.setName(name);
+            companyInfo.setAddress(address);
+            companyInfo.setTaxCode(taxCode);
+
             CompanyInformation newCompanyInfo = companyInfoService.addOrUpdate(companyInfo);
+
+            // Tìm hoặc tạo Employer dựa trên userId
+            Employer employer = employerService.findOrCreateEmployerByUserId(userId);
+            if (employer.getCompany() == null || employer.getCompany().getId() != newCompanyInfo.getId()) {
+                employer.setCompany(newCompanyInfo);
+                employer = employerService.saveEmployer(employer); // Lưu lại Employer với company mới
+            }
+
             return new ResponseEntity<>(newCompanyInfo, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +104,7 @@ public class ApiCompanyInfoController {
             if (existingCompanyInfo == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            companyInfo.setId(id); // Đảm bảo ID không thay đổi
+            companyInfo.setId(id);
             CompanyInformation updatedCompanyInfo = companyInfoService.addOrUpdate(companyInfo);
             return new ResponseEntity<>(updatedCompanyInfo, HttpStatus.OK);
         } catch (Exception e) {

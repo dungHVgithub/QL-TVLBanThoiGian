@@ -28,6 +28,7 @@ import java.util.Date;
 @Entity
 @Table(name = "user_documents")
 @NamedQueries({
+
     @NamedQuery(name = "UserDocuments.findAll", query = "SELECT u FROM UserDocuments u"),
     @NamedQuery(name = "UserDocuments.findById", query = "SELECT u FROM UserDocuments u WHERE u.id = :id"),
     @NamedQuery(name = "UserDocuments.findByDocumentType", query = "SELECT u FROM UserDocuments u WHERE u.documentType = :documentType"),
@@ -37,15 +38,16 @@ import java.util.Date;
     @NamedQuery(name = "UserDocuments.findByName", query = "SELECT u FROM UserDocuments u WHERE u.name = :name")})
 public class UserDocuments implements Serializable {
 
+    @Size(max = 45)
+    @Column(name = "name")
+    private String name;
     @Size(max = 7)
     @Column(name = "document_type")
     private String documentType;
     @Size(max = 255)
     @Column(name = "document_path")
     private String documentPath;
-    @Size(max = 45)
-    @Column(name = "name")
-    private String name;
+
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -143,6 +145,7 @@ public class UserDocuments implements Serializable {
     public String toString() {
         return "com.job.pojo.UserDocuments[ id=" + id + " ]";
     }
+
     public String getName() {
         return name;
     }
@@ -150,5 +153,5 @@ public class UserDocuments implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }

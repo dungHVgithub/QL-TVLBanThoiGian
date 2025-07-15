@@ -21,6 +21,10 @@ public interface JobPostingService {
     void deleteJob ( int id);
     long countJobs(); // Đếm tổng số JobPosting
     long countJobsByState(String state); // Đếm theo trạng thái
+
     List<JobPostingDTO> getJobPostingsAsDTO(Map<String, String> params);
     JobPostingDTO getJobByIdAsDTO(int id);
+
+    List<JobPosting> getJobPostingsByEmployerId(int employerId);
+
 }

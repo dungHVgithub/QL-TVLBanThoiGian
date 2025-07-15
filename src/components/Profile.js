@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MyUserContext } from "../configs/MyContexts";
 import { authApis, endpoints } from "../configs/Api";
-import { Container, Card, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
+import { Container, Card, Row, Col, Form, Button, InputGroup, Modal, ListGroup } from "react-bootstrap";
 import { FaPhone, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -12,9 +12,12 @@ const Profile = () => {
   const [documents, setDocuments] = useState([]);
   const [documentsBeingEdited, setDocumentsBeingEdited] = useState({});
   const [companyId, setCompanyId] = useState(null);
+  const [showApplicationsModal, setShowApplicationsModal] = useState(false);
+  const [applications, setApplications] = useState([]);
+  const [showCreateCompanyModal, setShowCreateCompanyModal] = useState(false);
+  const [formData, setFormData] = useState({ name: "", address: "", taxCode: "", userId: null });
   const navigate = useNavigate();
 
-  // Hàm ánh xạ vai trò sang tên hiển thị thân thiện
   const getRoleDisplayName = (role) => {
     switch (role) {
       case "ROLE_EMPLOYER":
@@ -34,21 +37,19 @@ const Profile = () => {
           const data = res.data;
           if (data.birthday)
             data.birthday = new Date(data.birthday).toISOString().split("T")[0];
-
           setProfile(data);
 
-          // Nếu là nhà tuyển dụng, lấy companyId từ endpoint /employers
           if (data.role === "ROLE_EMPLOYER") {
             try {
               const employerRes = await authApis().get(`${endpoints["employers"]}`);
-              // Tìm employer có userId.id khớp với user.id
               const matchedEmployer = employerRes.data.find(
                 (employer) => employer.userId.id === user.id
               );
               if (matchedEmployer) {
-                setCompanyId(matchedEmployer.company.id); // Lấy company.id từ employer khớp
+                setCompanyId(matchedEmployer.company?.id); // Kiểm tra null cho company
               } else {
-                console.error("Không tìm thấy employer khớp với user.id:", user.id);
+                console.log("Employer mới, chưa có companyId.");
+                setCompanyId(null);
               }
             } catch (err) {
               console.error("Không thể tải thông tin công ty:", err);
@@ -76,12 +77,26 @@ const Profile = () => {
   }, [user]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
 
-  try {
-    if (!profile.id) {
-      alert("Không tìm thấy ID người dùng!");
-      return;
+    e.preventDefault();
+    try {
+      const updated = {
+        ...profile,
+        birthday: profile.birthday ? new Date(profile.birthday).getTime() : null,
+      };
+      const res = await authApis().post("/user/update", updated);
+      setProfile({
+        ...res.data,
+        birthday: res.data.birthday
+          ? new Date(res.data.birthday).toISOString().split("T")[0]
+          : "",
+      });
+      alert("Cập nhật thành công!");
+      setShowEditForm(false);
+    } catch (err) {
+      console.error("Lỗi cập nhật:", err);
+      alert("Có lỗi xảy ra khi lưu thông tin.");
+
     }
 
     const updated = {
@@ -110,28 +125,107 @@ const Profile = () => {
   const handleDocSubmit = async (e, docId) => {
     e.preventDefault();
     const doc = documentsBeingEdited[docId];
-
     try {
       const res = await authApis().put(
         `${endpoints.updateDocument}/${docId}`,
-        {
-          name: doc.name,
-          type: doc.document_type
-        }
+        { name: doc.name, type: doc.document_type }
       );
-
-      const updatedDocs = documents.map(d => (d.id === docId ? res.data : d));
+      const updatedDocs = documents.map((d) => (d.id === docId ? res.data : d));
       setDocuments(updatedDocs);
-
       const newEditing = { ...documentsBeingEdited };
       delete newEditing[docId];
       setDocumentsBeingEdited(newEditing);
-
       alert("Cập nhật tài liệu thành công!");
     } catch (err) {
       console.error("Lỗi khi cập nhật tài liệu:", err);
       alert("Có lỗi xảy ra khi cập nhật tài liệu.");
     }
+  };
+
+  const loadApplications = async (employeeId) => {
+    try {
+      const res = await authApis().get(`${endpoints["employeeJob/employee"]}${employeeId}`);
+      const filteredApplications = res.data.filter(
+        (app) => app.jobState !== 0 && app.jobState !== 1 && app.jobId?.name
+      );
+      setApplications(filteredApplications);
+      setShowApplicationsModal(true);
+    } catch (err) {
+      console.error("Lỗi khi tải danh sách ứng tuyển:", err);
+      alert("Không thể tải danh sách ứng tuyển.");
+    }
+  };
+
+  const handleViewApplications = async () => {
+    if (profile.role === "ROLE_EMPLOYER") {
+      try {
+        const employeeRes = await authApis().get(`${endpoints["employees"]}`);
+        const allEmployees = employeeRes.data;
+        const promises = allEmployees.map((employee) =>
+          authApis()
+            .get(`${endpoints["employeeJob/employee"]}${employee.id}`)
+            .then((res) => res.data)
+            .catch((err) => {
+              console.error(`Lỗi khi tải employeeJob cho employee ${employee.id}:`, err);
+              return [];
+            })
+        );
+        const allApplications = await Promise.all(promises);
+        const filteredApplications = allApplications
+          .flat()
+          .filter((app) => app.jobState !== 0 && app.jobState !== 1 && app.jobId?.name);
+        setApplications(filteredApplications);
+        setShowApplicationsModal(true);
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách ứng tuyển:", err);
+        alert("Không thể tải danh sách ứng tuyển.");
+      }
+    }
+  };
+
+  const updateJobState = async (employeeId, employeeJobId, jobState) => {
+    if (!employeeId) {
+      alert("Không thể xác định ID ứng viên. Vui lòng thử lại!");
+      return;
+    }
+    try {
+      const url = `${endpoints["employeeJob/employee"]}${employeeId}/${employeeJobId}`;
+      const res = await authApis().put(url, { jobState: jobState });
+      const updatedApplications = applications
+        .map((app) => (app.id === employeeJobId ? res.data : app))
+        .filter((app) => app.jobState !== 0 && app.jobState !== 1);
+      setApplications(updatedApplications);
+      alert(`Cập nhật trạng thái thành công!`);
+      if (updatedApplications.length === 0) {
+        setShowApplicationsModal(false);
+      }
+    } catch (err) {
+      console.error("Lỗi khi cập nhật trạng thái:", err);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái. Vui lòng kiểm tra log.");
+    }
+  };
+
+  const handleCreateCompany = async (e) => {
+    e.preventDefault();
+    try {
+      // Gán userId từ user context trước khi gửi
+      const finalFormData = { ...formData, userId: user.id };
+      const res = await authApis().post("/company_info", finalFormData);
+      const newCompanyId = res.data.id; // Lấy id từ phản hồi API
+      setCompanyId(newCompanyId); // Cập nhật state companyId
+      setFormData({ name: "", address: "", taxCode: "", userId: user.id }); // Reset form
+      alert("Tạo thông tin công ty thành công!");
+      setShowCreateCompanyModal(false); // Đóng modal
+      navigate(`/company_info/${newCompanyId}`); // Điều hướng
+    } catch (err) {
+      console.error("Lỗi khi tạo thông tin công ty:", err);
+      alert("Có lỗi xảy ra khi tạo thông tin công ty. Vui lòng kiểm tra log.");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   if (!profile) return <p className="text-center mt-5">Đang tải thông tin...</p>;
@@ -151,32 +245,16 @@ const Profile = () => {
           </Col>
           <Col md={9}>
             <Row>
-              <Col md={6}>
-                <p><strong>👤 Tên:</strong> {profile.name}</p>
-              </Col>
-              <Col md={6}>
-                <p><strong>📧 Email:</strong> {profile.email}</p>
-              </Col>
+              <Col md={6}><p><strong>👤 Tên:</strong> {profile.name}</p></Col>
+              <Col md={6}><p><strong>📧 Email:</strong> {profile.email}</p></Col>
             </Row>
             <Row>
-              <Col md={6}>
-                <p><strong>📍 Địa chỉ:</strong> {profile.address || "Chưa cập nhật"}</p>
-              </Col>
-              <Col md={6}>
-                <p><strong>📞 Số điện thoại:</strong> {profile.sdt || "Chưa cập nhật"}</p>
-              </Col>
+              <Col md={6}><p><strong>📍 Địa chỉ:</strong> {profile.address || "Chưa cập nhật"}</p></Col>
+              <Col md={6}><p><strong>📞 Số điện thoại:</strong> {profile.sdt || "Chưa cập nhật"}</p></Col>
             </Row>
             <Row>
-              <Col md={6}>
-                <p><strong>🎂 Ngày sinh:</strong> {
-                  profile.birthday
-                    ? new Date(profile.birthday).toLocaleDateString("vi-VN")
-                    : "Chưa cập nhật"
-                }</p>
-              </Col>
-              <Col md={6}>
-                <p><strong>👑 Vai trò:</strong> {getRoleDisplayName(profile.role)}</p>
-              </Col>
+              <Col md={6}><p><strong>🎂 Ngày sinh:</strong> {profile.birthday ? new Date(profile.birthday).toLocaleDateString("vi-VN") : "Chưa cập nhật"}</p></Col>
+              <Col md={6}><p><strong>👑 Vai trò:</strong> {getRoleDisplayName(profile.role)}</p></Col>
             </Row>
           </Col>
         </Row>
@@ -185,13 +263,27 @@ const Profile = () => {
             <Button variant="primary" onClick={() => setShowEditForm(true)} className="me-2">
               ✏️ Chỉnh sửa
             </Button>
-            {profile.role === "ROLE_EMPLOYER" && companyId && (
+            {profile.role === "ROLE_EMPLOYER" && (
               <>
-                <Button
-                  variant="success"
-                  onClick={() => navigate(`/company_info/${companyId}`)}
-                >
-                  ℹ️ Thông tin công ty
+                {companyId ? (
+                  <Button
+                    variant="success"
+                    onClick={() => navigate(`/company_info/${companyId}`)}
+                    className="me-2"
+                  >
+                    ℹ️ Thông tin công ty
+                  </Button>
+                ) : (
+                  <Button
+                    variant="success"
+                    onClick={() => setShowCreateCompanyModal(true)}
+                    className="me-2"
+                  >
+                    ➕ Tạo thông tin công ty
+                  </Button>
+                )}
+                <Button variant="info" onClick={handleViewApplications}>
+                  📋 Xem danh sách ứng tuyển
                 </Button>
               </>
             )}
@@ -212,7 +304,6 @@ const Profile = () => {
                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Số điện thoại</Form.Label>
               <InputGroup>
@@ -220,13 +311,10 @@ const Profile = () => {
                 <Form.Control
                   type="text"
                   value={profile.sdt || ""}
-                  onChange={(e) =>
-                    setProfile({ ...profile, sdt: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, sdt: e.target.value })}
                 />
               </InputGroup>
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Địa chỉ</Form.Label>
               <InputGroup>
@@ -234,13 +322,10 @@ const Profile = () => {
                 <Form.Control
                   type="text"
                   value={profile.address || ""}
-                  onChange={(e) =>
-                    setProfile({ ...profile, address: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                 />
               </InputGroup>
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Ngày sinh</Form.Label>
               <InputGroup>
@@ -248,13 +333,10 @@ const Profile = () => {
                 <Form.Control
                   type="date"
                   value={profile.birthday || ""}
-                  onChange={(e) =>
-                    setProfile({ ...profile, birthday: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, birthday: e.target.value })}
                 />
               </InputGroup>
             </Form.Group>
-
             <div className="d-flex justify-content-between">
               <Button variant="secondary" onClick={() => setShowEditForm(false)}>
                 Hủy
@@ -275,7 +357,6 @@ const Profile = () => {
           documents.map((doc) => {
             const isEditing = !!documentsBeingEdited[doc.id];
             const editedDoc = documentsBeingEdited[doc.id] || {};
-
             return (
               <Form key={doc.id} onSubmit={(e) => handleDocSubmit(e, doc.id)}>
                 <Row className="align-items-center mb-4">
@@ -287,7 +368,6 @@ const Profile = () => {
                       style={{ width: "150px", height: "150px", objectFit: "cover" }}
                     />
                   </Col>
-
                   <Col md={6}>
                     {isEditing ? (
                       <>
@@ -299,15 +379,11 @@ const Profile = () => {
                             onChange={(e) =>
                               setDocumentsBeingEdited({
                                 ...documentsBeingEdited,
-                                [doc.id]: {
-                                  ...editedDoc,
-                                  name: e.target.value
-                                }
+                                [doc.id]: { ...editedDoc, name: e.target.value },
                               })
                             }
                           />
                         </Form.Group>
-
                         <Form.Group className="mb-2">
                           <Form.Label>Loại tài liệu</Form.Label>
                           <Form.Select
@@ -315,19 +391,14 @@ const Profile = () => {
                             onChange={(e) =>
                               setDocumentsBeingEdited({
                                 ...documentsBeingEdited,
-                                [doc.id]: {
-                                  ...editedDoc,
-                                  type: e.target.value
-                                }
+                                [doc.id]: { ...editedDoc, type: e.target.value },
                               })
                             }
                           >
                             <option value="CV">CV</option>
-                            <option value="ID">ID</option>
-                            <option value="Certificate">Certificate</option>
+                            <option value="Diploma">Diploma</option>
                           </Form.Select>
                         </Form.Group>
-
                         <Button variant="success" type="submit" className="me-2">
                           💾 Lưu
                         </Button>
@@ -347,20 +418,13 @@ const Profile = () => {
                         <p><strong>📃 Tên tài liệu:</strong> {doc.name}</p>
                         <p><strong>📄 Loại tài liệu:</strong> {doc.document_type}</p>
                         <p><strong>📅 Ngày tạo:</strong> {new Date(doc.createdDate).toLocaleDateString("vi-VN")}</p>
-                        <p><strong>🕓 Ngày cập nhật:</strong> {
-                          doc.updatedDate
-                            ? new Date(doc.updatedDate).toLocaleString("vi-VN")
-                            : "Chưa cập nhật"
-                        }</p>
+                        <p><strong>🕓 Ngày cập nhật:</strong> {doc.updatedDate ? new Date(doc.updatedDate).toLocaleString("vi-VN") : "Chưa cập nhật"}</p>
                         <Button
                           variant="primary"
                           onClick={() =>
                             setDocumentsBeingEdited({
                               ...documentsBeingEdited,
-                              [doc.id]: {
-                                name: doc.name,
-                                type: doc.document_type
-                              }
+                              [doc.id]: { name: doc.name, type: doc.document_type },
                             })
                           }
                         >
@@ -375,6 +439,118 @@ const Profile = () => {
           })
         )}
       </Card>
+
+      <Modal
+        show={showApplicationsModal}
+        onHide={() => setShowApplicationsModal(false)}
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Danh Sách Ứng Tuyển</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {applications.length === 0 ? (
+            <p className="text-center">Không có ứng tuyển nào đang chờ xử lý.</p>
+          ) : (
+            applications.map((app) => (
+              <Card key={app.id} className="mb-3">
+                <Card.Body>
+                  <Card.Title>{app.jobId?.name}</Card.Title>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item><strong>Ứng viên:</strong> {app.employeeId?.userId?.name || "Chưa xác định"}</ListGroup.Item>
+                    <ListGroup.Item><strong>Lương:</strong> {app.jobId?.salary ? `${app.jobId.salary} $` : "Thỏa thuận"}</ListGroup.Item>
+                    <ListGroup.Item><strong>Thời gian làm việc:</strong> {app.jobId?.timeStart && app.jobId?.timeEnd ? `${app.jobId.timeStart} - ${app.jobId.timeEnd}` : "Chưa xác định"}</ListGroup.Item>
+                    <ListGroup.Item><strong>Địa chỉ:</strong> {app.jobId?.employerId?.company?.address || "Chưa xác định"}</ListGroup.Item>
+                    <ListGroup.Item><strong>Mã số thuế:</strong> {app.jobId?.employerId?.company?.taxCode || "Chưa xác định"}</ListGroup.Item>
+                  </ListGroup>
+                  <div className="d-flex justify-content-end mt-2">
+                    <Button
+                      variant="success"
+                      className="me-2"
+                      onClick={() => updateJobState(app.employeeId?.id, app.id, 1)}
+                    >
+                      ✅ Duyệt
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => updateJobState(app.employeeId?.id, app.id, 0)}
+                    >
+                      ❌ Từ chối
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowApplicationsModal(false)}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showCreateCompanyModal}
+        onHide={() => setShowCreateCompanyModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Tạo Thông Tin Công Ty</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleCreateCompany}>
+            <Form.Group className="mb-3">
+              <Form.Label>Tên công ty</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Nhập tên công ty"
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Địa chỉ</Form.Label>
+              <Form.Control
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder="Nhập địa chỉ"
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Mã thuế</Form.Label>
+              <Form.Control
+                type="text"
+                name="taxCode"
+                value={formData.taxCode}
+                onChange={handleInputChange}
+                placeholder="Nhập mã thuế"
+                required
+              />
+            </Form.Group>
+            <Form.Control
+              type="hidden"
+              name="userId"
+              value={formData.userId || user.id} // Gán userId từ context
+              onChange={handleInputChange}
+            />
+            <div className="d-flex justify-content-end">
+              <Button variant="secondary" onClick={() => setShowCreateCompanyModal(false)}>
+                Hủy
+              </Button>
+              <Button variant="primary" type="submit" className="ms-2">
+                Tạo công ty
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

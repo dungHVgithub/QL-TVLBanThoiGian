@@ -11,4 +11,8 @@ import java.util.List;
 public interface EmployerService {
     List<Employer> getEmployers();
     Employer getEmployerById(int id);
+
+    Employer findOrCreateEmployerByUserId(Integer userId);
+
+    Employer saveEmployer(Employer employer);
 }

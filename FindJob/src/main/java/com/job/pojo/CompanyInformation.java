@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -44,25 +45,23 @@ public class CompanyInformation implements Serializable {
     @Size(max = 50)
     @Column(name = "tax_code")
     private String taxCode;
-
+    @OneToMany(mappedBy = "company")
+    @JsonIgnore
+    private Collection<Employer> employerCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companyId")
     @JsonIgnore
     private Set<CompanyImages> companyImagesSet;
-    
     @OneToMany(mappedBy = "company")
     @JsonIgnore
     private Set<Employer> employerSet;
-
     public CompanyInformation() {
     }
-
     public CompanyInformation(Integer id) {
         this.id = id;
     }
@@ -74,7 +73,6 @@ public class CompanyInformation implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
 
     public String getTaxCode() {
         return taxCode;
@@ -141,7 +139,6 @@ public class CompanyInformation implements Serializable {
         this.address = address;
     }
 
-  
- 
+
     
 }

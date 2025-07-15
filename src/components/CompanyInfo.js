@@ -33,11 +33,30 @@ const CompanyInfo = () => {
           taxCode: company.taxCode || "",
         });
       }
+//=======
+//  const [companyData, setCompanyData] = useState([]); // Dữ liệu companyImages
+//  const [companyInfo, setCompanyInfo] = useState(null); // Dữ liệu CompanyInformation
+//  const [showEditForm, setShowEditForm] = useState(false);
+//  const [formData, setFormData] = useState({ name: "", address: "", taxCode: "" });
+//
+//  // Hàm tải thông tin công ty (CompanyInformation)
+//  const loadCompanyInfo = async () => {
+//    try {
+//      const res = await authApis().get(`${endpoints["company_info"]}/${companyId}`);
+//      console.log("Company Info Data:", res.data);
+//      setCompanyInfo(res.data);
+//      setFormData({
+//        name: res.data.name || "",
+//        address: res.data.address || "",
+//        taxCode: res.data.taxCode || "",
+//      });
+//>>>>>>> main
     } catch (err) {
       console.error("Không thể tải thông tin công ty:", err);
       toast.error("Không thể tải thông tin công ty!");
     }
   };
+
 
   const loadFollowerCount = async (employerId) => {
     try {
@@ -54,11 +73,23 @@ const CompanyInfo = () => {
       setEmployeeId(res.data);
     } catch (err) {
       console.error("Không thể lấy employeeId từ userId:", err);
+//=======
+//  // Hàm tải danh sách ảnh (CompanyImages)
+//  const loadCompanyImages = async () => {
+//    try {
+//      const res = await authApis().get(`${endpoints["company_images"]}/${companyId}`);
+//      console.log("Company Images Data:", res.data);
+//      setCompanyData(res.data || []); // Đảm bảo là mảng rỗng nếu không có dữ liệu
+//    } catch (err) {
+//      console.error("Không thể tải danh sách ảnh:", err);
+//      setCompanyData([]); // Đặt rỗng nếu có lỗi
+//>>>>>>> main
     }
   };
 
   useEffect(() => {
-    loadCompanyImages();
+    loadCompanyInfo(); // Tải thông tin công ty
+    loadCompanyImages(); // Tải danh sách ảnh
   }, [companyId]);
 
   useEffect(() => {
@@ -80,7 +111,11 @@ const CompanyInfo = () => {
         await authApis().put(`${endpoints["company_info"]}/${companyId}`, formData);
         toast.success("Cập nhật thông tin công ty thành công!");
         setShowEditForm(false);
+
         await loadCompanyImages();
+
+        await loadCompanyInfo(); // Tải lại thông tin công ty sau khi cập nhật
+
       } catch (err) {
         console.error("Error updating company info:", err);
         toast.error("Cập nhật thông tin công ty thất bại!");
@@ -123,10 +158,9 @@ const CompanyInfo = () => {
     }
   };
 
-  if (!companyData || companyData.length === 0) {
-    return <p className="text-center mt-5">Không có dữ liệu công ty hoặc ảnh.</p>;
+  if (!companyInfo) {
+    return <p className="text-center mt-5">Đang tải thông tin công ty...</p>;
   }
-
   const company = companyData[0].companyId || {};
   const isOwner = user && user.role === "ROLE_EMPLOYER" && user.id === company.userId;
 
@@ -136,26 +170,38 @@ const CompanyInfo = () => {
       <Card className="shadow p-4">
         <h3 className="mb-4 text-center">Thông Tin Công Ty</h3>
         <Row>
+          {/* Cột ảnh công ty */}
           <Col md={4} className="image-list-container">
             <h5 className="mb-3 text-center">Ảnh Công Ty</h5>
-            <div className="image-list">
-              {companyData.map((item) => (
-                <div key={item.id} className="image-item">
-                  <img
-                    src={item.imagePath || "/default-company-logo.png"}
-                    alt={item.caption || "Ảnh công ty"}
-                    className="img-fluid rounded mb-3"
-                  />
-                  <p className="text-center">{item.caption || "Không có chú thích"}</p>
-                  {isOwner && (
-                    <div className="delete-icon" onClick={() => handleDeleteImage(item.id)}>
-                      🗑️
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
 
+            {companyData.length > 0 ? (
+              <div className="image-list">
+                {companyData.map((item) => (
+                  <div
+                    key={item.id}
+                    className="image-item"
+                    onMouseEnter={(e) => e.currentTarget.classList.add("hover")}
+                    onMouseLeave={(e) => e.currentTarget.classList.remove("hover")}
+                  >
+                    <img
+                      src={item.imagePath || "/default-company-logo.png"}
+                      alt={item.caption || "Ảnh công ty"}
+                      className="img-fluid rounded mb-3"
+                    />
+                    <p className="text-center">{item.caption || "Không có chú thích"}</p>
+                    {isOwner && (
+                      <div className="delete-icon" onClick={() => handleDeleteImage(item.id)}>
+                        🗑️
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center">Chưa có ảnh công ty. Vui lòng tải ảnh lên!</p>
+            )}
+
+            {/* Form tải ảnh lên */}
             {isOwner && (
               <Form onSubmit={handleUpdateImage} className="mt-3">
                 <Form.Group className="mb-3">
@@ -166,25 +212,33 @@ const CompanyInfo = () => {
                   <Form.Label>Chú thích</Form.Label>
                   <Form.Control type="text" name="caption" placeholder="Nhập chú thích" />
                 </Form.Group>
-                <Button variant="primary" type="submit">Tải ảnh lên</Button>
+                <Button variant="primary" type="submit">
+                  Tải ảnh lên
+                </Button>
               </Form>
             )}
           </Col>
 
+          {/* Cột thông tin công ty */}
           <Col md={6}>
             <Row>
               <Col md={12} className="company-info">
-                <p><strong>🏢 Tên công ty:</strong> {company.name || "Chưa cập nhật"}</p>
+                <p><strong>🏢 Tên công ty:</strong> {companyInfo.name || "Chưa cập nhật"}</p>
               </Col>
             </Row>
             <Row>
               <Col md={12} className="company-info">
-                <p><strong>📍 Địa chỉ:</strong> {company.address || "Chưa cập nhật"}</p>
+                <p><strong>📍 Địa chỉ:</strong> {companyInfo.address || "Chưa cập nhật"}</p>
               </Col>
             </Row>
             <Row>
               <Col md={12} className="company-info">
-                <p><strong>📜 Mã thuế:</strong> {company.taxCode || "Chưa cập nhật"}</p>
+                <p><strong>📜 Mã thuế:</strong> {companyInfo.taxCode || "Chưa cập nhật"}</p>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={12} className="company-info">
+                <p><strong>Thông báo:</strong> Thêm đủ 3 hình ảnh để quản trị viên xét duyệt</p>
               </Col>
             </Row>
 
@@ -194,7 +248,10 @@ const CompanyInfo = () => {
                   <Button variant="primary" onClick={handleToggleEditForm} className="me-2">
                     {showEditForm ? "Lưu" : "Cập nhật thông tin công ty"}
                   </Button>
-                  <Button variant="secondary" onClick={() => document.querySelector("form").scrollIntoView({ behavior: "smooth" })}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => document.querySelector("form").scrollIntoView({ behavior: "smooth" })}
+                  >
                     Cập nhật ảnh
                   </Button>
                 </Col>
@@ -221,6 +278,7 @@ const CompanyInfo = () => {
             )}
           </Col>
 
+          {/* Cột follow */}
           <Col md={2} className="d-flex flex-column align-items-center">
             {user?.role === "ROLE_EMPLOYEE" && employeeId && company?.employerId && (
               <>
@@ -239,6 +297,9 @@ const CompanyInfo = () => {
       </Card>
     </Container>
   );
+
 };
 
 export default CompanyInfo;
+
+

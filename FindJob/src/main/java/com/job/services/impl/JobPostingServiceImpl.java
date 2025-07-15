@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.services.impl;
 
 import com.job.dto.CompanyInformationDTO;
@@ -14,7 +10,6 @@ import com.job.repositories.JobPostingRepository;
 import com.job.services.JobPostingService;
 import java.text.SimpleDateFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -29,7 +24,7 @@ import org.springframework.stereotype.Service;
  * @author DUNG
  */
 @Service
-public class JobPostingServiceImpl implements JobPostingService{
+public class JobPostingServiceImpl implements JobPostingService {
     @Autowired
     private JobPostingRepository jobRepo;
 
@@ -54,9 +49,21 @@ public class JobPostingServiceImpl implements JobPostingService{
             j.setCreatedAt(currentDate);
             j.setUpdatedAt(currentDate);
         } else {
-            // Khi update: chỉ cập nhật updatedAt
+            // Khi update: lấy đối tượng hiện có từ cơ sở dữ liệu
+            JobPosting existingJob = this.jobRepo.getJobById(j.getId());
+            if (existingJob != null) {
+                // Giữ nguyên createdAt từ đối tượng hiện có
+                j.setCreatedAt(existingJob.getCreatedAt());
+                // Bảo vệ timeStart và timeEnd: chỉ cập nhật nếu chúng không null trong đối tượng đầu vào
+                if (j.getTimeStart() == null) {
+                    j.setTimeStart(existingJob.getTimeStart());
+                }
+                if (j.getTimeEnd() == null) {
+                    j.setTimeEnd(existingJob.getTimeEnd());
+                }
+            }
+            // Cập nhật updatedAt
             j.setUpdatedAt(currentDate);
-            // createdAt giữ nguyên, không cần set lại
         }
         return this.jobRepo.addOrUpdate(j);
     }
@@ -116,5 +123,10 @@ public class JobPostingServiceImpl implements JobPostingService{
         );
     }
 
-
+    public List<JobPosting> getJobPostingsByEmployerId(int employerId) {
+        // Tạm thời sử dụng Map để truyền employerId, sau này có thể thêm logic riêng
+        Map<String, String> params = Map.of("employerId", String.valueOf(employerId));
+        return this.jobRepo.getJobPostings(params);
+    }
 }
+

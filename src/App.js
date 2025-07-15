@@ -17,6 +17,13 @@ import Profile from "./components/Profile";
 import cookie from "react-cookies";
 import CompanyInfo from "./components/CompanyInfo";
 import NotificationList from "./components/NotificationList";
+import PostList from "./components/postList";
+import UpdateJob from "./components/updateJob";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Apply from "./components/Apply";
+import Employee from "./components/employee";
+import FavoriteJob from "./components/favoriteJob"; // Import component
 
 
 const App = () => {
@@ -51,28 +58,43 @@ const App = () => {
   }, []);
 
   return (
-    <NotificationContext.Provider value={{ unreadCount, setUnreadCount }}>
-      <MyUserContext.Provider value={user}>
-        <MyDispatchContext.Provider value={dispatch}>
-          <BrowserRouter>
-            <Header />
-            <Container>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/employer" element={<Employer />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/job_detail/:id" element={<JobDetail />} />
-                <Route path="company_info/:companyId" element={<CompanyInfo />} />
-                <Route path="/notifications" element={<NotificationList />} />
-              </Routes>
-            </Container>
-            <Footer />
-          </BrowserRouter>
-        </MyDispatchContext.Provider>
-      </MyUserContext.Provider>
-    </NotificationContext.Provider>
+    <MyUserContext.Provider value={user}>
+      <MyDispatchContext.Provider value={dispatch}>
+        <BrowserRouter>
+          <Header />
+          <Container>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/employer" element={<Employer />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/job_detail/:id" element={<JobDetail />} />
+              <Route path="company_info/:companyId" element={<CompanyInfo />} />
+              <Route path="/notifications" element={<NotificationList />} />
+              <Route path="postList/:employerId" element={<PostList />} />
+              <Route path="updateJob/:jobId" element={<UpdateJob />} />
+              <Route path="Apply/:employeeId/:jobId" element={<Apply />} />
+              <Route path="employee/:employeeId" element={<Employee />} />
+              <Route path="favoriteJob/:employeeId" element={<FavoriteJob />} /> {/* Route đúng */}
+            </Routes>
+          </Container>
+          <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </BrowserRouter>
+      </MyDispatchContext.Provider>
+    </MyUserContext.Provider>
   );
 };
 

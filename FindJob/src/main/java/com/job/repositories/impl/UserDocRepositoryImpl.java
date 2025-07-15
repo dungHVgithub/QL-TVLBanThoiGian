@@ -1,8 +1,11 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://.netbeans/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://.netbeans/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.job.repositories.impl;
+
+
+import com.job.pojo.Employee;
 
 import com.job.pojo.UserDocuments;
 import com.job.repositories.UserDocRepository;
@@ -90,6 +93,27 @@ public class UserDocRepositoryImpl implements UserDocRepository {
         return q.getResultList();
     }
 
-    
+    // Thêm phương thức để lấy danh sách tài liệu theo employeeId
+    public List<UserDocuments> getDocsByEmployeeId(int employeeId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query<UserDocuments> q = s.createNamedQuery("UserDocuments.findByEmployeeId", UserDocuments.class);
+        q.setParameter("employeeId", employeeId);
+        return q.getResultList();
+    }
 
+    // Thêm hoặc cập nhật tài liệu cho employeeId cụ thể
+    public UserDocuments addOrUpdateForEmployee(UserDocuments doc, int employeeId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Employee emp = s.get(Employee.class, employeeId); // Lấy employee từ DB
+        if (emp == null) {
+            throw new IllegalArgumentException("Employee not found with ID: " + employeeId);
+        }
+        doc.setEmployeeId(emp); // Gán employeeId cho tài liệu
+        if (doc.getId() == null) {
+            s.persist(doc);
+        } else {
+            s.merge(doc);
+        }
+        return doc;
+    }
 }

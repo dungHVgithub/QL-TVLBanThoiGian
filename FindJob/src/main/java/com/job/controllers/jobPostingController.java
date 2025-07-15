@@ -1,6 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.job.controllers;
 
@@ -60,8 +60,10 @@ public class jobPostingController {
 
     @PostMapping("/add")
     public String add(@ModelAttribute("job_posting") JobPosting j) {
+
         this.jobService.addOrUpdate(j);
         return "redirect:/";
     }
 
 }
+

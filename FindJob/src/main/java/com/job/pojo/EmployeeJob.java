@@ -18,10 +18,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
-/**
- *
- * @author DUNG
- */
+
 @Entity
 @Table(name = "employee_job")
 @NamedQueries({

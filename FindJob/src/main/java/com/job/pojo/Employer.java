@@ -1,69 +1,55 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.job.pojo;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Basic;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
+
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-/**
- *
- * @author DUNG
- */
 @Entity
 @Table(name = "employer")
 @NamedQueries({
-    @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
-    @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
-    @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")})
+        @NamedQuery(name = "Employer.findAll", query = "SELECT e FROM Employer e"),
+        @NamedQuery(name = "Employer.findById", query = "SELECT e FROM Employer e WHERE e.id = :id"),
+        @NamedQuery(name = "Employer.findByCreatedAt", query = "SELECT e FROM Employer e WHERE e.createdAt = :createdAt")
+})
 public class Employer implements Serializable {
 
-   private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employer")
     @JsonIgnore
     private Set<FollowNotice> followNoticeSet;
+
     @OneToMany(mappedBy = "employerId")
     @JsonIgnore
     private Set<Notification> notificationSet;
+
     @JoinColumn(name = "company", referencedColumnName = "id")
     @ManyToOne
     @JsonManagedReference
     private CompanyInformation company;
+
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne
     private User userId;
+
     @OneToMany(mappedBy = "employerId")
     @JsonIgnore
-    private Set<JobPosting> jobPostingSet;
+    private Collection<JobPosting> jobPostingCollection;
 
     public Employer() {
     }
@@ -120,12 +106,12 @@ public class Employer implements Serializable {
         this.userId = userId;
     }
 
-    public Set<JobPosting> getJobPostingSet() {
-        return jobPostingSet;
+    public Collection<JobPosting> getJobPostingCollection() {
+        return jobPostingCollection;
     }
 
-    public void setJobPostingSet(Set<JobPosting> jobPostingSet) {
-        this.jobPostingSet = jobPostingSet;
+    public void setJobPostingCollection(Collection<JobPosting> jobPostingCollection) {
+        this.jobPostingCollection = jobPostingCollection;
     }
 
     @Override
@@ -137,20 +123,15 @@ public class Employer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Employer)) {
             return false;
         }
         Employer other = (Employer) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
         return "com.job.pojo.Employer[ id=" + id + " ]";
     }
-    
 }

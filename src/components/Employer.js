@@ -177,58 +177,89 @@ const Employer = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h1 className="text-center text-success mb-4">ĐĂNG TIN TUYỂN DỤNG</h1>
+    <div className="employer-container">
+      <div className="employer-main-content">
+        <h1 className="employer-title">ĐĂNG TIN TUYỂN DỤNG</h1>
 
-      {msg && <Alert variant={msg.startsWith("✅") ? "success" : "danger"}>{msg}</Alert>}
+        {msg && (
+          <Alert 
+            variant={msg.startsWith("✅") ? "success" : "danger"}
+            className={`employer-alert ${msg.startsWith("✅") ? "alert-success" : "alert-danger"}`}
+          >
+            {msg}
+          </Alert>
+        )}
 
-      {isLoadingUser ? (
-        <MySpinner />
-      ) : (
-        <Form onSubmit={submitJob} className="bg-light p-4 rounded shadow">
-          <Row>
-            {info.map((f) => (
-              <Col md={6} key={f.field} className="mb-3">
-                <FloatingLabel controlId={`floating${f.field}`} label={f.label}>
-                  <Form.Control
-                    type={f.type}
-                    placeholder={f.label}
-                    required
-                    value={job[f.field] || ""}
-                    onChange={(e) => setState(e.target.value, f.field)}
-                  />
-                </FloatingLabel>
-              </Col>
-            ))}
-            <Col md={6} className="mb-3">
-              <FloatingLabel controlId="floatingCategoryId" label="Danh mục công việc">
-                <Form.Select
-                  required
-                  value={job.categoryId || ""}
-                  onChange={(e) => setState(e.target.value, "categoryId")}
-                >
-                  <option value="">Chọn danh mục</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </FloatingLabel>
-            </Col>
-          </Row>
-
-          <div className="text-center">
-            {loading ? (
-              <MySpinner />
-            ) : (
-              <Button type="submit" variant="success" size="lg" className="px-5">
-                Đăng tin
-              </Button>
-            )}
+        {isLoadingUser ? (
+          <div className="employer-spinner-container">
+            <div className="employer-loading-spinner"></div>
           </div>
-        </Form>
-      )}
+        ) : (
+          <Form onSubmit={submitJob} className="employer-form-container">
+            <Row className="employer-form-row">
+              {info.map((f) => (
+                <Col md={6} key={f.field} className="employer-form-col">
+                  <div className="employer-form-group">
+                    <FloatingLabel 
+                      controlId={`floating${f.field}`} 
+                      label={f.label}
+                      className="employer-floating-label"
+                    >
+                      <Form.Control
+                        type={f.type}
+                        placeholder={f.label}
+                        required
+                        value={job[f.field] || ""}
+                        onChange={(e) => setState(e.target.value, f.field)}
+                        className="employer-form-control"
+                      />
+                    </FloatingLabel>
+                  </div>
+                </Col>
+              ))}
+              <Col md={6} className="employer-form-col">
+                <div className="employer-form-group">
+                  <FloatingLabel 
+                    controlId="floatingCategoryId" 
+                    label="Danh mục công việc"
+                    className="employer-floating-label"
+                  >
+                    <Form.Select
+                      required
+                      value={job.categoryId || ""}
+                      onChange={(e) => setState(e.target.value, "categoryId")}
+                      className="employer-form-select"
+                    >
+                      <option value="">Chọn danh mục</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </FloatingLabel>
+                </div>
+              </Col>
+            </Row>
+
+            <div className="employer-submit-section">
+              {loading ? (
+                <div className="employer-spinner-container">
+                  <div className="employer-loading-spinner"></div>
+                </div>
+              ) : (
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="employer-submit-btn"
+                >
+                  Đăng tin
+                </Button>
+              )}
+            </div>
+          </Form>
+        )}
+      </div>
     </div>
   );
 };
