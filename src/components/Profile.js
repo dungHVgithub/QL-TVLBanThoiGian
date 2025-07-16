@@ -108,18 +108,19 @@ const Profile = () => {
 
     const res = await authApis().post(endpoints.updated, updated);
 
-    setProfile({
-      ...res.data,
-      birthday: res.data.birthday
-        ? new Date(res.data.birthday).toISOString().split("T")[0]
-        : "",
-    });
-    alert("Cập nhật thành công!");
-    setShowEditForm(false);
-  } catch (err) {
-    console.error("Lỗi cập nhật:", err);
-    alert("Có lỗi xảy ra khi lưu thông tin.");
-  }
+    try {
+  setProfile({
+    ...res.data,
+    birthday: res.data.birthday
+      ? new Date(res.data.birthday).toISOString().split("T")[0]
+      : "",
+  });
+  alert("Cập nhật thành công!");
+  setShowEditForm(false);
+} catch (err) {
+  console.error("Lỗi cập nhật:", err);
+  alert("Có lỗi xảy ra khi lưu thông tin.");
+}
 };
 
   const handleDocSubmit = async (e, docId) => {

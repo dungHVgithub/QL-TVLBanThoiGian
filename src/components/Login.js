@@ -8,10 +8,7 @@ import { auth, googleProvider, facebookProvider } from "../configs/FirebaseConfi
 import { signInWithPopup } from "firebase/auth";
 import { FaFacebook, FaGoogle, FaSignInAlt } from "react-icons/fa";
 import cookie from "react-cookies";
-import RoleSelectionModal from "./RoleSelectionModal.js";
-import { toast } from "react-toastify";
-import "../static/login.css"; // Import CSS tùy chỉnh
-
+import RoleSelectionModal from "./RoleSelectionModal"; // đảm bảo bạn đã có component này
 
 const Login = () => {
     const info = [
@@ -24,26 +21,10 @@ const Login = () => {
     const location = useLocation();
     const [user, setUser] = useState({ username: "", password: "" });
     const [loading, setLoading] = useState(false);
-
-    const [, setMsg] = useState("");
-    const [showRoleModal, setShowRoleModal] = useState(false);
-    const [googleUser, setGoogleUser] = useState(null);
-    const [, setEmailExists] = useState(undefined);
-
-    // ✅ Quay lại trang trước (nếu có) sau khi login thành công
-    const handleLoginSuccess = () => {
-        toast.success("Đăng nhập thành công!");
-        const params = new URLSearchParams(location.search);
-        const next = params.get("next") || "/";
-        nav(next); // điều hướng về trang trước đó
-
     const [msg, setMsg] = useState("");
-
-    const validateUsername = (username) => {
-        const usernameRegex = /^[a-zA-Z0-9_]+$/;
-        return usernameRegex.test(username);
-
-    };
+    const [googleUser, setGoogleUser] = useState(null);
+    const [showRoleModal, setShowRoleModal] = useState(false);
+    const [emailExists, setEmailExists] = useState(false);
 
     const login = async (e) => {
         e.preventDefault();
@@ -65,14 +46,9 @@ const Login = () => {
 
         try {
             setLoading(true);
- setMsg(""); // Xóa thông báo cũ
-            const res = await Api.post(endpoints.login, JSON.stringify(user), {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
+            const res = await Api.post(endpoints.login, user);
             const token = res.data.token;
+
             cookie.save("token", token);
             localStorage.setItem("token", token);
             const profileRes = await authApis().get(endpoints.profile);
@@ -89,25 +65,14 @@ const Login = () => {
                 },
             });
 
-            handleLoginSuccess();
-        } catch (err) {
-            console.error("❌ Lỗi đăng nhập:", err);
-                    id: userInfo.id,
-                },
-            });
-
-            setMsg("✅ Đăng nhập thành công!");
-            setTimeout(() => {
-                if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
-                    nav("/");
-                else if (userInfo.role === "ROLE_EMPLOYER")
-                    nav("/employer");
-                else nav("/");
-            }, 2000); // Đợi 2 giây trước khi điều hướng
-
+            if (userInfo.role === "ROLE_EMPLOYEE" || userInfo.role === "ROLE_ADMIN")
+                nav("/");
+            else if (userInfo.role === "ROLE_EMPLOYER")
+                nav("/employer");
+            else nav("/");
         } catch (err) {
             console.error("Lỗi đăng nhập:", err);
-            setMsg("❌ Đăng nhập thất bại! Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu.");
+            setMsg("❌ Đăng nhập thất bại!");
         } finally {
             setLoading(false);
         }
@@ -165,7 +130,7 @@ const Login = () => {
                     },
                 });
 
-                handleLoginSuccess();
+                handleLoginSuccess(userInfo);
             }
         } catch (err) {
             console.error("❌ OAuth login error:", err);
@@ -199,31 +164,29 @@ const Login = () => {
                 },
             });
 
-
-            setShowRoleModal(false);
-            handleLoginSuccess();
-        } catch (err) {
-            console.error("❌ Xử lý vai trò thất bại:", err);
-
-            setMsg("✅ Đăng nhập bằng mạng xã hội thành công!");
-            setTimeout(() => {
+            if (userInfo.role === "ROLE_EMPLOYER") {
+                nav("/employer");
+            } else {
                 nav("/");
-            }, 2000); // Đợi 2 giây trước khi điều hướng
+            }
 
         } catch (err) {
             console.error("OAuth login error:", err);
-            if (err.code === "auth/account-exists-with-different-credential") {
-                setMsg("⚠️ Tài khoản đã được đăng nhập bằng Google. Vui lòng đăng nhập bằng Google thay vì Facebook.");
-            } else if (err.code === "auth/popup-closed-by-user") {
-                setMsg("⚠️ Bạn đã đóng cửa sổ đăng nhập quá sớm.");
-            } else {
-                setMsg("❌ Đăng nhập mạng xã hội thất bại!");
-            }
-
+            setMsg("Đăng nhập mạng xã hội thất bại!");
         } finally {
             setLoading(false);
         }
     };
+
+    const handleLoginSuccess = (userInfo) => {
+        if (userInfo.role === "ROLE_EMPLOYER") {
+            nav("/employer");
+        } else {
+            nav("/");
+        }
+    };
+
+    const validateUsername = (username) => /^[a-zA-Z0-9_]+$/.test(username);
 
     return (
         <div className="login-container">
@@ -261,81 +224,33 @@ const Login = () => {
                         <span>Chọn phương thức đăng nhập</span>
                     </div>
 
+                    <div className="d-flex justify-content-around mb-3">
+                        <Button variant="outline-danger" onClick={() => loginWithProvider(googleProvider)}>
+                            <FaGoogle className="me-2" /> Google
+                        </Button>
+                        <Button variant="outline-primary" onClick={() => loginWithProvider(facebookProvider)}>
+                            <FaFacebook className="me-2" /> Facebook
+                        </Button>
+                    </div>
+
                     {loading ? (
-                        <div className="login-spinner-container">
-                            <MySpinner />
-                        </div>
+                        <MySpinner />
                     ) : (
-                        <div className="login-buttons-container">
-                            <Button 
-                                type="submit" 
-                                className="login-btn login-btn-primary"
-                                disabled={loading}
-                            >
-                                <FaSignInAlt />
-                                Đăng nhập
-                            </Button>
-                            
-                            <Button 
-                                className="login-btn login-btn-facebook"
-                                onClick={() => loginWithProvider(facebookProvider)}
-                                disabled={loading}
-                            >
-                                <FaFacebook />
-                                Facebook
-                            </Button>
-                            
-                            <Button 
-                                className="login-btn login-btn-google"
-                                onClick={() => loginWithProvider(googleProvider)}
-                                disabled={loading}
-                            >
-                                <FaGoogle />
-                                Google
-                            </Button>
-                        </div>
+                        <Button type="submit" variant="success" className="mt-1 mb-1">
+                            <FaSignInAlt className="me-2" /> Đăng nhập
+                        </Button>
                     )}
                 </Form>
             </div>
 
-
-            <Form onSubmit={login}>
-                {info.map((f) => (
-                    <FloatingLabel
-                        key={f.field}
-                        controlId={`floating-${f.field}`}
-                        label={f.label}
-                        className="mb-3"
-                    >
-                        <Form.Control
-                            type={f.type}
-                            placeholder={f.label}
-                            value={user[f.field] || ""}
-                            onChange={(e) => setState(e.target.value, f.field)}
-                            required
-                        />
-                    </FloatingLabel>
-                ))}
-
-                {loading ? (
-                    <MySpinner />
-                ) : (
-                    <Button type="submit" variant="success" className="mt-1 mb-1">
-                        Đăng nhập
-                    </Button>
-                )}
-            </Form>
-
-            <RoleSelectionModal
-                show={showRoleModal}
-                onSelect={handleRoleSelect}
-                onClose={() => setShowRoleModal(false)}
-                user={user}
-            />
-        </>
-
+            {showRoleModal && (
+                <RoleSelectionModal
+                    show={showRoleModal}
+                    onSelect={handleRoleSelect}
+                    onClose={() => setShowRoleModal(false)}
+                />
+            )}
         </div>
-
     );
 };
 

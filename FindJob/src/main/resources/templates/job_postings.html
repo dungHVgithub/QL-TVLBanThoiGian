@@ -155,11 +155,11 @@
                             <input type="text" class="form-control" id="companyTaxCode">
                         </div>
                     </fieldset>
-                    <p>ID bài viết: <span th:text="${job_posting.id}">[id]</span></p>
-                     <input type="hidden" class="form-control" th:field="*{id}" />
                 </div>
-                
+                <!-- Đặt input hidden ở ngoài -->
+                <input type="hidden" class="form-control" th:field="*{id}"/>
 
+                <!-- Nút xác nhận -->
                 <button class="btn btn-success mt-1" type="submit">
                     <span th:if="${job_posting.id == null}">Thêm bài viết</span>
                     <span th:unless="${job_posting.id == null}">Cập nhật bài viết</span>

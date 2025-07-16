@@ -8,6 +8,7 @@ import com.job.dto.JobPostingDTO;
 import com.job.pojo.JobPosting;
 import com.job.pojo.Notification;
 import com.job.pojo.User;
+import com.job.services.CategoryService;
 import com.job.services.EmployerService;
 import com.job.services.JobPostingService;
 import com.job.services.NotificationService;
@@ -37,24 +38,23 @@ public class jobPostingController {
     @Autowired
     private JobPostingService jobService;
     @Autowired
-    NotificationService notifiService;
-
-    @Autowired
-    private EmployerService employerService;
+    private CategoryService cateService;
 
     @GetMapping("/job_postings")
     public String addView(Model model, @RequestParam Map<String, String> params) {
         List<User> employers = userService.getUsersByRole("ROLE_EMPLOYER");
-        model.addAttribute("job_posting", new JobPosting());
+        JobPosting jobPosting = new JobPosting(); // Khởi tạo rõ ràng
+        model.addAttribute("job_posting", jobPosting);
         model.addAttribute("job_postings", jobService.getJobPostings(params));
-        model.addAttribute("states", Arrays.asList("approved", "rejected", "pending")); // Danh sách tĩnh
+        model.addAttribute("states", Arrays.asList("approved", "rejected", "pending"));
         return "job_postings";
     }
 
     @GetMapping("/job_postings/{jobPostingId}")
     public String updateView(Model model, @PathVariable(value = "jobPostingId") int id) {
         model.addAttribute("job_posting", this.jobService.getJobById(id));
-        model.addAttribute("states", Arrays.asList("approved", "rejected", "pending")); // Danh sách tĩnh
+        model.addAttribute("states", Arrays.asList("approved", "rejected", "pending"));
+
         return "job_postings";
     }
 
@@ -66,4 +66,3 @@ public class jobPostingController {
     }
 
 }
-

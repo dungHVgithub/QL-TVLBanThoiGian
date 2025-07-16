@@ -8,15 +8,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import Api, { authApis, endpoints } from '../../configs/Api';
 import '../../static/header.css';
 import { Button } from 'react-bootstrap';
-import { MyDispatchContext, MyUserContext } from "../../configs/MyContexts";
+import { MyDispatchContext, MyUserContext, NotificationContext } from "../../configs/MyContexts";
 import { FaBell, FaUserCircle } from 'react-icons/fa';
+import { toast } from "react-toastify";
 
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
   const user = useContext(MyUserContext);
   const dispatch = useContext(MyDispatchContext);
-  const [unreadCount, setUnreadCount] = useState(0);
+ const { unreadCount, setUnreadCount } = useContext(NotificationContext);
   const navigate = useNavigate();
 
 
@@ -81,28 +82,39 @@ const Header = () => {
     }
   };
 
-  useEffect(() => {
-    loadCates();
+ useEffect(() => {
+  loadCates();
 
-    const loadUnread = async () => {
-      try {
-        if (user?.role === "ROLE_EMPLOYEE") {
-          // Lấy employeeId từ userId
-          const empRes = await authApis().get(`${endpoints["employeeFromUser"]}/${user.id}`);
-          const employeeId = empRes.data;
+  const loadUnread = async () => {
+    try {
+      if (user?.role === "ROLE_EMPLOYEE") {
+        const empRes = await authApis().get(`${endpoints["employeeFromUser"]}/${user.id}`);
+        const employeeId = empRes.data;
 
-          // Lấy số thông báo chưa đọc
-          const notiRes = await authApis().get(`${endpoints["unreadNotificationCount"]}/${employeeId}`);
-          setUnreadCount(notiRes.data);
+        const res = await authApis().get(`${endpoints["notificationsByEmployee"]}/${employeeId}`);
+        const unread = res.data.filter(n => !n.isRead);
+        const unreadCountFromAPI = unread.length;
+
+        // Hiện toast nếu có thông báo mới
+        if (unreadCountFromAPI > unreadCount) {
+          toast.info("Bạn có thông báo mới");
         }
-        console.log(">>> user context:", user);
-      } catch (err) {
-        console.error("❌ Lỗi khi lấy số thông báo chưa đọc:", err);
-      }
-    };
 
-    loadUnread();
-  }, [user]);
+        setUnreadCount(unreadCountFromAPI);
+      }
+    } catch (err) {
+      console.error("Lỗi khi load unread count:", err);
+    }
+  };
+
+  loadUnread(); // lần đầu
+
+  const interval = setInterval(() => {
+    loadUnread(); // sau mỗi 5 giây
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [user, unreadCount]);
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary" aria-label="Main navigation">

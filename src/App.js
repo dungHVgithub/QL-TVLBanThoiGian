@@ -24,13 +24,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import Apply from "./components/Apply";
 import Employee from "./components/employee";
 import FavoriteJob from "./components/favoriteJob"; // Import component
+import { NotificationProvider } from "./configs/MyContexts";
 
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
   const [unreadCount, setUnreadCount] = useState(0); // ✅
 
-  useEffect(() => {
+ useEffect(() => {
     const init = async () => {
       let token = localStorage.getItem("token") || cookie.load("token");
       if (token) {
@@ -60,39 +61,41 @@ const App = () => {
   return (
     <MyUserContext.Provider value={user}>
       <MyDispatchContext.Provider value={dispatch}>
-        <BrowserRouter>
-          <Header />
-          <Container>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/employer" element={<Employer />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/job_detail/:id" element={<JobDetail />} />
-              <Route path="company_info/:companyId" element={<CompanyInfo />} />
-              <Route path="/notifications" element={<NotificationList />} />
-              <Route path="postList/:employerId" element={<PostList />} />
-              <Route path="updateJob/:jobId" element={<UpdateJob />} />
-              <Route path="Apply/:employeeId/:jobId" element={<Apply />} />
-              <Route path="employee/:employeeId" element={<Employee />} />
-              <Route path="favoriteJob/:employeeId" element={<FavoriteJob />} /> {/* Route đúng */}
-            </Routes>
-          </Container>
-          <Footer />
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-        </BrowserRouter>
+        <NotificationContext.Provider value={{ unreadCount, setUnreadCount }}>
+          <BrowserRouter>
+            <Header />
+            <Container>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/employer" element={<Employer />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/job_detail/:id" element={<JobDetail />} />
+                <Route path="company_info/:companyId" element={<CompanyInfo />} />
+                <Route path="/notifications" element={<NotificationList />} />
+                <Route path="postList/:employerId" element={<PostList />} />
+                <Route path="updateJob/:jobId" element={<UpdateJob />} />
+                <Route path="Apply/:employeeId/:jobId" element={<Apply />} />
+                <Route path="employee/:employeeId" element={<Employee />} />
+                <Route path="favoriteJob/:employeeId" element={<FavoriteJob />} />
+              </Routes>
+            </Container>
+            <Footer />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+          </BrowserRouter>
+        </NotificationContext.Provider>
       </MyDispatchContext.Provider>
     </MyUserContext.Provider>
   );

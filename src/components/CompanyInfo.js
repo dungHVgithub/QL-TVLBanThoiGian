@@ -4,60 +4,57 @@ import { Container, Card, Row, Col, Button, Form } from "react-bootstrap";
 import Api, { authApis, endpoints } from "../configs/Api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../static/companyInfo.css";
+import "../static/companyInfo.css"; // Import file CSS
 import { MyUserContext } from "../configs/MyContexts";
 import FollowButton from "./FollowButton";
 
 const CompanyInfo = () => {
   const { companyId } = useParams();
-  const [companyData, setCompanyData] = useState(null);
-  const [employeeId, setEmployeeId] = useState(null);
-  const [followerCount, setFollowerCount] = useState(0);
+  const [companyData, setCompanyData] = useState([]); // Dữ liệu companyImages
+  const [companyInfo, setCompanyInfo] = useState(null); // Dữ liệu CompanyInformation
   const [showEditForm, setShowEditForm] = useState(false);
   const [formData, setFormData] = useState({ name: "", address: "", taxCode: "" });
-
   const user = useContext(MyUserContext);
-  const isLogin = user && user.role === "ROLE_EMPLOYEE";
+  const [employeeId, setEmployeeId] = useState(null);
+  const [followerCount, setFollowerCount] = useState(0);
 
-  const loadCompanyImages = async () => {
+
+  // Hàm tải thông tin công ty (CompanyInformation)
+  const loadCompanyInfo = async () => {
     try {
-      const res = await Api.get(`${endpoints["company_images"]}/${companyId}`);
-      console.log("Dữ liệu ảnh công ty từ API:", res.data);
-      setCompanyData(res.data);
-
-      if (res.data.length > 0) {
-        const company = res.data[0].companyId || {};
-        setFormData({
-          name: company.name || "",
-          address: company.address || "",
-          taxCode: company.taxCode || "",
-        });
-      }
-//=======
-//  const [companyData, setCompanyData] = useState([]); // Dữ liệu companyImages
-//  const [companyInfo, setCompanyInfo] = useState(null); // Dữ liệu CompanyInformation
-//  const [showEditForm, setShowEditForm] = useState(false);
-//  const [formData, setFormData] = useState({ name: "", address: "", taxCode: "" });
-//
-//  // Hàm tải thông tin công ty (CompanyInformation)
-//  const loadCompanyInfo = async () => {
-//    try {
-//      const res = await authApis().get(`${endpoints["company_info"]}/${companyId}`);
-//      console.log("Company Info Data:", res.data);
-//      setCompanyInfo(res.data);
-//      setFormData({
-//        name: res.data.name || "",
-//        address: res.data.address || "",
-//        taxCode: res.data.taxCode || "",
-//      });
-//>>>>>>> main
+      const res = await authApis().get(`${endpoints["company_info"]}/${companyId}`);
+      console.log("Company Info Data:", res.data);
+      setCompanyInfo(res.data);
+      setFormData({
+        name: res.data.name || "",
+        address: res.data.address || "",
+        taxCode: res.data.taxCode || "",
+      });
     } catch (err) {
       console.error("Không thể tải thông tin công ty:", err);
       toast.error("Không thể tải thông tin công ty!");
     }
   };
+  const loadEmployeeId = async (userId) => {
+    try {
+      const res = await Api.get(`${endpoints["employeeFromUser"]}/${userId}`);
+      setEmployeeId(res.data);
+    } catch (err) {
+      console.error("Không thể lấy employeeId từ userId:", err);
+    }
+  };
 
-
+  // Hàm tải danh sách ảnh (CompanyImages)
+  const loadCompanyImages = async () => {
+    try {
+      const res = await authApis().get(`${endpoints["company_images"]}/${companyId}`);
+      console.log("Company Images Data:", res.data);
+      setCompanyData(res.data || []); // Đảm bảo là mảng rỗng nếu không có dữ liệu
+    } catch (err) {
+      console.error("Không thể tải danh sách ảnh:", err);
+      setCompanyData([]); // Đặt rỗng nếu có lỗi
+    }
+  };
   const loadFollowerCount = async (employerId) => {
     try {
       const res = await Api.get(`${endpoints["followCount"]}/${employerId}`);
@@ -67,32 +64,11 @@ const CompanyInfo = () => {
     }
   };
 
-  const loadEmployeeId = async (userId) => {
-    try {
-      const res = await Api.get(`${endpoints["employeeFromUser"]}/${userId}`);
-      setEmployeeId(res.data);
-    } catch (err) {
-      console.error("Không thể lấy employeeId từ userId:", err);
-//=======
-//  // Hàm tải danh sách ảnh (CompanyImages)
-//  const loadCompanyImages = async () => {
-//    try {
-//      const res = await authApis().get(`${endpoints["company_images"]}/${companyId}`);
-//      console.log("Company Images Data:", res.data);
-//      setCompanyData(res.data || []); // Đảm bảo là mảng rỗng nếu không có dữ liệu
-//    } catch (err) {
-//      console.error("Không thể tải danh sách ảnh:", err);
-//      setCompanyData([]); // Đặt rỗng nếu có lỗi
-//>>>>>>> main
-    }
-  };
-
   useEffect(() => {
     loadCompanyInfo(); // Tải thông tin công ty
     loadCompanyImages(); // Tải danh sách ảnh
   }, [companyId]);
-
-  useEffect(() => {
+   useEffect(() => {
     const company = companyData?.[0]?.companyId || {};
     const employerId = company.employerId;
 
@@ -105,17 +81,16 @@ const CompanyInfo = () => {
     }
   }, [companyData, user]);
 
+  // Xử lý khi bấm nút "Cập nhật thông tin công ty" hoặc "Lưu"
   const handleToggleEditForm = async () => {
     if (showEditForm) {
+      // Gửi PUT request khi bấm "Lưu"
       try {
-        await authApis().put(`${endpoints["company_info"]}/${companyId}`, formData);
+        const response = await authApis().put(`${endpoints["company_info"]}/${companyId}`, formData);
+        console.log("Update success:", response.data);
         toast.success("Cập nhật thông tin công ty thành công!");
         setShowEditForm(false);
-
-        await loadCompanyImages();
-
         await loadCompanyInfo(); // Tải lại thông tin công ty sau khi cập nhật
-
       } catch (err) {
         console.error("Error updating company info:", err);
         toast.error("Cập nhật thông tin công ty thất bại!");
@@ -125,33 +100,37 @@ const CompanyInfo = () => {
     }
   };
 
+  // Xử lý thay đổi dữ liệu trong form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Xử lý khi bấm nút "Cập nhật ảnh"
   const handleUpdateImage = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     formData.append("companyId", companyId);
 
     try {
-      await authApis().post(endpoints["company_images"], formData, {
+      const response = await authApis().post(endpoints["company_images"], formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log("Image uploaded:", response.data);
       toast.success("Tải ảnh lên thành công!");
-      await loadCompanyImages();
+      await loadCompanyImages(); // Cập nhật lại danh sách ảnh sau khi upload
     } catch (err) {
       console.error("Error uploading image:", err);
       toast.error("Tải ảnh lên thất bại!");
     }
   };
 
+  // Xử lý xóa ảnh
   const handleDeleteImage = async (imageId) => {
     try {
       await authApis().delete(`${endpoints["company_images"]}/${companyId}/${imageId}`);
       toast.success("Xóa ảnh thành công!");
-      await loadCompanyImages();
+      await loadCompanyImages(); // Cập nhật lại danh sách ảnh sau khi xóa
     } catch (err) {
       console.error("Error deleting image:", err);
       toast.error("Xóa ảnh thất bại!");
@@ -161,8 +140,9 @@ const CompanyInfo = () => {
   if (!companyInfo) {
     return <p className="text-center mt-5">Đang tải thông tin công ty...</p>;
   }
-  const company = companyData[0].companyId || {};
-  const isOwner = user && user.role === "ROLE_EMPLOYER" && user.id === company.userId;
+
+  const isOwner = user && user.role === "ROLE_EMPLOYER" && user.id === companyInfo.userId?.id;
+
 
   return (
     <Container className="mt-5">
@@ -170,10 +150,9 @@ const CompanyInfo = () => {
       <Card className="shadow p-4">
         <h3 className="mb-4 text-center">Thông Tin Công Ty</h3>
         <Row>
-          {/* Cột ảnh công ty */}
-          <Col md={4} className="image-list-container">
+          {/* Cột trái: Danh sách ảnh (30%) */}
+          <Col md={3} className="image-list-container">
             <h5 className="mb-3 text-center">Ảnh Công Ty</h5>
-
             {companyData.length > 0 ? (
               <div className="image-list">
                 {companyData.map((item) => (
@@ -189,19 +168,16 @@ const CompanyInfo = () => {
                       className="img-fluid rounded mb-3"
                     />
                     <p className="text-center">{item.caption || "Không có chú thích"}</p>
-                    {isOwner && (
-                      <div className="delete-icon" onClick={() => handleDeleteImage(item.id)}>
-                        🗑️
-                      </div>
-                    )}
+                    <div className="delete-icon" onClick={() => handleDeleteImage(item.id)}>
+                      🗑️
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
               <p className="text-center">Chưa có ảnh công ty. Vui lòng tải ảnh lên!</p>
             )}
-
-            {/* Form tải ảnh lên */}
+            {/* Form để upload ảnh mới */}
             {isOwner && (
               <Form onSubmit={handleUpdateImage} className="mt-3">
                 <Form.Group className="mb-3">
@@ -219,8 +195,8 @@ const CompanyInfo = () => {
             )}
           </Col>
 
-          {/* Cột thông tin công ty */}
-          <Col md={6}>
+          {/* Cột phải: Thông tin công ty (70%) */}
+          <Col md={7}>
             <Row>
               <Col md={12} className="company-info">
                 <p><strong>🏢 Tên công ty:</strong> {companyInfo.name || "Chưa cập nhật"}</p>
@@ -241,11 +217,15 @@ const CompanyInfo = () => {
                 <p><strong>Thông báo:</strong> Thêm đủ 3 hình ảnh để quản trị viên xét duyệt</p>
               </Col>
             </Row>
-
+            {/* Nút "Cập nhật thông tin công ty" và "Cập nhật ảnh" */}
             {isOwner && (
               <Row className="mt-3">
                 <Col md={12} className="button-container">
-                  <Button variant="primary" onClick={handleToggleEditForm} className="me-2">
+                  <Button
+                    variant="primary"
+                    onClick={handleToggleEditForm}
+                    className="me-2"
+                  >
                     {showEditForm ? "Lưu" : "Cập nhật thông tin công ty"}
                   </Button>
                   <Button
@@ -258,33 +238,50 @@ const CompanyInfo = () => {
               </Row>
             )}
 
-            {showEditForm && (
-              <div className="edit-form slide-down">
+            {/* Popup form chỉnh sửa thông tin công ty */}
+            {isOwner && showEditForm && (
+              <div className={`edit-form ${showEditForm ? "slide-down" : ""}`}>
                 <Form>
                   <Form.Group className="mb-3">
                     <Form.Label>Tên công ty</Form.Label>
-                    <Form.Control type="text" name="name" value={formData.name} onChange={handleInputChange} />
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Nhập tên công ty"
+                    />
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Địa chỉ</Form.Label>
-                    <Form.Control type="text" name="address" value={formData.address} onChange={handleInputChange} />
+                    <Form.Control
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="Nhập địa chỉ"
+                    />
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Mã thuế</Form.Label>
-                    <Form.Control type="text" name="taxCode" value={formData.taxCode} onChange={handleInputChange} />
+                    <Form.Control
+                      type="text"
+                      name="taxCode"
+                      value={formData.taxCode}
+                      onChange={handleInputChange}
+                      placeholder="Nhập mã thuế"
+                    />
                   </Form.Group>
                 </Form>
               </div>
             )}
           </Col>
-
-          {/* Cột follow */}
           <Col md={2} className="d-flex flex-column align-items-center">
-            {user?.role === "ROLE_EMPLOYEE" && employeeId && company?.employerId && (
+            {user?.role === "ROLE_EMPLOYEE" && employeeId && companyInfo.employerId && (
               <>
                 <FollowButton
                   employeeId={employeeId}
-                  employerId={company.employerId}
+                  employerId={companyInfo.employerId}
                   onChange={(status) => {
                     setFollowerCount((prev) => status ? prev + 1 : Math.max(prev - 1, 0));
                   }}
@@ -297,9 +294,6 @@ const CompanyInfo = () => {
       </Card>
     </Container>
   );
-
 };
 
 export default CompanyInfo;
-
-

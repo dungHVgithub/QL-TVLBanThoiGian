@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { Container, ListGroup, Spinner, Badge } from "react-bootstrap";
 import Api, { authApis, endpoints } from "../configs/Api";
 import { MyUserContext, NotificationContext } from "../configs/MyContexts";
-
 import { formatDistanceToNow } from "date-fns";
 import vi from "date-fns/locale/vi";
 import { toast } from "react-toastify";
@@ -13,7 +12,8 @@ const NotificationList = () => {
   const { setUnreadCount } = useContext(NotificationContext);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // ✅ sử dụng navigate
+  const navigate = useNavigate();
+  const prevUnreadRef = useRef(0); // lưu lại số thông báo chưa đọc trước đó
 
   const renderTimeSafely = (input) => {
     try {
@@ -40,44 +40,54 @@ const NotificationList = () => {
 
       setNotifications((prev) =>
         prev.map((n) =>
-          n.notificationId?.id === notificationId
-            ? { ...n, isRead: true }
-            : n
+          n.notificationId?.id === notificationId ? { ...n, isRead: true } : n
         )
       );
 
       setUnreadCount((prev) => Math.max(prev - 1, 0));
 
-      if (jobId) navigate(`/job_detail/${jobId}`); // ✅ điều hướng
+      if (jobId) navigate(`/job_detail/${jobId}`);
     } catch (err) {
       console.error("❌ Lỗi cập nhật trạng thái đã đọc:", err);
       toast.error("Không thể đánh dấu đã đọc");
     }
   };
 
-  useEffect(() => {
-    const loadNotifications = async () => {
-      if (!user || !user.id || user.role !== "ROLE_EMPLOYEE") return;
+  const loadNotifications = async () => {
+    if (!user || !user.id || user.role !== "ROLE_EMPLOYEE") return;
 
-      try {
-        setLoading(true);
+    try {
+      const empRes = await Api.get(`${endpoints["employeeFromUser"]}/${user.id}`);
+      const employeeId = empRes.data;
 
-        const empRes = await Api.get(`${endpoints["employeeFromUser"]}/${user.id}`);
-        const employeeId = empRes.data;
+      const res = await authApis().get(`${endpoints["notificationsByEmployee"]}/${employeeId}`);
+      const newNotifications = res.data.map(n => ({ ...n, employeeId }));
+      const newUnreadCount = newNotifications.filter(n => !n.isRead).length;
 
-        const res = await authApis().get(`${endpoints["notificationsByEmployee"]}/${employeeId}`);
-        setNotifications(res.data.map(n => ({ ...n, employeeId })));
-
-        setUnreadCount(res.data.filter(n => !n.isRead).length);
-      } catch (err) {
-        console.error("❌ Lỗi khi load notifications:", err);
-      } finally {
-        setLoading(false);
+      // ✅ Hiện toast nếu có thông báo mới
+      if (newUnreadCount > prevUnreadRef.current) {
+        toast.info("🔔 Bạn có thông báo mới!");
       }
-    };
 
-    loadNotifications();
-  }, [user?.id, setUnreadCount]);
+      prevUnreadRef.current = newUnreadCount;
+      setUnreadCount(newUnreadCount);
+      setNotifications(newNotifications);
+    } catch (err) {
+      console.error("❌ Lỗi khi load notifications:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications(); // load lần đầu
+
+    const interval = setInterval(() => {
+      loadNotifications(); // load mỗi 4 giây
+    }, 4000);
+
+    return () => clearInterval(interval); // dọn khi unmount
+  }, [user?.id]);
 
   return (
     <Container className="mt-4">
